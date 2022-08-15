@@ -1,0 +1,34 @@
+Package: FEMSdevPkg
+Type: Package
+Title: Provides an API to ACTUS cashflow Generation
+Version: 0.0.1
+Author: Francis Parr
+Maintainer: Francis Parr <fnparr@gmail.com>
+Description: Exports a samplePortfolio( ) which reads designated csv files 
+    with Bond portfolio and risk factor data, then creates and returns a 
+    Portfolio object with this contents.  A Portfolio contains all necessary
+    information to request an ACTUS server cashfkow event generation for its
+    contracts using the designated scenario i.e. list of Risk factors.  
+License: GPL ( >=2)
+Imports: 
+      httr,
+      jsonlite,
+      methods,
+      timeDate,
+      timeSeries
+ImportFrom: methods new      
+Encoding: UTF-8
+LazyData: true
+Collate: 
+    'ContractABC.R'
+    'ContractLeg.R'
+    'ContractModel.R'
+    'ContractType.R'
+    'Initialize.R'
+    'Portfolio.R'
+    'PrincipalAtMaturity.R'
+    'RiskFactor.R'
+    'ReferenceIndex.R'
+    'import.R'
+    'util.R'
+RoxygenNote: 7.2.1
