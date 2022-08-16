@@ -32,4 +32,5 @@ This functioniton copies sample csv data files into a user selected directory
   datadir <- "~/mydata"
   installSampleData(datadir)
   }
+  
 }

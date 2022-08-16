@@ -135,17 +135,16 @@ datarow2Contract<- function(terms_df, legs_df,irow){
 #'
 #' @return NULL
 #' @export
-#' @importFrom utils read.csv
-#' @importFrom utils write.csv 
 #'
 #' @examples {
 #'   datadir <- "~/mydata"
 #'   installSampleData(datadir)
 #'   }
+#'   
 installSampleData <- function (mydatadir){
   for (fn in  c("BondPortfolio.csv","RiskFactors.csv")) {
     pn <- paste0(mydatadir,"/",fn)
-    write.csv ( read.csv(system.file("extdata",fn, package = "FEMSdevPkg")),
-                pn, row.names = FALSE )
+    file.copy(from = system.file("extdata",fn, package = "FEMSdevPkg"),
+              to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)
   }
 }
