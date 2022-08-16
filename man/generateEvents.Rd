@@ -24,10 +24,12 @@ The generateEvents(<Portfolio>, serverURL) function takes an initialized
 }
 \examples{
 {
-   serverURL <- "https://demo.actusfrf.org:8080/"
-   cdfn  <- "~/Rprojects/FEMSdevPkg01/data/BondPortfolio.csv"
-   rfdfn <- "~/Rprojects/FEMSdevPkg01/data/RiskFactors.csv"
+   mydatadir <- "~/mydata"
+   installSampleData(mydatadir)
+   cdfn  <- "~/mydata/BondPortfolio.csv"
+   rfdfn <- "~/mydata/RiskFactors.csv"
    ptf   <-  samplePortfolio(cdfn,rfdfn)
+   serverURL <- "https://demo.actusfrf.org:8080/"
    cfls  <- generateEvents(ptf,serverURL)
 }
 

@@ -21,8 +21,10 @@ samplePortfolio ( cdfn, rdfn ) takes as input a contracts-data-filepath and
 }
 \examples{
 {
-   cdfn  <- "~/Rprojects/FEMSdevPkg01/data/BondPortfolio.csv"
-   rfdfn <- "~/Rprojects/FEMSdevPkg01/data/RiskFactors.csv"
+   mydatadir <- "~/mydata"
+   installSampleData(mydatadir)
+   cdfn  <- "~/mydata/BondPortfolio.csv"
+   rfdfn <- "~/mydata/RiskFactors.csv"
    ptf <- samplePortfolio(cdfn,rfdfn)
    }
 

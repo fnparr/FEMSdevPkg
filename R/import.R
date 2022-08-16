@@ -84,7 +84,7 @@ riskFactors_df2list <- function(riskFactors_df){
 #    constructors will set isStructured but not populate terms or legs
 #    if isStructured: insertLegs
 #    insertTerms ( both simple and structured cases )
-# *************************************
+# ************************************************
 datarow2Contract<- function(terms_df, legs_df,irow){
   contractTypeName <- longName(tolower(terms_df$contractType[irow]))
   contract <- CT(contractTypeName)
@@ -108,3 +108,44 @@ datarow2Contract<- function(terms_df, legs_df,irow){
   return(contract)
 }
 
+# *********************************************************
+# installSampleData(<directory-file-path>) 
+# ****************
+# ***********************************************
+#' installSampleData 
+#' 
+#'  This functioniton copies sample csv data files into a user selected directory 
+#'  where they can be easily inspected or modified. This demonstrates the 
+#'  required format for additional contract and riskFactor data files to be 
+#'  used in FEMSdev Pkg requests 
+#'  .  
+#'  Sample file BondPortfolio.csv specifies ACTUS contract terms for  a 
+#'  portfolio of PrincipalAtMaturity ( bullet ) bonds. Sample file 
+#'  RiskFactors.csv specifies projected # future values for a collection of
+#'  marketObjectCodes designated by contracts as their baseline for resetting 
+#'  rates or, in the case of (european) stock options, market value of the 
+#'  underlying 
+#'  
+#'  The input parameter <directory-file-path> locates a directory where the 
+#'  sample data files should be copied to. ( FEMSdevPkg contains a compressed 
+#'  form of these sample csv files not conveniently visible or accessible to the
+#'   FEMSdevPkg package user.
+#'
+#' @param mydatadir  character - full path name of directory to write sample csvs
+#'
+#' @return NULL
+#' @export
+#' @importFrom utils read.csv
+#' @importFrom utils write.csv 
+#'
+#' @examples {
+#'   datadir <- "~/mydata"
+#'   installSampleData(datadir)
+#'   }
+installSampleData <- function (mydatadir){
+  for (fn in  c("BondPortfolio.csv","RiskFactors.csv")) {
+    pn <- paste0(mydatadir,"/",fn)
+    write.csv ( read.csv(system.file("extdata",fn, package = "FEMSdevPkg")),
+                pn, row.names = FALSE )
+  }
+}
