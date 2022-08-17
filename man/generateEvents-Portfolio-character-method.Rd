@@ -2,7 +2,7 @@
 % Please edit documentation in R/Portfolio.R
 \name{generateEvents,Portfolio,character-method}
 \alias{generateEvents,Portfolio,character-method}
-\title{generateEvents}
+\title{generateEvents(ptf serverURL)}
 \usage{
 \S4method{generateEvents}{Portfolio,character}(ptf, serverURL)
 }
@@ -15,7 +15,7 @@
 List of generated cashflow results - one entry per contract
 }
 \description{
-The generateEvents(<Portfolio>, serverURL) function takes an initialized
+The generateEvents(Portfolio, character) instance takes an initialized
   S4 Portfolio object and a serverURL as inputs, constructs a JSON
   representation of the Portfolio contents and calls out using https POST to
   the Actus server at URL serverURL to generate a list of cashflow event
