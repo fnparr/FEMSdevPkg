@@ -20,11 +20,9 @@
 #' @importFrom methods new
 #' @export Portfolio
 #' @exportClass Portfolio
-#' @field contracts list.
-#' @field riskFactors list.
 #'
-#' @return  S4 object with class=Portfolio
-#'
+#' @field contracts  List of contracts, class=ContractType, in the portfolio.
+#' @field riskFactors List of class=RiskFactor objects defining a risk Scenario. 
 #' @examples { ptf1 <- Portfolio()}
 setRefClass("Portfolio",
             fields = list(
@@ -35,19 +33,30 @@ setRefClass("Portfolio",
 # **************************************
 # constructors Portfolio(...) for a portfolio object
 # *************************************
-# define generic function Portfolio()
+#' Portfolio < >  -  generic function definition 
+#'
+#' Defines generic S4 constructor method on class Portfolio
+#' @param  contract   S4 reference Class=ContractType, a contract to include. 
+#' @param  ...        Not used
 setGeneric(name = "Portfolio",
            def = function(contract, ...){
              standardGeneric("Portfolio")
            })
-# and instantiate for the no parameters case
+#' Portfolio ( )  - no parameters instance of Portfolio< > 
+#' 
+#' Creates an empty Portfolio object with no attributes initialized. 
+#' @return  S4 reference with class=Portfolio and no attributes initialized.
 setMethod(f = "Portfolio", signature = c(),
           definition = function( ){
              return(new("Portfolio"))
           })
-
-# allow creation of a portfolio with single contract in its contracts
-# useful to run a cash flow generation on a test contract
+#' Portfolio("ContractType")  Constructs Portfolio containing a single contract.
+#' 
+#' This instance of the generic Portfolio< > method takes a reference to a 
+#' contract as its input parameter and returns a portfolio with no defined risk 
+#' Scenario and this single contract as its contents
+#' @param contract  S4 reference class=ContractType
+#' @return   S4 reference class=Portfolio, initialized attributes
 setMethod(f = "Portfolio", signature = "ContractType",
           definition = function (contract) {
           ptf <- Portfolio()
@@ -56,9 +65,24 @@ setMethod(f = "Portfolio", signature = "ContractType",
           return(ptf)
           })
 
+#' generateEvents < >     Generic method definition
+#' 
+#' Defines a generic method on S4 Class Portfolio. Instances will call out
+#' to an ACTUS server at location serverURL to generate cashflow events for 
+#' contracts in the portfolio using the risk scenario in the portfolio. 
+#' Instances of this generic are: 1. signature ( "Portfolio", serverURL)
+#'
+#' @param ptf   S4 reference Class=Portfolio
+#' @param serverURL  character string, the URL of ACTUS server to call out to. 
+#' @return          List of generated cashflow results - one entry per contract
+setGeneric(name = "generateEvents",
+           def = function(ptf,serverURL){
+             standardGeneric("generateEvents")
+           })
+
 # ************************************************************************
-# generateEvents(<Portfolio>)
-# *************************************
+# generateEvents(<Portfolio>, ServerURL) - instance of generic method 
+# ************************************************************************
 
 #' generateEvents
 #'
@@ -85,11 +109,6 @@ setMethod(f = "Portfolio", signature = "ContractType",
 #'    cfls  <- generateEvents(ptf,serverURL)
 #' }
 #'
-setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL){
-             standardGeneric("generateEvents")
-           })
-
 setMethod (f = "generateEvents", signature = c("Portfolio","character") ,
             definition = function(ptf,serverURL){
             # send contract and risk factors to the Server as valid JSON

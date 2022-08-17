@@ -2,35 +2,21 @@
 % Please edit documentation in R/Portfolio.R
 \name{generateEvents}
 \alias{generateEvents}
-\title{generateEvents}
+\title{generateEvents < >     Generic method definition}
 \usage{
 generateEvents(ptf, serverURL)
 }
 \arguments{
-\item{ptf}{Portfolio S4 object initialized with contract and risk factors}
+\item{ptf}{S4 reference Class=Portfolio}
 
-\item{serverURL}{character - identifies the ACTUS server to be called}
+\item{serverURL}{character string, the URL of ACTUS server to call out to.}
 }
 \value{
 List of generated cashflow results - one entry per contract
 }
 \description{
-The generateEvents(<Portfolio>, serverURL) function takes an initialized
-  S4 Portfolio object and a serverURL as inputs, constructs a JSON
-  representation of the Portfolio contents and calls out using https POST to
-  the Actus server at URL serverURL to generate a list of cashflow event
-  lists for each contract in the Portfolio using the portfolio's RiskFactor
-  scenario data.
-}
-\examples{
-{
-   mydatadir <- "~/mydata"
-   installSampleData(mydatadir)
-   cdfn  <- "~/mydata/BondPortfolio.csv"
-   rfdfn <- "~/mydata/RiskFactors.csv"
-   ptf   <-  samplePortfolio(cdfn,rfdfn)
-   serverURL <- "https://demo.actusfrf.org:8080/"
-   cfls  <- generateEvents(ptf,serverURL)
-}
-
+Defines a generic method on S4 Class Portfolio. Instances will call out
+to an ACTUS server at location serverURL to generate cashflow events for 
+contracts in the portfolio using the risk scenario in the portfolio. 
+Instances of this generic are: 1. signature ( "Portfolio", serverURL)
 }

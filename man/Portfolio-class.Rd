@@ -4,9 +4,6 @@
 \name{Portfolio-class}
 \alias{Portfolio-class}
 \title{class Portfolio}
-\value{
-S4 object with class=Portfolio
-}
 \description{
 A Portfolio consists of a list of contracts and a list of riskFactors
 defining a scenario, A portfolio argument can be used as the input
@@ -15,9 +12,9 @@ parameter for a generateEvents( ) request
 \section{Fields}{
 
 \describe{
-\item{\code{contracts}}{list.}
+\item{\code{contracts}}{List of contracts, class=ContractType, in the portfolio.}
 
-\item{\code{riskFactors}}{list.}
+\item{\code{riskFactors}}{List of class=RiskFactor objects defining a risk Scenario.}
 }}
 
 
