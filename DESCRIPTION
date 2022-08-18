@@ -14,8 +14,12 @@ Imports:
       httr,
       jsonlite,
       methods,
+      shiny,
+      shinythemes,
       timeDate,
-      timeSeries
+      timeSeries,
+      xts,
+      zoo
 ImportFrom: methods new      
 Encoding: UTF-8
 LazyData: true
@@ -30,5 +34,6 @@ Collate:
     'RiskFactor.R'
     'ReferenceIndex.R'
     'import.R'
+    'runShinyDemo.R'
     'util.R'
 RoxygenNote: 7.2.1
