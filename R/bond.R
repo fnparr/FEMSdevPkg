@@ -5,38 +5,35 @@
 # IDP - Institute for Data Analysis and Process Design
 # author(s): Nils Andri Bundi (bund@zhaw.ch)
 # edits by Francis Parr for FEMSdev april 2022
- #*******************************************************************************
+#*******************************************************************************
 
 ##############################################################
 #' \code{bond}
 #'
 #' Constructor method for simple (single) PrincipalAtMaturity contract.
 #' @export
-#'
 #' @param start a character reflecting the start date of the bond.
-#'
-#' @param maturity a character reflecting the maturity of the bond,
-#' default is "0 years".
-#'
-#' @param nominal a numeric to set the notional principal of the bond,
-#' default is 0.0.
-#'
-#' @param coupon a numeric to set the coupon payment, default is 0.0.
-#'
+#' @param maturity   a character reflecting the maturity of the bond,
+#'                   default is "0 years".
+#' @param nominal    a numeric to set the notional principal of the bond,
+#'                   default is 0.0.
+#' @param coupon     a numeric to set the coupon payment, default is 0.0.
 #' @param couponFreq a character reflecting the frequency of coupon payments,
-#' default is "1 year".
-#'
+#'                   default is "1 year".
 #' @param role a character reflecting the contract role. default is "long".
 #'
-#' @return a PrincipalAtMaturity contrat with specified attributes.
+#' @return    a PrincipalAtMaturity contract with specified attributes.
 #'
 #' @usage bond(start, maturity, nominal, coupon, couponFreq, role)
 #'
-#' @examples
-#' b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-#'            coupon = 0.02, couponFreq = "1 years")
+#' @examples {
+#'     b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
+#'               coupon = 0.02, couponFreq = "1 years")
+#'     }
 #'
 #' @include PrincipalAtMaturity.R
+#' @importFrom   timeDate timeSequence
+#' @importFrom   timeDate timeDate
 #' @export
 bond <- function(start, maturity="0 years", nominal=0,
                 coupon=0.0, couponFreq="1 year", role="long",
@@ -46,11 +43,12 @@ bond <- function(start, maturity="0 years", nominal=0,
   }
   args <- list(...)
   if(nchar(maturity)<10) {
-    maturity <- as.character(timeSequence(timeDate(start),
-                                               by=maturity, length.out=2)[2])
+    maturity <- as.character(
+         timeDate::timeSequence(
+              timeDate::timeDate(start), by=maturity, length.out=2)[2])
   }
-  statusDate <- as.character(timeDate(start)-24*3600)
-  contractDealDate <- as.character(timeDate(start)-24*3600)
+  statusDate <- as.character(timeDate::timeDate(start)-24*3600)
+  contractDealDate <- as.character(timeDate::timeDate(start)-24*3600)
   initialExchangeDate <- start
 
   couponFreq_bef <- couponFreq

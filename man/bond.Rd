@@ -23,13 +23,15 @@ default is "1 year".}
 \item{role}{a character reflecting the contract role. default is "long".}
 }
 \value{
-a PrincipalAtMaturity contrat with specified attributes.
+a PrincipalAtMaturity contract with specified attributes.
 }
 \description{
 Constructor method for simple (single) PrincipalAtMaturity contract.
 }
 \examples{
-b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-           coupon = 0.02, couponFreq = "1 years")
+{
+    b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
+              coupon = 0.02, couponFreq = "1 years")
+    }
 
 }
