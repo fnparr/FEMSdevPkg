@@ -84,9 +84,9 @@ setGeneric(name = "generateEvents",
 # generateEvents(<Portfolio>, ServerURL) - instance of generic method 
 # ************************************************************************
 
-#' generateEvents(ptf serverURL)
+#' generateEvents(<portfolio>, <ACTUS-server-URL>)
 #'
-#'   The generateEvents(Portfolio, character) instance takes an initialized
+#'   The generateEvents(Portfolio, character) function takes an initialized
 #'   S4 Portfolio object and a serverURL as inputs, constructs a JSON
 #'   representation of the Portfolio contents and calls out using https POST to
 #'   the Actus server at URL serverURL to generate a list of cashflow event

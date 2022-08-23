@@ -32,7 +32,28 @@ setMethod(f = "EventSeries", signature = c(),
           definition = function(){
              return(new("EventSeries"))
              })
-
+#' EventSeries (<contract>, <risk-factor-list>, <ACTUS-server-URL>)
+#' 
+#'   The EventSeries ("ContractType", "list", "character") method instance 
+#'   constructs an EventSeries instance including as its events_df attribute a 
+#'   dataframe of cashflow events for the input ACTUS contract. This cashflow
+#'   is generated with a callout to the ACTUS server located at ACTUS-server-URL
+#'   using a risk scenario specified as the list of risk factors. THe method 
+#'   works by first creating a Portfolio with this ine contract and the supplied
+#'   risk factor list, then calling generateEvents on this portfolio 
+#'  @include Portfolio.R
+#'  @param  contract    S4 ref to an initialized class ContractType object
+#'  @param  riskFactors list of S4 refs to initialized class riskFactor objects
+#'  @param  serverURL   character URL of ACTUS server to simulate the contract
+#'  @return     S4 ref to an initialized Class EventSeries object with cashflows
+#'  @export
+#'  @examples {
+#'    pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
+#'                 coupon = 0.02, couponFreq = "1 years")
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    evs1 <- EventSeries(pam1, list(), serverURL)
+#'    }
+#'  
 setMethod(f = "EventSeries", signature = c("ContractType","list", "character"),
           definition = function(contract, riskFactors, serverURL){
             ptf <- Portfolio()
