@@ -7,6 +7,7 @@
 # defines: PrincipalAtMaturity refClass  - extends ContractType
 # introduces : Pam() null constructor , PrincipalAtMaturiy() constructor
 
+#' @include ContractType.R
 #' @import methods
 #' @importFrom methods new
 

@@ -27,7 +27,8 @@ setGeneric(name = "EventSeries",
            def = function(contract, riskFactors, serverURL ){
              standardGeneric("EventSeries")
            })
-
+#' EventSeries(...)  is the generic contstructor for EventSeries objectd
+#' @export
 setMethod(f = "EventSeries", signature = c(),
           definition = function(){
              return(new("EventSeries"))
