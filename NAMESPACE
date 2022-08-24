@@ -2,6 +2,7 @@
 
 export(Portfolio)
 export(bond)
+export(installSampleCode)
 export(installSampleData)
 export(runDaDFiR3demo)
 export(samplePortfolio)

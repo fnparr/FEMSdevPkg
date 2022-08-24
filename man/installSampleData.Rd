@@ -10,7 +10,7 @@ installSampleData(mydatadir)
 \item{mydatadir}{character - full path name of directory to write sample csvs}
 }
 \description{
-This functioniton copies sample csv data files into a user selected directory 
+This function copies asample csv data files into a user selected directory 
  where they can be easily inspected or modified. This demonstrates the 
  required format for additional contract and riskFactor data files to be 
  used in FEMSdev Pkg requests 

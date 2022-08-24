@@ -111,10 +111,11 @@ datarow2Contract<- function(terms_df, legs_df,irow){
 # *********************************************************
 # installSampleData(<directory-file-path>) 
 # ****************
+
 # ***********************************************
 #' installSampleData 
 #' 
-#'  This functioniton copies sample csv data files into a user selected directory 
+#'  This function copies asample csv data files into a user selected directory 
 #'  where they can be easily inspected or modified. This demonstrates the 
 #'  required format for additional contract and riskFactor data files to be 
 #'  used in FEMSdev Pkg requests 
@@ -149,4 +150,32 @@ installSampleData <- function (mydatadir){
     file.copy(from = system.file("extdata",fn, package = "FEMSdevPkg"),
               to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)
   }
+}
+
+# ***********************************************
+#'  installSampleCode 
+#' 
+#'  This function copies the code of a sample R application importing and using 
+#'  the FEMSdevPkg package in a user specified directory. The copied code
+#'  introductoryDemo.R provides a simple guide and introduction to using the 
+#'  package. This code is documented with comments  introductoryDemo.R is copied.
+#'  
+#'  The input parameter <directory-file-path> of installSampleCode locates a 
+#'  directory where the sample data files should be copied to. 
+#'
+#' @param demodir  character - full path name of folder to write demo R code 
+#'
+#' @return NULL
+#' @export
+#'
+#' @examples {
+#'   demodir <- "~/mycode"
+#'   installSampleCode(demodir)
+#'   }
+#'   
+installSampleCode <- function (demodir){
+    pn <- paste0(demodir,"/","introductoryDemo.R")
+    file.copy(from = system.file("code-examples","introductoryDemo.R", 
+                                  package = "FEMSdevPkg"),
+              to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)
 }
