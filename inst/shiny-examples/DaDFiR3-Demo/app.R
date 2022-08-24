@@ -1,8 +1,8 @@
-library(shiny)
-library(shinythemes)
-library(zoo)
+# library(shiny)
+# library(shinythemes)
+# library(zoo)
 # Define UI for application that draws a histogram
-ui <- fluidPage(theme = shinytheme("cerulean"),
+ui <- fluidPage(theme = shinythemes::shinytheme("cerulean"),
                 img(src = "actus-logo.png", height = 77, width = 220, 
                     style="float:right; padding-right:25px"),
                 img(src="Logo_Weiss.png",height = 80, width = 100),
@@ -42,7 +42,7 @@ server <- function(input, output) {
          plotDataPath <- "../../extdata/UST5Y_recoveringRates.csv"
       }
       
-      plot.zoo(read.csv.zoo(
+      zoo::plot.zoo(zoo::read.csv.zoo(
         file = plotDataPath, header = TRUE),
         main="5 year US Treasury Bill Interest Rate", xlab = "Year",
         ylab = "Annual %ge interest")

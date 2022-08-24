@@ -2,9 +2,7 @@ Package: FEMSdevPkg
 Type: Package
 Title: Provides an API to ACTUS cashflow Generation
 Version: 0.0.2
-Author: Francis Parr
-Author: Donat Maier
-Author: 
+Author: Francis Parr, Donat Maier: 
 Maintainer: Francis Parr <fnparr@gmail.com>
 Description: Exports a samplePortfolio( ) which reads designated csv files 
     with Bond portfolio and risk factor data, then creates and returns a 
