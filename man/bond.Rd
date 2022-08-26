@@ -7,20 +7,17 @@
 bond(start, maturity, nominal, coupon, couponFreq, role)
 }
 \arguments{
-\item{start}{a character reflecting the start date of the bond.}
+\item{start}{a character string yyyy-mm-dd the start date of the bond.}
 
-\item{maturity}{a character reflecting the maturity of the bond,
-default is "0 years".}
+\item{maturity}{a character string setting the bond's maturity.}
 
-\item{nominal}{a numeric to set the notional principal of the bond,
-default is 0.0.}
+\item{nominal}{a numeric to set the notional principal of the bond,}
 
 \item{coupon}{a numeric to set the coupon payment, default is 0.0.}
 
-\item{couponFreq}{a character reflecting the frequency of coupon payments,
-default is "1 year".}
+\item{couponFreq}{a character reflecting the frequency of coupon payments,}
 
-\item{role}{a character reflecting the contract role. default is "long".}
+\item{role}{a character string setting the contract role.}
 }
 \value{
 a PrincipalAtMaturity contract with specified attributes.
@@ -31,7 +28,6 @@ Constructor method for simple (single) PrincipalAtMaturity contract.
 \examples{
 {
     b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-              coupon = 0.02, couponFreq = "1 years")
+              coupon = 0.02, couponFreq = "1 years", role = "long")
     }
-
 }

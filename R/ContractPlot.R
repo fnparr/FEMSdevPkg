@@ -3,21 +3,28 @@
 # Please see accompanying distribution file for license.
 #*************************************************************
 
-# define the generic plot(x) function 
-# not appropriate to @export this no value for users to redefine plot 
+# define the generic cashflowPlot(evs) function 
+# not appropriate to export this - no value for users to redefine plot 
+#' cashflowPlot < >     generic function to plot cashflow events of a contract
+#' 
+#'  The instance of this function is cashflowPlot(\code{\link{EventSeries}}) 
+#'  where the input \code{\link{EventSeries}} carries cashflow event data for a 
+#'  contract to be plotted
+#'   
+#' @param evs    S4 reference to \code{\link{EventSeries}} object
 setGeneric(name = "cashflowPlot",
-           def = function(x) {
+           def = function(evs) {
              standardGeneric("cashflowPlot")
            })
-# if  (!isGeneric("plot"))  
 ##############################################################
-#'  cashflowPlot(<eventSeries> )  - plots a graphical representation od cashflow events
+#'  cashflowPlot  (evs) - create graphical plot of a contract's cashflow events
 #'
-#'    Creates and displays a graphical representation of the cashflow events of 
-#'   an  \code{\link{EventSeries}} object. An EventSeries captures the cashflows
-#'   of a single ACTUS contract. plot(<eventseries> ) displays the cashflow  
-#'   events of the contract graphically. 
-#'
+#'   Creates and displays a graphical representation of the cashflow events in 
+#'   an  \code{\link{EventSeries}} object. An \code{\link{EventSeries}} captures
+#'   the cashflows of a single ACTUS contract. The exported function
+#'   cashflowPlot(\code{\link{EventSeries}}) displays the cashflow events of the
+#'   contract graphically. 
+#' 
 #'   The graphical representation shows the different types of cashflow event
 #'   such as Principal Payment, Interest Payment, etc. Cashflows are shown 
 #'   as directional arrows. Incoming cashflows appear as arrows towards the 
@@ -25,25 +32,24 @@ setGeneric(name = "cashflowPlot",
 #'   A color code indicates the type of the cashflow as described in detail in 
 #'   the displayed legend of the plot. 
 #'
-#' @include EventSeries.R
-#' @include bond.R
-#'
-#' @param x The object carrying the contract events to be potted
+#' @include  EventSeries.R
+#' @include  bond.R
+#' @param evs  a \code{\link{EventSeries}} object with contract events to be 
+#'             plotted
 #' @return   creates  returns a graphical canvas (plot) displayed as plot
-#'
 #' @examples {
-#'   pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-#'                coupon = 0.02, couponFreq = "1 years")
+#'   pam1      <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
+#'                      coupon = 0.02, couponFreq = "1 years", role = "long")
 #'   serverURL <- "https://demo.actusfrf.org:8080/" 
-#'   evs1 <- EventSeries(pam1, list(), serverURL)
+#'   evs1      <- generateEventSeries(pam1, list(), serverURL)
 #'   cashflowPlot(evs1)     
 #' }
 #' @export
 #' @importFrom timeDate as.timeDate
+#' @importFrom graphics abline arrows axis legend mtext par text title
 setMethod("cashflowPlot", signature("EventSeries"),
-          definition = function(x){
+          definition = function(evs){
             # get data.frame of cash flow events from EventSeries
-            evs<- x
             df<- evs$events_df
             # plot
             # I need to distinguish between single and combined contracts!
@@ -58,7 +64,7 @@ setMethod("cashflowPlot", signature("EventSeries"),
 
 # -----------------------------------------------------------
 # private helper method (accessed through method 'plot')
-contractPlot <- function(events_df, contractType, contractID){
+contractPlot <- function(events_df, contractType, contractID, ...){
 
     ##require(timeSeries)
     ## get function arguments
@@ -67,7 +73,7 @@ contractPlot <- function(events_df, contractType, contractID){
     start <- df[1,"time"]    # no need to substr for time
     end <-   df[nrow(df),"time"]    # no need to substr for time
     by <- "1 day"
-
+    optlist <- list(...)
     # everything below this might work without change
 
     ## basic or combined ct?

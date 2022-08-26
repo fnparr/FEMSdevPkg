@@ -2,21 +2,23 @@
 % Please edit documentation in R/ContractPlot.R
 \name{cashflowPlot,EventSeries-method}
 \alias{cashflowPlot,EventSeries-method}
-\title{cashflowPlot(<eventSeries> )  - plots a graphical representation od cashflow events}
+\title{cashflowPlot  (evs) - create graphical plot of a contract's cashflow events}
 \usage{
-\S4method{cashflowPlot}{EventSeries}(x)
+\S4method{cashflowPlot}{EventSeries}(evs)
 }
 \arguments{
-\item{x}{The object carrying the contract events to be potted}
+\item{evs}{a \code{\link{EventSeries}} object with contract events to be 
+plotted}
 }
 \value{
 creates  returns a graphical canvas (plot) displayed as plot
 }
 \description{
-Creates and displays a graphical representation of the cashflow events of 
-  an  \code{\link{EventSeries}} object. An EventSeries captures the cashflows
-  of a single ACTUS contract. plot(<eventseries> ) displays the cashflow  
-  events of the contract graphically.
+Creates and displays a graphical representation of the cashflow events in 
+  an  \code{\link{EventSeries}} object. An \code{\link{EventSeries}} captures
+  the cashflows of a single ACTUS contract. The exported function
+  cashflowPlot(\code{\link{EventSeries}}) displays the cashflow events of the
+  contract graphically.
 }
 \details{
 The graphical representation shows the different types of cashflow event
@@ -28,10 +30,10 @@ The graphical representation shows the different types of cashflow event
 }
 \examples{
 {
-  pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-               coupon = 0.02, couponFreq = "1 years")
+  pam1      <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
+                     coupon = 0.02, couponFreq = "1 years", role = "long")
   serverURL <- "https://demo.actusfrf.org:8080/" 
-  evs1 <- EventSeries(pam1, list(), serverURL)
+  evs1      <- generateEventSeries(pam1, list(), serverURL)
   cashflowPlot(evs1)     
 }
 }

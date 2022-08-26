@@ -16,10 +16,10 @@ runDaDFiR3demo()
 # 5. Developing FEMSdev support for ActusContract.rmd RShiny demo
 # 5.1 create PAM bond with user friendly API
 pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-coupon = 0.02, couponFreq = "1 years")
+coupon = 0.02, couponFreq = "1 years", role = "long")
 unlist(pam1$contractTerms)
 #5.2 create null / uninitialized EventSeries
-evs1 <- EventSeries(pam1, list(), serverURL)
+evs1 <- generateEventSeries(pam1, list(), serverURL)
 unlist(list(contractID = evs1$contractID,
             contractType=evs1$contractType,
             statusDate= evs1$statusDate,

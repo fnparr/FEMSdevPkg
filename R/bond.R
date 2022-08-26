@@ -11,37 +11,28 @@
 #' \code{bond}
 #'
 #' Constructor method for simple (single) PrincipalAtMaturity contract.
-#' @export
-#' @param start a character reflecting the start date of the bond.
-#' @param maturity   a character reflecting the maturity of the bond,
-#'                   default is "0 years".
+#' @param start      a character string yyyy-mm-dd the start date of the bond.
+#' @param maturity   a character string setting the bond's maturity.
 #' @param nominal    a numeric to set the notional principal of the bond,
-#'                   default is 0.0.
 #' @param coupon     a numeric to set the coupon payment, default is 0.0.
 #' @param couponFreq a character reflecting the frequency of coupon payments,
-#'                   default is "1 year".
-#' @param role a character reflecting the contract role. default is "long".
-#'
+#' @param role      a character string setting the contract role.
 #' @return    a PrincipalAtMaturity contract with specified attributes.
-#'
 #' @usage bond(start, maturity, nominal, coupon, couponFreq, role)
-#'
 #' @examples {
 #'     b <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-#'               coupon = 0.02, couponFreq = "1 years")
+#'               coupon = 0.02, couponFreq = "1 years", role = "long")
 #'     }
-#'
 #' @include PrincipalAtMaturity.R
 #' @importFrom   timeDate timeSequence
 #' @importFrom   timeDate timeDate
 #' @export
-bond <- function(start, maturity="0 years", nominal=0,
-                coupon=0.0, couponFreq="1 year", role="long",
-                variable.rates=FALSE, ...) {
+bond <- function(start, maturity, nominal, coupon, couponFreq, role ){
   if (missing(start)){
     stop("Parameter 'start' must be set to yyyy-mm-dd date !!!")
   }
-  args <- list(...)
+  # args <- list(...)
+  args <- list()
   if(nchar(maturity)<10) {
     maturity <- as.character(
          timeDate::timeSequence(
@@ -87,10 +78,6 @@ bond <- function(start, maturity="0 years", nominal=0,
 
   if(!"dayCountConvention"%in%names(args)) {
     args[["dayCountConvention"]] <- "30E360"
-  }
-
-  if(variable.rates) {
-    args[["cycleOfRateReset"]] <- couponFreq
   }
 
   contractType <- "PAM"
