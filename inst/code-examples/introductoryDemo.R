@@ -27,3 +27,7 @@ unlist(list(contractID = evs1$contractID,
           ))
 evs1$events_df
 cashflowPlot(evs1)
+# 5.3 Extract a contract from the sample portfolio 
+cids <- getContractIDs(ptf)   # find the contractID in the portfolio
+cids
+cntr1 <- getContract(ptf,cids[1]) # get the contract with the selected cid

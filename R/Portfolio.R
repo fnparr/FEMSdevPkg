@@ -15,12 +15,12 @@
 #' A Portfolio consists of a list of contracts and a list of riskFactors
 #' defining a scenario, A portfolio argument can be used as the input
 #' parameter for a generateEvents( ) request
-#'
+#' @include ContractType.R
 #' @import methods
 #' @importFrom methods new
 #' @export Portfolio
 #' @exportClass Portfolio
-#'
+#' 
 #' @field contracts  List of contracts, class=ContractType, in the portfolio.
 #' @field riskFactors List of class=RiskFactor objects defining a risk Scenario. 
 #' @examples { ptf1 <- Portfolio()}
@@ -168,3 +168,90 @@ samplePortfolio <- function(cdfn, rfdfn) {
                                 # cashflow generation
   return(ptf)
 }
+
+#' getContractIDs  <ptf>     Generic method definition
+#' 
+#' Defines a generic method on S4 Class Portfolio. Returns a vector with the 
+#' contractIDs of all the contracts in the portfolio.
+#'
+#' @param ptf   S4 reference Class=Portfolio Portfolio with a list of contracts.
+#' @return      A vector of character string contractIDs 
+setGeneric(name = "getContractIDs",
+           def = function(ptf) standardGeneric("getContractIDs"))
+
+
+#' getContractIDs
+#'
+#' getContractIDs(ptf) takes as input an S4 ref to a Class=Portfolio object
+#'     containing a list of contracts. It returns a vector of character string 
+#'     contractID of the contracts in the portfolio. 
+#'
+#' @param ptf    S4 ref to class=Portfolio object with list of contracts
+#' @return       Vector of character string contractIDs -  one for each contract
+#'               in the portfolio
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    rfdfn <- "~/mydata/RiskFactors.csv"
+#'    ptf <- samplePortfolio(cdfn,rfdfn)
+#'    cids <- getContractIDs(ptf)
+#'    }
+#'
+setMethod (f = "getContractIDs", signature = c("Portfolio") ,
+           definition = function(ptf){
+             cids <- sapply(ptf$contracts, getCIDfromContract)
+             return(cids)
+           })
+
+
+#' getContract <ptf, cid >     Generic method definition
+#' 
+#'   Defines a generic method on S4 Class Portfolio also taking character string
+#'   contractID as its second input. Returns an S4 reference to an object of 
+#'   Class=ContractType if the input contractID matches a contract in the 
+#'   Portfolio and NULL if it does not.  
+#'
+#' @param ptf   S4 reference Class=Portfolio Portfolio with a list of contracts
+#' @param cid   A character string contractID.
+#' @return      An S4 Reference to a portfolio Object if cid is matched or NULL  
+setGeneric(name = "getContract", 
+           def = function(ptf, cid ) standardGeneric("getContract"))
+
+
+#' getContract(ptf, cid)     
+#'
+#' getContract(ptf, cid) takes as input an S4 ref to a Class=Portfolio object
+#'     containing a list of contracts and a character string contractID. The 
+#'     returns either an S4 ref to a Class=ContractType contract object whose 
+#'     contractID the input cid string OR NULL if there is no matching contract
+#'     in the portfolio.
+#'
+#' @param ptf    S4 ref to class=Portfolio object with list of contracts
+#' @param cid    character - a contractID string to be matched
+#' @return       EITHER an S4 Ref to a class=ContractType object with this input
+#'                      cid as its its contractID 
+#'               OR NULL if no such match exists 
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    rfdfn <- "~/mydata/RiskFactors.csv"
+#'    ptf <- samplePortfolio(cdfn,rfdfn)
+#'    cids <- getContractIDs(ptf)
+#'    cntr <- getContract(ptf, cids[1])
+#'    }
+#'
+setMethod ( f = "getContract",  signature = c("Portfolio", "character"),
+            definition = function(ptf, cid) {
+               cl <- ptf$contracts[
+                     sapply(ptf$contracts, function(cntr){
+                            getCIDfromContract(cntr) == cid
+                     }) ]
+               if (length(cl) == 1)  cntr_out <- cl[[1]]
+               else  cntr_out = NULL
+               return(cntr_out)
+            } )
+  
