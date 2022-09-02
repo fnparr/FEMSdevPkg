@@ -39,35 +39,80 @@
 #' @import timeSeries
 #'
 setRefClass("ReferenceIndex", contains = "RiskFactor",
-            fields = list())
-
+            fields = list( # riskFactorID =  "character"  In RiskFactor parent
+                           marketObjectCode = "character", 
+                           base  = "numeric",  
+                           data =  "timeSeries" 
+            ))
 
 setGeneric(name = "Index",
-           def = function(label,base,timeSeries, dates, values, ...){
-             standardGeneric("Index")
-           })
+           def = function(rfID, moc, base, timeSeries, 
+                          dates, values, fname, ...) standardGeneric("Index") )
 
-# constructor with label, base and timeSeries data
-setMethod(f = "Index", signature = c("character", "numeric", "timeSeries"),
-          definition= function(label, base, timeSeries) {
-            object <- new("ReferenceIndex")
-            object$label <- label
-            object$base  <- base
-            object$data  <- timeSeries
-            return(object)
+# constructor with rfID label, base and timeSeries data
+setMethod(f = "Index", signature = c("character", "character","numeric",
+                                     "timeSeries"),
+          definition= function(rfID, moc, base, timeSeries) {
+            rfx <- new("ReferenceIndex")
+            rfx$riskFactorID      <- rfID
+            rfx$marketObjectCode  <- moc
+            rfx$base              <- base
+            rfx$data  <- timeSeries
+            return(rfx)
           })
-# constructor with label, base, vector of date, vector of value
+# constructor with label, base, vector of dates, vector of values
 # builds the data TimeSeries from date qnd value columns
 setMethod(f = "Index", signature =
-                 c("character", "numeric", "missing", "character","numeric") ,
-          definition= function(label, base, dates, values) {
-            object <- new("ReferenceIndex")
+                 c("character", "character", "numeric", "missing", 
+                   "character","numeric") ,
+          definition= function(rfID, moc, base, dates, values) {
+            rfx <- new("ReferenceIndex")
             ts1 <- timeSeries(data = values, charvec = dates, units = "value")
-            object$label <- label
-            object$base  <- base
-            object$data  <- ts1
-            return(object)
+            rfx$riskFactorID <- rfID
+            rfx$marketObjectCode <- moc
+            rfx$base            <- base
+            rfx$data  <- ts1
+            return(rfx)
           })
+
+
+# ************************************************************
+# preJSONts(), preJSONrf(), preJSONrfc() these functions map
+#     reference Index elements to a preJSON form where calling
+#     jsonlite::toJSON(preJSONrfc(rfc) , dataframe = "rows")
+#     will generate valid Actus JSON for reference Indexes;
+#     R dataframes map to JSON [ ] sequences;
+#     R lists map to JSON { } records but
+#     need unbox( ) for singleton values
+#     timeSeries optimizes times, no renaming time col etc
+#     time() extracts vector of times; format() converts to chars
+#     paste0 to append T00:00:00 expected by Actus; reference Index list is 
+#     organized
+#     as list of names with unboxed values, embedded dataframe is allowed
+#     a rFConn had to be a dataframe with unnamed column of risked factors
+#        FNP Apr 2022
+# ************************************************************
+
+preJSONts <- function(ts) {
+  return (data.frame(time = paste0(format(timeSeries::time(ts)),"T00:00:00"),
+                     value = ts$value)
+  )
+}
+# result should convert to JSON with toJSON(preJSONrf(rf),dataframe="rows")
+
+preJSONrfx <- function(rfx) {
+  return ( list(marketObjectCode= jsonlite::unbox(rfx$marketObjectCode),
+                base = jsonlite::unbox(rfx$base),
+                data = preJSONts(rfx$data)
+               )
+         )
+}
+
+preJSONrfxs <- function(rfxs) {         # work directly on riskFactors list
+  rfsl <- lapply(rfxs, preJSONrfx )
+  names(rfsl) <- NULL  # must clear the list names
+  return(rfsl)
+}
 
 
 # setMethod(f = "Index",signature = c("numeric", "ANY", "character"),
@@ -203,9 +248,10 @@ is.valid.index.get.field <- function(x) {
 sampleReferenceIndex_YC_EA_AAA <- function(){
   values <- c(0.02, 0.03, 0.04)   # sample interest rates base = 1.0
   dates <- c("2000-01-01","2016-01-01","2017-01-01")
-  label = "YC_EA_AAA"
-  base  = 1.0
-  rfndx <- Index(label, base,, dates, values)
+  rfID  <- "sample$YC_EA_AAA"
+  moc   <- "YC_EA_AAA"
+  base  <- 1.0
+  rfndx <- Index(rfID, moc, base,, dates, values)
   return (rfndx)
 }
 # function to create a sample ReferenceIndex riskFactor object for
@@ -213,9 +259,10 @@ sampleReferenceIndex_YC_EA_AAA <- function(){
 sampleReferenceIndex_AAPL <- function(){
   values <- c(63.70, 91.20, 115.81 )   # sample index / stock price base = 1.0
   dates <- c("2020-03-30","2020-06-30","2020-09-30")
-  label = "AAPL"
-  base  = 1.0
-  rfndx <- Index(label, base,, dates, values)
+  rfID  <- "sample$AAPL"
+  moc   <- "AAPL"
+  base  <- 1.0
+  rfndx <- Index(rfID, moc, base,, dates, values)
   return (rfndx)
 }
 # function to create a sample ReferenceIndex riskFactor object for
@@ -223,7 +270,8 @@ sampleReferenceIndex_AAPL <- function(){
 sampleReferenceIndex_IND_CPI_EA <- function(){
   values <- c(1.08, 1.07, 1.06 )   # sample index / stock price base = 1.0
   dates <- c("2000-01-02","2016-01-02","2017-01-02")
-  label = "IND_CPI_EA"
-  base  = 1.0
-  return(Index(label, base,, dates, values))
+  rfID  <- "sample$IND_CPI_EA"
+  moc   <- "IND_CPI_EA"
+  base   <- 1.0
+  rfndx <- Index(rfID,moc,base,,dates,values)
 }

@@ -64,7 +64,7 @@ contracts_df2list<- function(contracts_df){
 #   all riskFactors are referenceIndex for now
 # ************************************************
 riskFactors_df2list <- function(riskFactors_df){
-  rflist <- list()
+  rfxlist <- list()
   nhdrs <- 4        # rfType, moc, base, dataPairCount are " row headers"
   for ( irow in 1:nrow(riskFactors_df)){
       rfRow <- riskFactors_df[irow,]
@@ -72,10 +72,12 @@ riskFactors_df2list <- function(riskFactors_df){
           # vector of dates
       vset <- as.numeric(rfRow[nhdrs+(1:rfRow$dataPairCount)*2])
            # vector of numeric values
-      rflist <-append(rflist,
-                       Index(rfRow$marketObjectCode,rfRow$base,,tset,vset))
+      rfID <- paste0("sample$",rfRow$marketObjectCode)
+      rfxlist <-append(rfxlist,
+                       Index(rfID,rfRow$marketObjectCode,rfRow$base,,
+                             tset,vset))
       }
-  return(rflist)
+  return(rfxlist)
 }
 
 # ***********************************************

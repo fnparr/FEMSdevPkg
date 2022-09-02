@@ -22,12 +22,12 @@
 #' @exportClass Portfolio
 #' 
 #' @field contracts  List of contracts, class=ContractType, in the portfolio.
-#' @field riskFactors List of class=RiskFactor objects defining a risk Scenario. 
-#' @examples { ptf1 <- Portfolio()}
+#' @field riskFactors List of class=ReferenceIndex's defining a risk Scenario.
+#'        possibly better to change to riskFactorIndexList 
 setRefClass("Portfolio",
             fields = list(
               contracts = "list",   # contracts are instances of ContractType
-              riskFactors = "list"  # riskFactors ReferenceIndex with moc
+              riskFactors = "list"  #  ReferenceIndexList with moc
             ))
 
 # **************************************
@@ -115,7 +115,7 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character") ,
 
 #  Functional programming construction of preJson for Portfolio
             contractDefs <- lapply(ptf$contracts,preJcontract)
-            riskFactors <-  preJSONrfs(ptf$riskFactors)
+            riskFactors <-  preJSONrfxs(ptf$riskFactors)
             fin_list <- list(contracts = contractDefs,
                              riskFactors = riskFactors)
 

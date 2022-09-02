@@ -30,16 +30,17 @@
 #' @exportClass RiskFactor
 #'
 setRefClass("RiskFactor",
-            fields = list(label = "character",
-                          base  = "numeric",
-                          data =  "timeSeries"
+            fields = list(riskFactorID =  "character",
+                          rf_marketObjectCode = "character", # will move to RefIndx
+ # FNP replaced          label = "character",
+                          rf_base  = "numeric",  # will move to ReferenceIndex
+                          rf_data =  "timeSeries" # will move to ReferenceIndex
             ))
 
 setGeneric(name = "RF",
-           def = function(object){
-             standardGeneric("RF")
-           })
+           def = function(object) standardGeneric("RF"))
 
+# FNP unclear what the intended purpose of character parameter is 
 setMethod(f = "RF", signature = c("character"),
           definition = function(object) {
             return(new(object))
@@ -55,6 +56,7 @@ setGeneric(name = "valueAt",
 #             standardGeneric("as.timeSeries")
 #           })
 
+# FNP replace with as.timeSeries.ReferenceIndex(rfx)
 as.timeSeries.RiskFactor <- function(x) {return(x$data) }
 
 # ************************************************************
@@ -71,25 +73,25 @@ as.timeSeries.RiskFactor <- function(x) {return(x$data) }
 #     a rFConn had to be a dataframe with unnamed column of risked factors
 #        FNP Apr 2022
 # ************************************************************
-
-preJSONts <- function(ts) {
-  return (data.frame(time = paste0(format(timeSeries::time(ts)),"T00:00:00"),
-                     value = ts$value)
-  )
-}
-# result should convert to JSON with toJSON(preJSONrf(rf),dataframe="rows")
-
-preJSONrf <- function(rf) {
-  return ( list(marketObjectCode= jsonlite::unbox(rf$label),
-                base = jsonlite::unbox(rf$base),
-                data = preJSONts(rf$data)
-                )
-  )
-}
-
-preJSONrfs <- function(rfs) {         # work directly on riskFactors list
-  rfsl <- lapply(rfs, preJSONrf )
-  names(rfsl) <- NULL  # must clear the list names
-  return(rfsl)
-}
+#
+#preJSONts <- function(ts) {
+#  return (data.frame(time = paste0(format(timeSeries::time(ts)),"T00:00:00"),
+#                     value = ts$value)
+#  )
+#}
+## result should convert to JSON with toJSON(preJSONrf(rf),dataframe="rows")
+#
+#preJSONrf <- function(rf) {
+#  return ( list(marketObjectCode= jsonlite::unbox(rf$label),
+#                base = jsonlite::unbox(rf$base),
+#                data = preJSONts(rf$data)
+#                )
+#  )
+#}
+#
+#preJSONrfs <- function(rfs) {         # work directly on riskFactors list
+#  rfsl <- lapply(rfs, preJSONrf )
+#  names(rfsl) <- NULL  # must clear the list names
+#  return(rfsl)
+#}
 
