@@ -38,4 +38,5 @@ cashflowPlot(evs2)   # a very simple  zero-coupon bond
 mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
-rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+rfx_falling <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+rfx_rising <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
