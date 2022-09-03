@@ -39,4 +39,4 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx_falling <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-rfx_rising <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+rfx_rising <- sampleReferenceIndex(rxdfp,"UST5Y_risingRates", "YC_EA_AAA",100)
