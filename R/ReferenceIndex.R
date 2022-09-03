@@ -114,91 +114,47 @@ preJSONrfxs <- function(rfxs) {         # work directly on riskFactors list
   return(rfsl)
 }
 
-
-# setMethod(f = "Index",signature = c("numeric", "ANY", "character"),
-#          definition = function(data, charvec, label, ...){
-#            object <- new("ReferenceIndex")
-#            object$data <- timeSeries(data = data,
-#                                      charvec = charvec,
-#                                      units = "Values", ...)
-#            object$label <- label
-#            return(object)
-#          })
-
-#setMethod(f = "Index",signature = c("matrix", "ANY", "character"),
-#          definition = function(data, charvec, label, ...){
-#            object <- new("ReferenceIndex")
-#            object$Data <- timeSeries(data = data,
-#                                      charvec = charvec,
-#                                      units = "Values", ...)
-#            object$label <- label
-#            return(object)
-#          })
-
-#setMethod(f = "Index",signature = c("timeSeries", "missing", "character"),
-#          definition = function(data, charvec, label, ...){
-#            object <- new("ReferenceIndex")
-#            object$Data <- data
-#            object$label <- label
-#            return(object)
-#          })
-
-# sst("ReferenceIndex>, <list> ) removed -introduces FEMS:: FNP March 2022
-# setMethod(f = "set", signature = c("ReferenceIndex", "list"),
-#          definition = function(object, what, ...){
-#            par.names <- names(what)
-#            for (i in par.names) {
-#              if (FEMS:::is.valid.index.set.field(i)) {
-#                value <- what[[i]]
-#                switch(i,
-#                       label = {
-#                         object$label = value
-#                       },
-#                       Data = {
-#                         object$Data = timeSeries(data = as.numeric(value$Values),
-#                                                  charvec = as.character(value$Dates),
-#                                                  units = "Values")
-#                       } )
-#              } else {
-#                warning(paste("field ", i, " does not exist, cannot assign value!", sep=""))
-#              }
-#            }
-#          })
+# ************************************
+#'  sampleReferenceIndex(rxdfp,rfID, moc, base)
+#'  
+#'     Function to read a csv file with a column of yyyy-mm-dd dates, and a 
+#'     column of interest rate values. A marketObjectCode, a riskFactorID and 
+#'     a numeric base value. The function returns an S4 ref to an object with
+#'     class=ReferenceIndex. The marketObjectCode is the identifier used in 
+#'     variable rate contracts to specify a dependency on this ReferenceIndex
+#'     for setting a nominal interest rate.  The numeric value base should have 
+#'     value 100 if a 3.1% interest rate appears as 3.1 in the csv file, and 
+#'     value 1.0 if that rate appears as 0.031. Input parameter rfID will be 
+#'     set as the unique riskFactorID of the returned ReferenceIndex object.
+#'     Examples of csv files formatted with Dates and Values for ReferenceIndex
+#'     creation in the sample data are: UST5Y_fallingRates.csv,
+#'     UST5Y_recoveringRates.csv, UST5Y_risingRates.csv, UST5Y_steadyRates.csv .
+#'
+#' @param rxdfp   character  Pathname of csv data file for the referenceIndex
+#' @param rfID    character  the (unique) riskFactorID for new referenceIndex
+#' @param moc     character  marketObjectCode used in varying rate contracts
+#'                           with rate dependent on this referenceIndex 
+#' @param base    numeric     value 1.0 or 100  if 3% shown as 0.03 or 3.00
+#'
+#' @return        S4 reference to a newly created class=ReferenceIndex object
+#' @export
+#'
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#' }
+sampleReferenceIndex <- function(rxdfp, rfID, moc, base){
+   rxddf <- read.csv(file = rxdfp, header=TRUE)
+   rfx <- Index(rfID,moc, base,,rxddf$Date,rxddf$Rate)
+   return(rfx) 
+} 
 
 
-
-# setMethod get(<MarketIndex>, ,,,) removed - includes FEMS:: - FNP march 2022
-#get(ind, "MarketObjectCode")
-
-# setMethod(f = "get", signature = c("ReferenceIndex", "character"),
-#          definition = function(object, what, ...){
-#            out <- list()
-#            if (length(what) == 1 && tolower(what) == "all") {
-#              what <- FEMS:::validIndexGetFields()
-#            for (i in what) {
-#              if (is.valid.index.get.field(i)) {
-#              out[[i]] <- switch(i,
-#                                   label = {
-#                                     object$label
-#                                     },
-#                                   Dates = {
-#                                     rownames(idx$Data)
-#                                     },
-#                                   Values = {
-#                                     object$Data$Values
-#                                     },
-#                                   Data = object$Data
-#                )
-#              } else {
-#                warning(paste("field ", i, " does not exist, cannot get value!", sep = ""))
-#              }
-#            }
-#            if (length(out) == 1) {
-#              out <- out[[1]]
-#            }
-#            return(out)
-#          })
-
+# *******************************
+# FNP inderited functions not used 
+# 
 setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
           definition = function(object, at, ...){
             datums <- sort(as.Date(unlist(rownames(object$Data))))
@@ -215,29 +171,6 @@ setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
 #            print(object$data)
 #          })
 
-
-## -----------------------------------------------------------------
-## helper methods
-# existing fields in the java class
-validIndexSetFields <- function() {
-  return(c(
-    "data", "label", "base"
-  ))
-}
-is.valid.index.set.field <- function(x) {
-  valid <- validIndexSetFields()
-  return(x %in% valid)
-}
-validIndexGetFields <- function() {
-  return(c(
-    "label", "date", "value", "data"
-  ))
-}
-
-is.valid.index.get.field <- function(x) {
-  valid <- validIndexGetFields()
-  return(x %in% valid)
-}
 
 # **********************************************
 # FNP testing section Mar - Apr 2022

@@ -34,3 +34,8 @@ cntr1 <- getContract(ptf,cids[1]) # get the contract with the selected cid
 evs2 <- generateEventSeries(cntr1, list(), serverURL)
 evs2$events_df
 cashflowPlot(evs2)   # a very simple  zero-coupon bond
+# 5.4 Create sample ReferenceIndex objects 
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
