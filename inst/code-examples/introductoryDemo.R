@@ -70,8 +70,8 @@ installSampleData(mydatadir)
 cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
 ptf   <-  samplePortfolio(cdfn,rfdfn)
-# 6.2  Extract varying rate contract with contractID = '112'
-vrpam112 <- getContract(ptf, '112')
+# 6.2  Extract varying rate contract with contractID = '119'
+vrpam119 <- getContract(ptf, '119')
 
 # 6.3  create rising and falling interest rate projections as in 5.0 
 falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
@@ -85,10 +85,10 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 #      interest rate scenarios as in 4. with cashflow plots for visual 
 #      comparisons as 
 serverURL <- "https://demo.actusfrf.org:8080/"
-evs_falling <- generateEventSeries(vrpam112, list(rfx_falling), serverURL)
+evs_falling <- generateEventSeries(vrpam119, list(rfx_falling), serverURL)
 evs_falling$events_df
 cashflowPlot(evs_falling)   
 # compare with the same contract but a rising interest rate projection/Scenario 
-evs_rising <- generateEventSeries(vrpam112, list(rfx_rising), serverURL)
+evs_rising <- generateEventSeries(vrpam119, list(rfx_rising), serverURL)
 evs_rising$events_df
 cashflowPlot(evs_rising)   
