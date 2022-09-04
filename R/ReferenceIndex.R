@@ -115,7 +115,8 @@ preJSONrfxs <- function(rfxs) {         # work directly on riskFactors list
 }
 
 # ************************************
-#'  sampleReferenceIndex(rxdfp,rfID, moc, base)
+
+#'  sampleReferenceIndex     (rxdfp,rfID, moc, base)
 #'  
 #'     Function to read a csv file with a column of yyyy-mm-dd dates, and a 
 #'     column of interest rate values. A marketObjectCode, a riskFactorID and 
@@ -133,12 +134,10 @@ preJSONrfxs <- function(rfxs) {         # work directly on riskFactors list
 #' @param rxdfp   character  Pathname of csv data file for the referenceIndex
 #' @param rfID    character  the (unique) riskFactorID for new referenceIndex
 #' @param moc     character  marketObjectCode used in varying rate contracts
-#'                           with rate dependent on this referenceIndex 
-#' @param base    numeric     value 1.0 or 100  if 3% shown as 0.03 or 3.00
-#'
-#' @return        S4 reference to a newly created class=ReferenceIndex object
+#' @param base    numeric    1.0 or 100  if 3 percent  as 0.03 or 3.00
+#' @return                    S4 ref to a new class=ReferenceIndex object
 #' @export
-#'
+#' @importFrom utils read.csv
 #' @examples {
 #'    mydatadir <- "~/mydata"
 #'    installSampleData(mydatadir)
@@ -146,7 +145,7 @@ preJSONrfxs <- function(rfxs) {         # work directly on riskFactors list
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #' }
 sampleReferenceIndex <- function(rxdfp, rfID, moc, base){
-   rxddf <- read.csv(file = rxdfp, header=TRUE)
+   rxddf <- utils::read.csv(file = rxdfp, header=TRUE)
    rfx <- Index(rfID,moc, base,,rxddf$Date,rxddf$Rate)
    return(rfx) 
 } 

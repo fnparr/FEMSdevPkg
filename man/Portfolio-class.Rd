@@ -14,10 +14,8 @@ parameter for a generateEvents( ) request
 \describe{
 \item{\code{contracts}}{List of contracts, class=ContractType, in the portfolio.}
 
-\item{\code{riskFactors}}{List of class=RiskFactor objects defining a risk Scenario.}
+\item{\code{riskFactors}}{List of class=ReferenceIndex's defining a risk Scenario.
+possibly better to change to riskFactorIndexList}
 }}
 
 
-\examples{
-{ ptf1 <- Portfolio()}
-}
