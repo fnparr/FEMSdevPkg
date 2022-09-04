@@ -55,6 +55,13 @@ setMethod("cashflowPlot", signature("EventSeries"),
             # I need to distinguish between single and combined contracts!
             ct <- evs$contractType
             id <- evs$contractID
+  # if there is at least one riskFactor, put its rfID into id which is 
+  # used to set the graph title 
+            if (length(evs$riskFactors) >= 1 ) {
+               id <- paste0(id, " ",evs$riskFactors[[1]]$riskFactorID)
+            }
+  # eventually id should be called graphId, and set scenarioID  
+            
   # we will focus on getting plots for simole contracts but leave in the
   # code for complex case see if it compiles - suspect not helpful FNP
             stopifnot(! ct %in% c("future", "futur", "option", "optns",
@@ -1183,18 +1190,18 @@ addInterestAccrualsLayer <- function(obj, rawdata, axis) {
         if(nrow(data) > 1) {
             ## for RR and TD events, replace event Value with state variable for accrued interest
             if(nrow(subset(x = data, subset = type == "RR")) > 0){
-                data[which(data$type == "RR"), "Value"] <- data[which(data$type == "RR"), "NominalAccrued"]
+                data[which(data$type == "RR"), "payoff"] <- data[which(data$type == "RR"), "nominalAccrued"]
 
             }
             if(nrow(subset(x = data, subset = type == "TD")) > 0){
-                data[which(data$type == "TD"), "Value"] <- data[which(data$type == "TD"), "NominalAccrued"]
+                data[which(data$type == "TD"), "payoff"] <- data[which(data$type == "TD"), "nominalAccrued"]
 
             }
             if(nrow(subset(x = data, subset = type == "ETA")) > 0){
-              data[which(data$type == "ETA"), "Value"] <- data[which(data$type == "ETA"), "NominalAccrued"]
+              data[which(data$type == "ETA"), "payoff"] <- data[which(data$type == "ETA"), "nominalAccrued"]
             }
             if(nrow(subset(x = data, subset = type == "ITF")) > 0){
-              data[which(data$type == "ITF"), "Value"] <- data[which(data$type == "ITF"), "NominalAccrued"]
+              data[which(data$type == "ITF"), "payoff"] <- data[which(data$type == "ITF"), "nominalAccrued"]
             }
             ## prepare line x and y coordinates
             xStart <- as.numeric(as.timeDate(data$time[1:(nrow(data)-1)]))
@@ -1259,7 +1266,7 @@ addRateResetLayer <- function(obj, rawdata, axis) {
     ## extract and prepare relevant data
     data <- subset(x = df, subset = type %in% c("IED", "PRD", "RR", "RRY", "TD", "MD"))
     if(nrow(subset(x = data, subset = type %in% c("RR","RRY"))) > 0) {
-        data$payoff[1] <- data$NominalRate[1]
+        data$payoff[1] <- data$nominalRate[1]
         aux <- data.frame(xStart = as.numeric(as.timeDate(data$time[1:(nrow(data) - 1)])),
                           xEnd = as.numeric(as.timeDate(data$time[2:nrow(data)])),
                           Value = data$payoff[1:(nrow(data) - 1)],
