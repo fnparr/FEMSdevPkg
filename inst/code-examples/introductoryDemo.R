@@ -19,6 +19,7 @@ unlist(ptf$riskFactors)
 serverURL <- "https://demo.actusfrf.org:8080/"
 cfls  <- generateEvents(ptf,serverURL)
 unlist(lapply(cfls,function(x){return(x$status)}))
+unlist(cfls[[1]])
 
 # 2.0  Open a shiny application allowing browser controlled review/examples 
 runDaDFiR3demo()

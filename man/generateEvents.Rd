@@ -4,7 +4,7 @@
 \alias{generateEvents}
 \title{generateEvents < >     Generic method definition}
 \usage{
-generateEvents(ptf, serverURL)
+generateEvents(ptf, serverURL, ...)
 }
 \arguments{
 \item{ptf}{S4 reference Class=Portfolio}

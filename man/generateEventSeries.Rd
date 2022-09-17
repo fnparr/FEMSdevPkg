@@ -9,7 +9,7 @@ generateEventSeries(contract, riskFactors, serverURL)
 \arguments{
 \item{contract}{the contract to simulate cashflows for}
 
-\item{riskFactors}{the risk scenario for contract simulation}
+\item{riskFactors}{list of riskFactors - scenario for contract simulation}
 
 \item{serverURL}{locate the ACTUS server performing the cashflow analysis}
 }

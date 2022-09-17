@@ -73,7 +73,7 @@ setMethod(f = "EventSeries", signature = c("ContractType","list", "character"),
 #' generateEventSeries < contract riskFactors serverURL >
 #'
 #' @param  contract     the contract to simulate cashflows for
-#' @param  riskFactors  the risk scenario for contract simulation
+#' @param  riskFactors  list of riskFactors - scenario for contract simulation
 #' @param  serverURL    locate the ACTUS server performing the cashflow analysis
 #' @return              an EventSeries with cashflow events for the contract
 #' @import  methods

@@ -76,7 +76,7 @@ setMethod(f = "Portfolio", signature = "ContractType",
 #' @param serverURL  character string, the URL of ACTUS server to call out to. 
 #' @return          List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL){
+           def = function(ptf,serverURL,...){
              standardGeneric("generateEvents")
            })
 
@@ -179,7 +179,6 @@ samplePortfolio <- function(cdfn, rfdfn) {
 setGeneric(name = "getContractIDs",
            def = function(ptf) standardGeneric("getContractIDs"))
 
-
 #' getContractIDs
 #'
 #' getContractIDs(ptf) takes as input an S4 ref to a Class=Portfolio object
@@ -254,4 +253,111 @@ setMethod ( f = "getContract",  signature = c("Portfolio", "character"),
                else  cntr_out = NULL
                return(cntr_out)
             } )
+
+# ***********************************
+# mergecfls(cfls) : internal function to convert lists of lists of 
+#   cashflow events from generateEvents(ptf) to a merged dataframe
+# appends the contractId into each event row 
+mergecfls <- function(cfls) {
+       dfout <- do.call(rbind, lapply(cfls, function(cfl){
+          df1 <- as.data.frame(do.call(rbind,cfl$events))
+          df1["contractId"]<- cfl$contractId
+         return(df1)
+         }))
+       for (col in c("type","time","payoff","currency","nominalValue",
+                        "nominalRate","nominalAccrued") )
+         { dfout[col]<- unlist(dfout[col]) }
+       return(dfout)
+}
+
+# *************************
+# monthlyAndCumulatedValue(indf) : internal function to convert a row-per-event
+# dataframe into a row-per-month dataframe with monthly net payoffs and 
+# month-to-month cumulated value
+# payoff and month to month cumulated payoff
+# input=dataframe with "payoff", "month",  "Date" columns for event data
+#  output= timebucketed dataframe with "Date", "value", "cumValue" for months (with flows)  
+monthlyAndCumulatedValue <- function(indf){
+  dfout <- aggregate(indf$payoff, by=list(indf$month), FUN= sum)
+  colnames(dfout) <- c("month","value")
+  dfout["cumValue"]<- cumsum(dfout[,"value"])
+  dfout["Date"]<- as.Date(paste0(dfout[,"month"],"-01"))
+  dfout <- dfout [c("Date","value","cumValue","month")]
+  return (dfout)
+}
+
+# ************************
+#' simulateAndPlot (ptf, rf, serverURL, scname)
+#' 
+#'  This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
+#'  of risk factors - the historical and projected future values for interest 
+#'  rates, etc  (3) a URL identifying an ACTUS server to generate cashflow 
+#'  events for the contracts and (4) a scenario name. The ACTUS server is
+#'  invoked via an http POST with all required data for the cashflow simulation
+#'  passes as JSON.
+#'  
+#'  If the cashflow simulation is successful, the returned cashflow events are
+#'  merged into a dataframe sorted by time. Income events and Net capital and 
+#'  interest flows are extracted and  aggregated into monthly time buckets. 
+#'  Funtion ggplot is used to generate graphics for Interest Income by Month,
+#'  Cumulated Income Month by Month, Liquidity Change By Month, and Cumulative 
+#'  Liquidity Position. A vector with these four plots is returned. 
+#'  
+#' @param ptf    Portfolio of ACTUS contract to be simulated class=Portfolio 
+#' @param riskFactors  list of riskFactors class RiskFactor - the scenario
+#' @param serverURL    locates ACTUS server to generate cashflow events
+#' @param scname       character name for the scenario - used in plot title  
+#'
+#' @return vector of plots: income and liquidity change, monthly and cumulative
+#' @export
+#' @include RiskFactor.R
+#' @include Portfolio.R
+#' @include ContractType.R
+#' @import  ggplot2
+#' @examples
+simulateAndPlot <-function(ptf,rfs, serverURL, scname){
   
+  
+  return ( c(g_ipm,g_ipc,g_lqm,g_lqc) )
+  
+  
+}
+# allow loading with this initialization 
+cfls <- list()
+
+# merge all cashflow events for the portfolio into one dataframe 
+# dfall <- mergecfls(cfls)  
+
+# sort dataframe by date, add Date sortkey and month charstring (for aggregation) 
+# dfall["Date"]<- as.Date(substr(dfall[,"time"],1,10))
+# tsrtall <- dfall[order(dfall$Date),] 
+# tsrtall["month"] <- substr(tsrtall[,"time"],1,7)
+
+#  extract income/interestpayment and liquidity/all payoffs subsets
+# ipall <- subset(tsrtall, type %in% c("IP","FP","OPS"))
+# lqall <- subset(tsrtall, type %in% c("IP","IED","MD"))
+
+#ipMonthly <- monthlyAndCumulatedValue(ipall)
+#lqMonthly <- monthlyAndCumulatedValue(lqall)
+
+#g_ipm <- ggplot(ipMonthly, aes(x=Date,y=value)) + geom_point(colour = "green") +
+#     labs(title="Monthly Interest Income")
+#g_ipc <- ggplot(ipMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="blue") +
+#     labs(title="Cumulative Monthly Interest Income")
+#g_lqm <- ggplot(lqMonthly, aes(x=Date,y=value)) + geom_point(colour = "brown") +
+#     labs(title="Monthly Liquidity", subtitle="net Interest + Capital flows")
+#g_lqc <- ggplot(lqMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="red") +
+#     labs(title="Cumulative Monthly Liquidity", 
+#          subtitle="Net Interest + Capital Flows")
+
+# ***************************
+# Deprecated CODE below here 
+# create timeSeries of IP payoffs and aggregate by month
+# ... but plotting timeSeries data with irregular times tricky 
+#charvec <- as.character(ipall[,"time"])
+#ipmts <- ipall[,"payoff"]
+#income_ts <- timeSeries(ipmts,charvec,units="EUR")
+#by <- timeSequence(from=start(income_ts), to = end(income_ts), by = "week")
+#income_monthly <- aggregate( income_ts, by, sum)
+
+
