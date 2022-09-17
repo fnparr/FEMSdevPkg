@@ -21,6 +21,16 @@ cfls  <- generateEvents(ptf,serverURL)
 unlist(lapply(cfls,function(x){return(x$status)}))
 unlist(cfls[[1]])
 
+#1.5  Create portfolio but independent risk factors , generate events 
+falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+rising_fp <-  paste0(mydatadir,"/UST5Y_risingRates.csv")
+rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
+                                    "YC_EA_AAA",100)
+rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
+                                   "YC_EA_AAA",100)
+cfls  <- generateEvents(ptf,serverURL, list(rfx_falling))
+unlist(lapply(cfls,function(x){return(x$status)}))
+
 # 2.0  Open a shiny application allowing browser controlled review/examples 
 runDaDFiR3demo()
 

@@ -76,7 +76,7 @@ setMethod(f = "Portfolio", signature = "ContractType",
 #' @param serverURL  character string, the URL of ACTUS server to call out to. 
 #' @return          List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL,...){
+           def = function(ptf,serverURL,riskFactors){
              standardGeneric("generateEvents")
            })
 
@@ -133,6 +133,64 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character") ,
             }
             return(response_content)
         })
+
+# ************************************************************************
+# generateEvents(<Portfolio>, ServerURL, list<riskFactors>) 
+#    -- instance of generic method, proto-scenario
+# ************************************************************************
+#' generateEvents(<portfolio>, <ACTUS-server-URL>, list<riskFactors>)
+#'
+#'   The generateEvents(Portfolio, character, list, character) function takes as
+#'   input: (1) an initialized S4 Portfolio of ACTUS contracts, (2) an ACTUS 
+#'   serverURL,  and (3)  a list of riskFactors defining the risk scenario; 
+#'   the function constructs a JSON representation of the Portfolio contents and
+#'   risk factors then calls out using https POST to the Actus server at URL 
+#'   serverURL to generate a list of cashflow event lists for each contract in 
+#'   the Portfolio using the provided list of riskFctors as scenario data.
+#'
+#' @param ptf    Portfolio S4 object initialized with contract and risk factors
+#' @param serverURL  character - identifies the ACTUS server to be called
+#' @param riskFactors list - list of S4 class riskFactor objects 
+#' @return       List of generated cashflow results - one entry per contract
+#' @export
+#' @import    jsonlite
+#' @import    httr
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    rfdfn <- "~/mydata/RiskFactors.csv"
+#'    ptf   <-  samplePortfolio(cdfn,rfdfn)
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    cfls  <- generateEvents(ptf,serverURL,list(rfx))
+#' }
+#'
+setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
+           definition = function(ptf,serverURL,riskFactors){
+             # send input portfolio contracts and riskFactors to server as JSON
+             #  -- ignore riskFactors in the portfolio ! 
+             #  Functional programming construction of preJson for Portfolio
+             contractDefs <- lapply(ptf$contracts,preJcontract)
+             riskFactors <-  preJSONrfxs(riskFactors)
+             fin_list <- list(contracts = contractDefs,
+                              riskFactors = riskFactors)
+             
+             # create final request body in json format
+             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = FALSE)
+             
+             # issue POST command to have server generate cashflows
+             response_events <- POST(paste0(serverURL, "eventsBatch"),
+                                     body = request_body,
+                                     content_type_json())
+             response_content <- content(response_events)
+             if (response_events$status_code != 200) {
+               print(response_content$error)
+               stop("ErrorIn::ContractType:: API response error; Check if all necessary contractTerms were set correctly!!!")
+             }
+             return(response_content)
+           })
 
 # ************************************************************
 # samplePortfolio(contractDataFileName)  cdfn  FNP 13 April 2022
