@@ -2,18 +2,18 @@
 % Please edit documentation in R/Portfolio.R
 \name{simulateAndPlot}
 \alias{simulateAndPlot}
-\title{simulateAndPlot (ptf, rf, serverURL, scname)}
+\title{simulateAndPlot (ptf, serverURL, riskFactors, scenarioName)}
 \usage{
-simulateAndPlot(ptf, rfs, serverURL, scname)
+simulateAndPlot(ptf, serverURL, riskFactors, scenarioName)
 }
 \arguments{
-\item{ptf}{Portfolio of ACTUS contract to be simulated class=Portfolio}
+\item{ptf}{Portfolio of ACTUS contracts to be simulated class=Portfolio}
 
 \item{serverURL}{locates ACTUS server to generate cashflow events}
 
-\item{scname}{character name for the scenario - used in plot title}
-
 \item{riskFactors}{list of riskFactors class RiskFactor - the scenario}
+
+\item{scenarioName}{character   name for the scenario - used in plot title}
 }
 \value{
 vector of plots: income and liquidity change, monthly and cumulative
@@ -29,7 +29,9 @@ This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
  If the cashflow simulation is successful, the returned cashflow events are
  merged into a dataframe sorted by time. Income events and Net capital and 
  interest flows are extracted and  aggregated into monthly time buckets. 
- Funtion ggplot is used to generate graphics for Interest Income by Month,
+ Function ggplot is used to generate graphics for Interest Income by Month,
  Cumulated Income Month by Month, Liquidity Change By Month, and Cumulative 
- Liquidity Position. A vector with these four plots is returned.
+ Liquidity Position. A vector with these four plots is returned. 
+ 
+ There may also be riskFactors in the portfolio ptf but they are not used
 }

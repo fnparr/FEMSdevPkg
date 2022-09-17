@@ -345,7 +345,7 @@ monthlyAndCumulatedValue <- function(indf){
 }
 
 # ************************
-#' simulateAndPlot (ptf, rf, serverURL, scname)
+#' simulateAndPlot (ptf, serverURL, riskFactors, scenarioName)
 #' 
 #'  This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
 #'  of risk factors - the historical and projected future values for interest 
@@ -357,14 +357,16 @@ monthlyAndCumulatedValue <- function(indf){
 #'  If the cashflow simulation is successful, the returned cashflow events are
 #'  merged into a dataframe sorted by time. Income events and Net capital and 
 #'  interest flows are extracted and  aggregated into monthly time buckets. 
-#'  Funtion ggplot is used to generate graphics for Interest Income by Month,
+#'  Function ggplot is used to generate graphics for Interest Income by Month,
 #'  Cumulated Income Month by Month, Liquidity Change By Month, and Cumulative 
 #'  Liquidity Position. A vector with these four plots is returned. 
 #'  
-#' @param ptf    Portfolio of ACTUS contract to be simulated class=Portfolio 
-#' @param riskFactors  list of riskFactors class RiskFactor - the scenario
+#'  There may also be riskFactors in the portfolio ptf but they are not used
+#'  
+#' @param ptf    Portfolio of ACTUS contracts to be simulated class=Portfolio 
 #' @param serverURL    locates ACTUS server to generate cashflow events
-#' @param scname       character name for the scenario - used in plot title  
+#' @param riskFactors  list of riskFactors class RiskFactor - the scenario
+#' @param scenarioName character   name for the scenario - used in plot title  
 #'
 #' @return vector of plots: income and liquidity change, monthly and cumulative
 #' @export
@@ -373,49 +375,41 @@ monthlyAndCumulatedValue <- function(indf){
 #' @include ContractType.R
 #' @import  ggplot2
 #' @examples
-simulateAndPlot <-function(ptf,rfs, serverURL, scname){
+simulateAndPlot <-function(ptf, serverURL, riskFactors, scenarioName){
+  cfls <- generateEvents(ptf, serverURL, riskFactors )
+  # merge all cashflow events for the portfolio into one dataframe 
+  dfall <- mergecfls(cfls) 
   
+  # sort dataframe by date, add Date sortkey 
+  # add a  month charstring  column (for aggregation by month) 
+  dfall["Date"]<- as.Date(substr(dfall[,"time"],1,10))
+  tsrtall <- dfall[order(dfall$Date),] 
+  tsrtall["month"] <- substr(tsrtall[,"time"],1,7)
   
-  return ( c(g_ipm,g_ipc,g_lqm,g_lqc) )
+  #  extract income/interestpayment and liquidity/all payoffs subsets
+  ipall <- subset(tsrtall, type %in% c("IP","FP","OPS"))
+  lqall <- subset(tsrtall, type %in% c("IP","IED","MD"))
   
+  # build aggregated dataframes with row per month replacing row per event
+  # columns for monthly sum, and month by month accumulated total 
+  ipMonthly <- monthlyAndCumulatedValue(ipall)
+  lqMonthly <- monthlyAndCumulatedValue(lqall)
   
+  # use ggplot to generate graphic plots for the four cases 
+  g_ipm <- ggplot(ipMonthly, aes(x=Date,y=value)) + geom_point(colour = "green") +
+       labs(title= paste0("Monthly Interest Income ",scenarioName))
+  g_ipc <- ggplot(ipMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="blue") +
+       labs(title="Cumulative Monthly Interest Income")
+  g_lqm <- ggplot(lqMonthly, aes(x=Date,y=value)) + geom_point(colour = "brown") +
+       labs(title="Monthly Liquidity", subtitle="net Interest + Capital flows")
+  g_lqc <- ggplot(lqMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="red") +
+       labs(title="Cumulative Monthly Liquidity", 
+            subtitle="Net Interest + Capital Flows")
+  
+   #  assemble the plots into a named list and return 
+   plotlist <- list(g_ipm,g_ipc,g_lqm,g_lqc)
+   names(plotlist)  <- c("monthly income", "cumulative income", 
+                          "monthly liquidity change", "accumulated liquidity" )
+  
+   return ( plotlist )
 }
-# allow loading with this initialization 
-cfls <- list()
-
-# merge all cashflow events for the portfolio into one dataframe 
-# dfall <- mergecfls(cfls)  
-
-# sort dataframe by date, add Date sortkey and month charstring (for aggregation) 
-# dfall["Date"]<- as.Date(substr(dfall[,"time"],1,10))
-# tsrtall <- dfall[order(dfall$Date),] 
-# tsrtall["month"] <- substr(tsrtall[,"time"],1,7)
-
-#  extract income/interestpayment and liquidity/all payoffs subsets
-# ipall <- subset(tsrtall, type %in% c("IP","FP","OPS"))
-# lqall <- subset(tsrtall, type %in% c("IP","IED","MD"))
-
-#ipMonthly <- monthlyAndCumulatedValue(ipall)
-#lqMonthly <- monthlyAndCumulatedValue(lqall)
-
-#g_ipm <- ggplot(ipMonthly, aes(x=Date,y=value)) + geom_point(colour = "green") +
-#     labs(title="Monthly Interest Income")
-#g_ipc <- ggplot(ipMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="blue") +
-#     labs(title="Cumulative Monthly Interest Income")
-#g_lqm <- ggplot(lqMonthly, aes(x=Date,y=value)) + geom_point(colour = "brown") +
-#     labs(title="Monthly Liquidity", subtitle="net Interest + Capital flows")
-#g_lqc <- ggplot(lqMonthly, aes(x=Date,y=cumValue)) + geom_point(colour="red") +
-#     labs(title="Cumulative Monthly Liquidity", 
-#          subtitle="Net Interest + Capital Flows")
-
-# ***************************
-# Deprecated CODE below here 
-# create timeSeries of IP payoffs and aggregate by month
-# ... but plotting timeSeries data with irregular times tricky 
-#charvec <- as.character(ipall[,"time"])
-#ipmts <- ipall[,"payoff"]
-#income_ts <- timeSeries(ipmts,charvec,units="EUR")
-#by <- timeSequence(from=start(income_ts), to = end(income_ts), by = "week")
-#income_monthly <- aggregate( income_ts, by, sum)
-
-

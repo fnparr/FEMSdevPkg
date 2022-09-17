@@ -28,9 +28,22 @@ rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates",
                                     "YC_EA_AAA",100)
 rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
                                    "YC_EA_AAA",100)
-cfls  <- generateEvents(ptf,serverURL, list(rfx_falling))
-unlist(lapply(cfls,function(x){return(x$status)}))
 
+# following 2 lines valid test but better to generate plots  section 1.7
+# cfls  <- generateEvents(ptf,serverURL, list(rfx_falling))
+# unlist(lapply(cfls,function(x){return(x$status)}))
+
+#1.7  simulate and plot Portfolio Monthly data falling rates 
+ plotlist <- simulateAndPlot(ptf, serverURL, list(rfx_falling),
+                          rfx_falling$riskFactorID)
+ 
+ # display the plots - fo falling rates scenario 
+ plotlist[["monthly income"]]
+ plotlist[["cumulative income"]]
+ plotlist[["monthly liquidity change"]]
+ plotliat[["accumulate liquidity"]]
+ 
+ 
 # 2.0  Open a shiny application allowing browser controlled review/examples 
 runDaDFiR3demo()
 
