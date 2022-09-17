@@ -28,7 +28,8 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     of some additional risk factor data. The underlying riskFactorindex data is 
     aslo available in the installSampledata directory. 
 License: GPL ( >=2)
-Imports: 
+Imports:
+      ggplot2,
       httr,
       jsonlite,
       methods,
