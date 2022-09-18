@@ -34,14 +34,14 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 # unlist(lapply(cfls,function(x){return(x$status)}))
 
 #1.7  simulate and plot Portfolio Monthly data falling rates 
- plotlist <- simulateAndPlot(ptf, serverURL, list(rfx_falling),
+ plotlist <- simulatePortfolio(ptf, serverURL, list(rfx_falling),
                           rfx_falling$riskFactorID)
  
  # display the plots - fo falling rates scenario 
  plotlist[["monthly income"]]
  plotlist[["cumulative income"]]
  plotlist[["monthly liquidity change"]]
- plotliat[["accumulate liquidity"]]
+ plotlist[["accumulated liquidity"]]
  
  
 # 2.0  Open a shiny application allowing browser controlled review/examples 

@@ -345,7 +345,7 @@ monthlyAndCumulatedValue <- function(indf){
 }
 
 # ************************
-#' simulateAndPlot (ptf, serverURL, riskFactors, scenarioName)
+#' simulatePortfolio (ptf, serverURL, riskFactors, scenarioName)
 #' 
 #'  This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
 #'  of risk factors - the historical and projected future values for interest 
@@ -374,8 +374,21 @@ monthlyAndCumulatedValue <- function(indf){
 #' @include Portfolio.R
 #' @include ContractType.R
 #' @import  ggplot2
-#' @examples
-simulateAndPlot <-function(ptf, serverURL, riskFactors, scenarioName){
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    rfdfn <- "~/mydata/RiskFactors.csv"
+#'    ptf <- samplePortfolio(cdfn,rfdfn)
+#'    falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
+#'                                    "YC_EA_AAA",100)
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    plotlist <- simulatePortfolio(ptf, serverURL, list(rfx_falling),
+#'                                rfx_falling$riskFactorID ) 
+#'    plotlist[["monthly income"]]                               
+#' }
+simulatePortfolio <-function(ptf, serverURL, riskFactors, scenarioName){
   cfls <- generateEvents(ptf, serverURL, riskFactors )
   # merge all cashflow events for the portfolio into one dataframe 
   dfall <- mergecfls(cfls) 
