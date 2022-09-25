@@ -116,3 +116,4 @@ cashflowPlot(evs_falling)
 evs_rising <- generateEventSeries(vrpam119, list(rfx_rising), serverURL)
 evs_rising$events_df
 cashflowPlot(evs_rising)   
+
