@@ -1,6 +1,7 @@
 # import.R 
 # import.R - working development version of import.R
 # fnp Feb 2022
+library(utils)
 
 # ***************************************
 # file2dataframe(filename)
