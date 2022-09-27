@@ -205,7 +205,7 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
 #'
 #' @return   Portfolio s4 object initialized with the data from the input files
 #' @export
-#' @import utils
+#' @importFrom utils read.csv
 #' @examples {
 #'    mydatadir <- "~/mydata"
 #'    installSampleData(mydatadir)

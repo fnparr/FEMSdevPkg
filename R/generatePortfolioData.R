@@ -7,6 +7,7 @@
 # becomes clear ( fewer dependent packages is better ) FNP 
 library(lubridate)
 #' @importFrom stats runif
+#' @importFrom utils write.csv
 
 # ***************************
 # generateContractCsvData ( )
@@ -18,7 +19,7 @@ library(lubridate)
 #  The csvFilepath parameter is a character string with the full path and 
 #  file name wher the generated csv data will be written 
 
-generateConntractCsvData <- function(pamCount = 20, optionCount=0, 
+generateContractCsvData <- function(pamCount = 20, optionCount=0, 
                                       annuityCount = 0, csvFilePath) {
 ## Input for Portfoliogeneration (Number of each Contracts)----------
   numberOfPams <- pamCount

@@ -19,7 +19,6 @@ unlist(ptf$riskFactors)
 serverURL <- "https://demo.actusfrf.org:8080/"
 cfls  <- generateEvents(ptf,serverURL)
 unlist(lapply(cfls,function(x){return(x$status)}))
-library(utils)
 unlist(cfls[[1]])
 
 #1.5  Create portfolio but independent risk factors , generate events 
