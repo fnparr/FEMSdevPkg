@@ -47,6 +47,9 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 # 2.0  Open a shiny application allowing browser controlled review/examples 
 runDaDFiR3demo()
 
+# 2.1  Open updated shiny application with browser controlled review examples
+runDaDFiR3demo2()
+
 # 3.0  Create a single, (fixed rate) PAM bond with in line term specification,
 #      generate an EventSeries of cash flow events for that Contract and Plot 
 pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
