@@ -1,7 +1,7 @@
 Package: FEMSdevPkg
 Type: Package
 Title: Provides an API to ACTUS cashflow Generation
-Version: 0.0.4
+Version: 0.0.5
 Author: Francis Parr, Donat Maier 
 Maintainer: Francis Parr <fnparr@gmail.com>
 Description: Exports a samplePortfolio( ) which reads designated csv files 
@@ -54,6 +54,7 @@ Collate:
     'EventSeries.R'
     'ContractPlot.R'
     'ReferenceIndex.R'
+    'demoSteps.R'
     'generatePortfolioData.R'
     'import.R'
     'runShinyDemo.R'

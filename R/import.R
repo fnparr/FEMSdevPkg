@@ -181,4 +181,8 @@ installSampleCode <- function (demodir){
     file.copy(from = system.file("code-examples","introductoryDemo.R", 
                                   package = "FEMSdevPkg"),
               to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)
+    pn <- paste0(demodir,"/","workshopDemo.R")
+    file.copy(from = system.file("code-examples","workshopDemo.R", 
+                                 package = "FEMSdevPkg"),
+              to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)
 }

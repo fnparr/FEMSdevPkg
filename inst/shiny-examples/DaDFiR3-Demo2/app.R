@@ -19,7 +19,7 @@ ui <- fluidPage(theme = shinytheme("cerulean"),
 
                 # inputs for contract terms of Bond
                 navbarPage("DaDFiR3 Demo Application", #navbar App title
-                           tabPanel("RF Scenario Vis", #first Tab title
+                           tabPanel("RF Scenario Views", #first Tab title
                                     sidebarLayout(
                                       #dataset choice input
                                       selectInput(inputId = "dataSetName",label = "Choose a Dataset", 

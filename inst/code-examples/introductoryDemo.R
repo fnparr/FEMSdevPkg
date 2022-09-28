@@ -114,8 +114,10 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 serverURL <- "https://demo.actusfrf.org:8080/"
 evs_falling <- generateEventSeries(vrpam119, list(rfx_falling), serverURL)
 evs_falling$events_df
+par(mfrow = c(1,2))
 cashflowPlot(evs_falling)   
 # compare with the same contract but a rising interest rate projection/Scenario 
 evs_rising <- generateEventSeries(vrpam119, list(rfx_rising), serverURL)
 evs_rising$events_df
 cashflowPlot(evs_rising)   
+
