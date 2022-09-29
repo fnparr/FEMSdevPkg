@@ -1,5 +1,6 @@
 # Demonstration of FEMSdevPkg capabilities for workshop
 library(FEMSdevPkg)
+library(utils)
 # 0.   clear the environment 
 rm(list=ls())
 # 1.  Open updated shiny application with browser controlled concept examples.

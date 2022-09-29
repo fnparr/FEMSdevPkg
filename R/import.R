@@ -1,6 +1,7 @@
 # import.R 
 # import.R - working development version of import.R
 # fnp Feb 2022
+library(utils)
 
 # ***************************************
 # file2dataframe(filename)
@@ -12,11 +13,11 @@
 #    as character ( "30E360" would be read numeric )  BUT
 #    field does not occur in riskData csv files
 # ***************************************
-contractFile2dataframe <- function(fname, sep = ",") {
+contractFile2dataframe <- function(cdfn, sep = ",") {
    # read csv ignores and strips '"' and dayCountConvention has 30E360 value
    # which gets read as numeric = Inf.
    # we assume all contract csv files will have a dayCountConvention column
-   df = utils::read.csv(fname, colClasses = c(dayCountConvention = "character"))
+   df <- utils::read.csv(cdfn, colClasses = c(dayCountConvention = "character"))
    # convert all missing data into text null
    df[is.na(df)] <- "NULL"
    return(df)
