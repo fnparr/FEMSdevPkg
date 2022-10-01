@@ -1,6 +1,6 @@
 # Demonstration of FEMSdevPkg capabilities for workshop
 library(FEMSdevPkg)
-library(utils)
+
 # 0.   clear the environment 
 rm(list=ls())
 # 1.  Open updated shiny application with browser controlled concept examples.
@@ -14,6 +14,7 @@ ptf <- createPortfolioFromExcelData()
 
 #    a variable rate Principal AT Maturity (bond) 
 vrpam119 <- getContract(ptf, '119')
+unlist(vrpam119$contractTerms)
 
 #4.  create rising and falling interest rate scenario
 rfx_falling <- sampleReferenceIndex( "~/mydata/UST5Y_fallingRates.csv",

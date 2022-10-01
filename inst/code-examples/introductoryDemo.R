@@ -12,7 +12,7 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
-ptf   <-  samplePortfolio(cdfn,rfdfn)
+ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
 unlist(ptf$contracts[[1]]$contractTerms)
 unlist(lapply(ptf$contracts,function(x){return(x$isCompound)}))
 unlist(ptf$riskFactors)

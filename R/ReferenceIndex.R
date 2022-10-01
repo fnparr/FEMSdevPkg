@@ -154,13 +154,15 @@ sampleReferenceIndex <- function(rxdfp, rfID, moc, base){
 # *******************************
 # FNP inderited functions not used 
 # 
-setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
-          definition = function(object, at, ...){
-            datums <- sort(as.Date(unlist(rownames(object$Data))))
-            bool_matrix <- t(sapply(at, function(x) datums <= as.Date(x)))
-            indices <- unname(apply(bool_matrix,1,function(x) max(which(x))))
-            return(object$Data[,"Values"][indices])
-          })
+# DEBUG COMMENT OUT 
+#setMethod(f = "valueAt", signature = c("ReferenceIndex", "character"),
+#          definition = function(object, at, ...){
+#            datums <- sort(as.Date(unlist(rownames(object$Data))))
+#            bool_matrix <- t(sapply(at, function(x) datums <= as.Date(x)))
+#            indices <- unname(apply(bool_matrix,1,function(x) max(which(x))))
+#            return(object$Data[,"Values"][indices])
+#         })
+# END DEBUG comment out 
 # FNP comment out the show function below which seems to have an issue
 # not aware of any use in FEMSdev01
 # setMethod(f = "show", signature = c("ReferenceIndex"),

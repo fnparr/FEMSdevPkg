@@ -205,6 +205,7 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
 #'
 #' @return   Portfolio s4 object initialized with the data from the input files
 #' @export
+#' @include import.R
 #' @importFrom utils read.csv
 #' @examples {
 #'    mydatadir <- "~/mydata"
@@ -215,6 +216,10 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
 #'    }
 #'
 samplePortfolio <- function(cdfn, rfdfn) {
+  # DEBUG TO BE REMOVED
+  cdfn <- "~/mydata/BondPortfolio.csv"
+  rfdfn <- "~/mydata/RiskFactors.csv"
+  # END DEBUG
   ptf <- Portfolio()            # create portfolio object no attributes set
                                 # read in contract and riskFactor data from
                                 # named files; convert to lists of contract
