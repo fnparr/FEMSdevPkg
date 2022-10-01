@@ -2,7 +2,7 @@ Package: FEMSdevPkg
 Type: Package
 Title: Provides an API to ACTUS cashflow Generation
 Version: 0.0.5
-Author: Francis Parr, Donat Maier 
+Author: Francis Parr, Donat Maier, Nils Bundi 
 Maintainer: Francis Parr <fnparr@gmail.com>
 Description: Exports a samplePortfolio( ) which reads designated csv files 
     with Bond portfolio and risk factor data, then creates and returns a 
@@ -18,7 +18,7 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     a portfolio containing this single contract then calls generateEvents( ) to
     have the designated ACTUS server simulate the contract cashflow events. The
     EventSeries saves the cashflow events of the input contract as a datafram 
-    togehter wil the contractID and its contract type. Exported function 
+    together with the contractID and its contract type. Exported function 
     cashflowPlot(<EventSerie>) generates a detailed graphical display of the 
     events in the input EventSeries. Exported utility function 
     installSampleData(<mydirectory>) copies samplecsv files with contract 
