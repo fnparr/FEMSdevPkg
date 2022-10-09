@@ -1,6 +1,6 @@
 Package: FEMSdevPkg
 Type: Package
-Title: Provides an API to ACTUS cashflow Generation
+Title: Provides an API to ACTUS cashflow Generation, liquidity and income plots
 Version: 0.0.5
 Author: Francis Parr, Donat Maier, Nils Bundi 
 Maintainer: Francis Parr <fnparr@gmail.com>
