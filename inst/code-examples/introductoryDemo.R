@@ -17,6 +17,7 @@ unlist(ptf$contracts[[1]]$contractTerms)
 unlist(lapply(ptf$contracts,function(x){return(x$isCompound)}))
 unlist(ptf$riskFactors)
 serverURL <- "https://demo.actusfrf.org:8080/"
+# serverURL <- "http://ractus.ch:8080/"
 cfls  <- generateEvents(ptf,serverURL)
 unlist(lapply(cfls,function(x){return(x$status)}))
 unlist(cfls[[1]])
