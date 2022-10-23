@@ -2,6 +2,7 @@
 
 export(Portfolio)
 export(bond)
+export(bondvr)
 export(createPortfolioFromExcelData)
 export(installSampleCode)
 export(installSampleData)

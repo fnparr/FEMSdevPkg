@@ -103,3 +103,141 @@ bond <- function(start, maturity, nominal, coupon, couponFreq, role ){
 #  checkAttributes(out)     $ checking disabled for now
   return(out)
 }
+
+# **************************************
+# bondvr() Adding variable rate capability - does fixed and variable rates
+#' \code{bondvr}
+#'
+#' Constructor for a simple PrincipalAtMaturity fixed or variable rate contract
+#' .
+#' Variable rate bonds  are identified by a nonnull rateResetFrequency. For 
+#' these variable rate bonds the default marketObjectCodeOfRateReset is 
+#' "YC_EA_AAA"
+#' 
+#' @param start      a character string yyyy-mm-dd the start date of the bond.
+#' @param maturity   a character string setting the term of the bond.
+#' @param nominal    a numeric to set the notional principal of the bond,
+#' @param coupon     a numeric to set the coupon payment, default is 0.0.
+#' @param couponFreq a character string with period of coupon payments,
+#' @param role      a character string setting the contract role.
+#' @param rateResetFreq optional character string setting a period of RateReset
+#' @param rateResetSpread optional numeric with rate spread for variable rate
+#' @return    a PrincipalAtMaturity contract with specified attributes.
+#' @usage bondvr(start, maturity, nominal, coupon, couponFreq, role)
+#' @examples {
+#'     b <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
+#'               coupon = 0.02, couponFreq = "3 months", role = "long",
+#'               rateResetFreq = "1 years", rateResetSpread = 0.01 )
+#'     }
+#' @include PrincipalAtMaturity.R
+#' @importFrom   timeDate timeSequence
+#' @importFrom   timeDate timeDate
+#' @export
+bondvr <- function(start, maturity, nominal, coupon, couponFreq, role,
+                    rateResetFreq=NULL, rateResetSpread=NULL){
+  if (missing(start)){
+    stop("Parameter 'start' must be set to yyyy-mm-dd date !!!")
+  }
+  # args <- list(...)
+  args <- list()  # No additional args - just the explicit ones+defaults  
+  if(nchar(maturity)<10) {
+    maturity <- as.character(
+      timeDate::timeSequence(
+        timeDate::timeDate(start), by=maturity, length.out=2)[2])
+  }
+  statusDate <- as.character(timeDate::timeDate(start)-24*3600)
+  contractDealDate <- as.character(timeDate::timeDate(start)-24*3600)
+  initialExchangeDate <- start
+  
+  couponFreq_bef <- couponFreq      # save the string to set cycleAnchorDateIP      
+  if(is.null(couponFreq) || couponFreq=="NULL") {
+    couponFreq <- NULL
+    coupon <- -999999999
+  } else {
+    if(length(grep("y", couponFreq))>0) {
+      couponFreq <- paste("P",gsub("([0-9]*).*","\\1",couponFreq), "Y", "L1", sep="")
+    } else if(length(grep("q", couponFreq))>0) {
+      couponFreq <- paste("P",gsub("([0-9]*).*","\\1",couponFreq), "Q", "L1", sep="")
+    } else if(length(grep("m", couponFreq))>0) {
+      couponFreq <- paste("P",gsub("([0-9]*).*","\\1",couponFreq), "M", "L1", sep="")
+    } else if(length(grep("w", couponFreq))>0) {
+      couponFreq <- paste("P",gsub("([0-9]*).*","\\1",couponFreq), "W", "L1", sep="")
+    } else if(length(grep("d", couponFreq))>0) {
+      couponFreq <- paste("P",gsub("([0-9]*).*","\\1",couponFreq), "D", "L1", sep="")
+    }else {
+      stop("please provide couponFreq information in timeSeries 'by' format!")
+    }
+  }
+  
+  if(role=="long") {
+    role <- "RPA"
+  } else {
+    role <- "RPL"
+  }
+  
+  if(!"currency"%in%names(args)) {
+    args[["currency"]] <- "CHF"
+  }
+  
+  if(!"calendar"%in%names(args)) {
+    args[["calendar"]] <- "NC"
+  }
+  
+  if(!"dayCountConvention"%in%names(args)) {
+    args[["dayCountConvention"]] <- "30E360"
+  }
+  
+  contractType <- "PAM"
+  contractID <-  "bondvr001"
+  
+  rateResetFreq_bef <- rateResetFreq # save string for cycleAnchorDateRR
+  if(is.null(rateResetFreq) || rateResetFreq=="NULL") { #fixed rate Bond
+    rateResetFreq <- NULL
+    rateSpread <- NULL
+    vrAttributes <- list()
+  } else {                              # variable rate bond 
+    if(length(grep("y", rateResetFreq))>0) {
+      rateResetFreq <- paste("P",gsub("([0-9]*).*","\\1",rateResetFreq), "Y", "L1", sep="")
+    } else if(length(grep("q", rateResetFreq))>0) {
+      rateResetFreq <- paste("P",gsub("([0-9]*).*","\\1",rateResetFreq), "Q", "L1", sep="")
+    } else if(length(grep("m", rateResetFreq))>0) {
+      rateResetFreq <- paste("P",gsub("([0-9]*).*","\\1",rateResetFreq), "M", "L1", sep="")
+    } else if(length(grep("w", rateResetFreq))>0) {
+      rateResetFreq <- paste("P",gsub("([0-9]*).*","\\1",rateResetFreq), "W", "L1", sep="")
+    } else if(length(grep("d", rateResetFreq))>0) {
+      rateResetFreq <- paste("P",gsub("([0-9]*).*","\\1",rateResetFreq), "D", "L1", sep="")
+    }
+    vrAttributes <- list( cycleOfRateReset=rateResetFreq,
+                          marketObjectCodeOfRateReset="YC_EA_AAA",
+                          cycleAnchorDateOfRateReset= 
+                              as.character(timeDate::timeSequence(
+                                              timeDate::timeDate(start), 
+                                              by=rateResetFreq_bef, 
+                                              length.out=2)[2])
+                        )
+      
+  }
+  
+  attributes <- list( contractType=contractType,
+                      contractID=contractID,
+                      initialExchangeDate=initialExchangeDate,
+                      statusDate=statusDate,
+                      contractDealDate=contractDealDate,
+                      maturityDate=maturity,
+                      notionalPrincipal=nominal,
+                      nominalInterestRate=coupon,
+                      cycleOfInterestPayment=couponFreq,
+                      cycleAnchorDateOfInterestPayment =
+                        as.character(timeSequence(initialExchangeDate,
+                                                  by=couponFreq_bef,
+                                                  length.out=2)[2]),
+                      contractRole=role
+                      )
+  attributes <- append(attributes,args)
+  attributes <- append(attributes,vrAttributes)
+  out <- Pam()
+  set(out, what=attributes)
+  #  checkAttributes(out)     $ checking disabled for now
+  return(out)
+}
+
