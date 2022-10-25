@@ -142,15 +142,16 @@ datarow2Contract<- function(terms_df, legs_df,irow){
 #' @return NULL
 #' @export
 #'
-#' @examples {
+#' @examples  {              # directory ~/mydata must exist and be writable 
 #'   datadir <- "~/mydata"
 #'   installSampleData(datadir)
 #'   }
 #'   
 installSampleData <- function (mydatadir){
-  for (fn in  c("BondPortfolio.csv","RiskFactors.csv","UST5Y_fallingRates.csv",
-                "UST5Y_recoveringRates.csv","UST5Y_risingRates.csv",
-                "UST5Y_steadyRates.csv")) {
+  for (fn in  c("BondPortfolio.csv","AnnuityPortfolio.csv",
+                "OptionsPortfolio.csv", "RiskFactors.csv",
+                "UST5Y_fallingRates.csv", "UST5Y_recoveringRates.csv",
+                "UST5Y_risingRates.csv", "UST5Y_steadyRates.csv")) {
     pn <- paste0(mydatadir,"/",fn)
     file.copy(from = system.file("extdata",fn, package = "FEMSdevPkg"),
               to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)

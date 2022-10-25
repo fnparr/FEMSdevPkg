@@ -43,10 +43,11 @@ ImportFrom: methods new
 Encoding: UTF-8
 LazyData: true
 Collate: 
-    'ContractABC.R'
-    'ContractLeg.R'
     'ContractModel.R'
+    'ContractABC.R'
     'ContractType.R'
+    'Annuity.R'
+    'ContractLeg.R'
     'PrincipalAtMaturity.R'
     'bond.R'
     'RiskFactor.R'
@@ -54,6 +55,7 @@ Collate:
     'Portfolio.R'
     'EventSeries.R'
     'ContractPlot.R'
+    'Option.R'
     'ReferenceIndex.R'
     'demoSteps.R'
     'generatePortfolioData.R'

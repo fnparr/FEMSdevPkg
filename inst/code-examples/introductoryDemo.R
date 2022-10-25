@@ -10,19 +10,29 @@ library(FEMSdevPkg)
 rm(list=ls())
 mydatadir <- "~/mydata"
 installSampleData(mydatadir)
-cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
-rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
-ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
-unlist(ptf$contracts[[1]]$contractTerms)
-unlist(lapply(ptf$contracts,function(x){return(x$isCompound)}))
-unlist(ptf$riskFactors)
+
+# 2.0   better to create and test single contracts of each contract type 
+#       before building portfolios
+
 serverURL <- "https://demo.actusfrf.org:8080/"
 # serverURL <- "http://ractus.ch:8080/"
-cfls  <- generateEvents(ptf,serverURL)
-unlist(lapply(cfls,function(x){return(x$status)}))
-unlist(cfls[[1]])
 
-#1.5  Create portfolio but independent risk factors , generate events 
+# 2.1  Create a single, (fixed rate) PAM bond with in line term specification,
+#      generate an EventSeries of cash flow events for that Contract and Plot 
+pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
+             coupon = 0.02, couponFreq = "1 years", role = "long")
+unlist(pam1$contractTerms)
+
+evs1 <- generateEventSeries(pam1, list(), serverURL)
+unlist(list(contractID = evs1$contractID,
+            contractType=evs1$contractType,
+            statusDate= evs1$statusDate,
+            riskFactors = evs1$riskFactors
+))
+evs1$events_df
+cashflowPlot(evs1)
+
+# 3.1  Initialize some interest rate riskfactors for YC_EA_AAA for VR contracts 
 falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rising_fp <-  paste0(mydatadir,"/UST5Y_risingRates.csv")
 rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
@@ -33,6 +43,33 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 # following 2 lines valid test but better to generate plots  section 1.7
 # cfls  <- generateEvents(ptf,serverURL, list(rfx_falling))
 # unlist(lapply(cfls,function(x){return(x$status)}))
+
+# 3.2  Now generate a variable rate PAM RRMOC="YC_EA_AAA" by default 
+pam2 <- bondvr("2020-12-31", maturity = "5 years", nominal = 50000,
+               coupon = 0.02, couponFreq = "3 months", role = "long",
+               rateResetFreq = "1 years", rateResetSpread = 0.01 )
+unlist(pam2$contractTerms)
+
+evs2 <- generateEventSeries(pam2, list(rfx_falling), serverURL)
+evs2$events_df
+cashflowPlot(evs2)
+
+evs3<- generateEventSeries(pam2, list(rfx_rising), serverURL)
+evs3$events_df
+cashflowPlot(evs3)
+
+# -------- TESTED up to HERE  _ FNP 22 October 2022 
+
+cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
+rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
+ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
+unlist(ptf$contracts[[1]]$contractTerms)
+unlist(lapply(ptf$contracts,function(x){return(x$isCompound)}))
+unlist(ptf$riskFactors)
+
+cfls  <- generateEvents(ptf,serverURL)
+unlist(lapply(cfls,function(x){return(x$status)}))
+unlist(cfls[[1]])
 
 #1.7  simulate and plot Portfolio Monthly data falling rates 
  plotlist <- simulatePortfolio(ptf, serverURL, list(rfx_falling),
@@ -50,20 +87,6 @@ runDaDFiR3demo()
 
 # 2.1  Open updated shiny application with browser controlled review examples
 runDaDFiR3demo2()
-
-# 3.0  Create a single, (fixed rate) PAM bond with in line term specification,
-#      generate an EventSeries of cash flow events for that Contract and Plot 
-pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-coupon = 0.02, couponFreq = "1 years", role = "long")
-unlist(pam1$contractTerms)
-evs1 <- generateEventSeries(pam1, list(), serverURL)
-unlist(list(contractID = evs1$contractID,
-            contractType=evs1$contractType,
-            statusDate= evs1$statusDate,
-            riskFactors = evs1$riskFactors
-          ))
-evs1$events_df
-cashflowPlot(evs1)
 
 # 4 Choose and extract a single contract from the sample portfolio; generate
 #   EventSeries of cashflow events and plot for visual review 

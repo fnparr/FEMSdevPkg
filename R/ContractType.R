@@ -14,6 +14,8 @@
 #'
 #' @import methods
 #' @importFrom methods new
+#' @include ContractABC.R
+#' @include ContractModel.R
 
 # Introduces ContractType refClass,  terms, RF, event, val -Eng
 #  CT() generic constructor
