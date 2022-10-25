@@ -28,7 +28,7 @@ This function copies asample csv data files into a user selected directory
   FEMSdevPkg package user.
 }
 \examples{
-{
+ {              # directory ~/mydata must exist and be writable 
   datadir <- "~/mydata"
   installSampleData(datadir)
   }
