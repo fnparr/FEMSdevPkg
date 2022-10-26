@@ -801,7 +801,7 @@ addNotionalPrincipalStateLayer <- function(obj, rawdata, axis) {
     df <- as.data.frame(rawdata)
 
     ## get graphical parameters
-    pars <- getEventParameters()["NominalValue", ]
+    pars <- getEventParameters()["NominalValue", ]  #FNP Nom->nom
 
     ## extract layer relevant data and bring in graphics form
     ## notice that we only need AD0 on Parent level (in a combined contract)
@@ -1061,7 +1061,7 @@ addPrincipalRedemptionLayer <- function(obj, rawdata, axis) {
         ## we always want to have the event name written above the arrow,
         ## no matter what direction it points to (in/outflow). Since, either
         ## yStart or yEnd of an arrow must be 0 by definition, we use their sum
-        text <- as.character(prData$type)
+        text <- as.character(prData$Type)
         x.pos <- prData$x0
         y.pos <- yStart + yEnd + y.scale*y.max/15
         ## do only draw arrows for events with values > 0

@@ -59,13 +59,20 @@ evs3$events_df
 cashflowPlot(evs3)
 
 # -------- TESTED up to HERE  _ FNP 22 October 2022 
-ann1 <- mortgage("2020-12-31", maturity = "5 years", nominal = 50000,
-                 coupon = 0.02, paymentFreq = "3 months", role = "long",
-                 rateResetFreq = "1 year", rateResetSpread = 0.01 )
+ann1 <- mortgage("2020-12-31",maturity ="5 years", nominal= 10000, 
+                 coupon = 0.70, paymentFreq = "1 months", role= "long")
 unlist(ann1$contractTerms)
-evs4 <- generateEventSeries(ann1, list(rfx_rising), serverURL)
+evs4 <- generateEventSeries(ann1, list(), serverURL)
 evs4$events_df
 cashflowPlot(evs4)
+
+ann2 <- mortgage("2020-12-31", maturity = "5 years", nominal = 50000,
+                 coupon = , paymentFreq = "3 months", role = "long",
+                 rateResetFreq = "1 year", rateResetSpread = 0.01 )
+unlist(ann2$contractTerms)
+evs5 <- generateEventSeries(ann2, list(rfx_rising), serverURL)
+evs5$events_df
+cashflowPlot(evs5)
 
 cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
