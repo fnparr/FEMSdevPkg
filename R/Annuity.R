@@ -17,23 +17,22 @@
 setRefClass("Annuity",
             contains = "ContractType")
 
-setGeneric(name = "Ann",
-           def = function(...){
-             standardGeneric("Ann")
-           })
 
-## FNP Not clear why separate Ann( ) and Annuity ( )  - but no attempt to fix
-# New version: no Term parameters passed in so empty term list
-# initialize isCompound and contractStructure for PAM
+# mark for deletion Ann()   Annuity() does everythig 
 
-setMethod(f = "Ann", signature = c(),
-          definition = function (...) {
-            object <- new("Annuity")
-            object$contractTerms<- list()
-            object$isCompound <- FALSE
-            object$contractStructure <- list()
-            return(object)
-          })
+# setGeneric(name = "Ann",
+#           def = function(...){
+#             standardGeneric("Ann")
+#           })
+
+# setMethod(f = "Ann", signature = c(),
+#          definition = function (...) {
+#            object <- new("Annuity")
+#            object$contractTerms<- list()
+#            object$isCompound <- FALSE
+#            object$contractStructure <- list()
+#            return(object)
+#          })
 
 setGeneric(name = "Annuity",
            def = function(...){
@@ -42,6 +41,9 @@ setGeneric(name = "Annuity",
 
 setMethod(f = "Annuity", signature = c(),
           definition = function(...){
-            object <- Ann(...)
+            object <- new("Annuity")
+            object$contractTerms<- list()
+            object$isCompound <- FALSE
+            object$contractStructure <- list()
             return(object)
           })

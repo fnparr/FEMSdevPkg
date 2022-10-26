@@ -60,6 +60,7 @@ Collate:
     'demoSteps.R'
     'generatePortfolioData.R'
     'runShinyDemo.R'
+    'singleContract.R'
     'util.R'
 RoxygenNote: 7.2.1
 Suggests: 
