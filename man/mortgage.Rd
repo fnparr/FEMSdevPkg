@@ -4,8 +4,7 @@
 \alias{mortgage}
 \title{\code{mortgage}}
 \usage{
-mortgage(start, maturity, nominal, coupon, paymentFreq, role, 
-                     rateResetFreq, rateResetSpread )
+mortgage(start, maturity, nominal, coupon, paymentFreq, role, rateResetFreq, rateResetSpread )
 }
 \arguments{
 \item{start}{character string yyyy-mm-dd the start date of the mortgage.}
@@ -14,7 +13,7 @@ mortgage(start, maturity, nominal, coupon, paymentFreq, role,
 
 \item{nominal}{numeric to set the notional principal of the bond,}
 
-\item{coupon}{numeric to set the initial interest rate; default is 0.0.}
+\item{coupon}{numeric initial interest rate 0.02 = 2% pa default is 0.0.}
 
 \item{paymentFreq}{character string period of payments (interest + principal)}
 
@@ -36,8 +35,8 @@ mortgage()   function to construct a single annuity contract using
 }
 \examples{
 {
-    m <- mortgage("2020-12-31", maturity = "5 years", nominal = 50000,
-              coupon = 0.02, paymentFreq = "3 months", role = "long",
+    m <- mortgage("2020-12-31", maturity = "10 years", nominal = 10000,
+              coupon = 0.07, paymentFreq = "3 months", role = "long",
               rateResetFreq = "1 year", rateResetSpread = 0.01 )
     }
 }

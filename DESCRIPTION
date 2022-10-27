@@ -32,13 +32,12 @@ Imports:
       ggplot2,
       httr,
       jsonlite,
+      lubridate,
       methods,
       shiny,
       shinythemes,
       timeDate,
-      timeSeries,
-      xts,
-      zoo
+      timeSeries
 ImportFrom: methods new      
 Encoding: UTF-8
 LazyData: true

@@ -19,7 +19,7 @@ serverURL <- "https://demo.actusfrf.org:8080/"
 
 # 2.1  Create a single, (fixed rate) PAM bond with in line term specification,
 #      generate an EventSeries of cash flow events for that Contract and Plot 
-pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
+pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
              coupon = 0.02, couponFreq = "1 years", role = "long")
 unlist(pam1$contractTerms)
 
@@ -59,16 +59,16 @@ evs3$events_df
 cashflowPlot(evs3)
 
 # -------- TESTED up to HERE  _ FNP 22 October 2022 
-ann1 <- mortgage("2020-12-31",maturity ="5 years", nominal= 10000, 
-                 coupon = 0.70, paymentFreq = "1 months", role= "long")
+ann1 <- mortgage("2020-12-31",maturity ="20 years", nominal= 1000, 
+                 coupon = 0.08, paymentFreq = "1 year", role= "long")
 unlist(ann1$contractTerms)
 evs4 <- generateEventSeries(ann1, list(), serverURL)
 evs4$events_df
 cashflowPlot(evs4)
 
-ann2 <- mortgage("2020-12-31", maturity = "5 years", nominal = 50000,
-                 coupon = , paymentFreq = "3 months", role = "long",
-                 rateResetFreq = "1 year", rateResetSpread = 0.01 )
+ann2 <- mortgage("2020-12-31", maturity = "20 years", nominal = 1000,
+                 coupon =0.08 , paymentFreq = "1 year", role = "long",
+                 rateResetFreq = "1 year", rateResetSpread = 0.03 )
 unlist(ann2$contractTerms)
 evs5 <- generateEventSeries(ann2, list(rfx_rising), serverURL)
 evs5$events_df
