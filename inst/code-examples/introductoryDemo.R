@@ -20,7 +20,7 @@ serverURL <- "https://demo.actusfrf.org:8080/"
 # 2.1  Create a single, (fixed rate) PAM bond with in line term specification,
 #      generate an EventSeries of cash flow events for that Contract and Plot 
 pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
-             coupon = 0.02, couponFreq = "1 years", role = "long")
+             coupon = 0.02, paymentFreq = "1 year", role = "long")
 unlist(pam1$contractTerms)
 
 evs1 <- generateEventSeries(pam1, list(), serverURL)
@@ -46,7 +46,7 @@ rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
 
 # 3.2  Now generate a variable rate PAM RRMOC="YC_EA_AAA" by default 
 pam2 <- bondvr("2020-12-31", maturity = "5 years", nominal = 50000,
-               coupon = 0.02, couponFreq = "3 months", role = "long",
+               coupon = 0.02, paymentFreq = "3 months", role = "long",
                rateResetFreq = "1 years", rateResetSpread = 0.01 )
 unlist(pam2$contractTerms)
 

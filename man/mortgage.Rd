@@ -4,7 +4,8 @@
 \alias{mortgage}
 \title{\code{mortgage}}
 \usage{
-mortgage(start, maturity, nominal, coupon, paymentFreq, role, rateResetFreq, rateResetSpread )
+mortgage(start, maturity, nominal, coupon, paymentFreq, role, 
+                 rateResetFreq, rateResetSpread )
 }
 \arguments{
 \item{start}{character string yyyy-mm-dd the start date of the mortgage.}
@@ -27,11 +28,22 @@ mortgage(start, maturity, nominal, coupon, paymentFreq, role, rateResetFreq, rat
 initialized Annuity contract contract with specified attributes.
 }
 \description{
-mortgage()   function to construct a single annuity contract using 
-             simplified parameters. Handles fixed and variable rates. 
-             Variable rate is identified by a nonnull rateResetFreq. The 
-             market object code for rate reset is by default the interest 
-             market object code YC_EA_AAA
+Function mortgage() creates and returns a fixed or variable rate ANN
+}
+\details{
+Convenience function with a simplified parameter list to create and 
+    initialize a single Annuity fixed or variable rate mortgage contract.
+.
+    Variable rate bonds  are identified by a nonnull rateResetFrequency. For 
+    these variable rate bonds the default marketObjectCodeOfRateReset is 
+    "YC_EA_AAA"
+    
+    Terms statusDate and contractDealDate are set 1 day before start date. 
+    Term initialExchangeDate is set to start date. The cycleAnchorDates for
+    Interest and principal payments are set at ( IED + a period ). The 
+    maturityDate is set ( IED + Maturity period) defaults are set for 
+    currency, dayCountConvention, Calendar. Role, notionaPrincipal and 
+    nominalInterestRate are set as specified in the parameter list.
 }
 \examples{
 {
