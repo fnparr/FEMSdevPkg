@@ -82,7 +82,8 @@ mortgage <- function(start, maturity, nominal, coupon, paymentFreq, role,
   # principal  and interest payments
   payPeriod <- lubridate::period(paymentFreq)
   payPcode <- period2code(paymentFreq)
-  firstPaymentDate <-   as.character( startDate + payPeriod ) 
+  firstPaymentDate <-   lubridate::add_with_rollback(startDate,
+                                                     payPeriod ) 
   ann1$contractTerms[["cycleAnchorDateOfPrincipalRedemption"]] <- 
          firstPaymentDate
   ann1$contractTerms[["cycleAnchorDateOfInterestPayment"]] <- 
@@ -91,11 +92,11 @@ mortgage <- function(start, maturity, nominal, coupon, paymentFreq, role,
   ann1$contractTerms[["cycleOfInterestPayment"]]     <- payPcode
   
   # if variable rate add RateReset terms 
-  if ( !(is.null(rateResetFreq) || rateResetFreq=="NULL") ) {
+  if ( !(is.null(rateResetFreq) || rateResetFreq=="Fixed rate") ) {
      rrPeriod <- lubridate::period(rateResetFreq)
      rrPcode  <- period2code(rateResetFreq)
      ann1$contractTerms[["cycleAnchorDateOfRateReset"]] <-
-           as.character( startDate + rrPeriod )
+                  lubridate::add_with_rollback(startDate, rrPeriod) 
      ann1$contractTerms[["cycleOfRateReset"]] <- rrPcode
      ann1$contractTerms[["marketObjectCodeOfRateReset"]] <- "YC_EA_AAA"
   }
@@ -179,9 +180,11 @@ bondvr <- function(start, maturity, nominal, coupon, paymentFreq, role,
   bnd1$contractTerms[["dayCountConvention"]] <- "30E360"
   
   # principal  and interest payments
-  payPeriod <- lubridate::period(paymentFreq)
   payPcode <- period2code(paymentFreq)
-  firstPaymentDate <-   as.character( startDate + payPeriod ) 
+  # lubridate addition of months gives NA in some cases so handle specially:
+  
+  firstPaymentDate <- lubridate::add_with_rollback(startDate,
+                                                   period(paymentFreq )) 
   bnd1$contractTerms[["cycleAnchorDateOfPrincipalRedemption"]] <- 
     firstPaymentDate
   bnd1$contractTerms[["cycleAnchorDateOfInterestPayment"]] <- 
@@ -190,11 +193,11 @@ bondvr <- function(start, maturity, nominal, coupon, paymentFreq, role,
   bnd1$contractTerms[["cycleOfInterestPayment"]]     <- payPcode
   
   # if variable rate add RateReset terms 
-  if ( !(is.null(rateResetFreq) || rateResetFreq=="NULL") ) {
+  if ( !(is.null(rateResetFreq) || rateResetFreq=="Fixed rate") ) {
     rrPeriod <- lubridate::period(rateResetFreq)
     rrPcode  <- period2code(rateResetFreq)
     bnd1$contractTerms[["cycleAnchorDateOfRateReset"]] <-
-      as.character( startDate + rrPeriod )
+      lubridate::add_with_rollback(startDate,period(rateResetFreq))
     bnd1$contractTerms[["cycleOfRateReset"]] <- rrPcode
     bnd1$contractTerms[["marketObjectCodeOfRateReset"]] <- "YC_EA_AAA"
   }
@@ -206,6 +209,7 @@ bondvr <- function(start, maturity, nominal, coupon, paymentFreq, role,
 # period2code ( )  input is a periodString is. "2 years" "3 months" "1 day" 
 #                  as accepted by lubridate period( ) converts ISO P2YL1 etc 
 period2code <- function(pstring) {
+  pcode<-""
   if(length(grep("year", pstring))>0) {
     pcode <- paste("P",gsub("([0-9]*).*","\\1", pstring), "Y", "L1", sep="")
 #  } else if(length(grep("q", pstring))>0) {
@@ -217,6 +221,25 @@ period2code <- function(pstring) {
     pcode <- paste("P",gsub("([0-9]*).*","\\1", pstring), "W", "L1", sep="")
   } else if(length(grep("day", pstring))>0) {
     pcode <- paste("P",gsub("([0-9]*).*","\\1", pstring), "D", "L1", sep="")
-  }
+  } else { pcode <- "invalid period input"}
+  
   return (pcode)
+}
+
+# ***************************
+# addPeriod( )   lubridate returns NA for add 6 months to 2020-12-31  
+#      addPeriod: parameters: start character yyyy-mm-dd , pstring character
+#                 "2 years", "1 month" , "6 months" , "4 days"
+#      uses lubridate + for years and days , %m+% for months 
+#      returns  character yyyy-mm-dd  = start + period 
+addPeriod <- function( start, pstring ){
+   startDate <- lubridate::ymd(start)
+   if(length(grep("month", pstring))>0) {
+      ptokens<- strsplit(pstring," ")
+      endDate <- startDate %m+% months(as.integer(ptokens[[1]][1]))
+   }
+   else {
+      endDate <- startDate + lubridate::period(pstring)
+   }
+   return(as.character(endDate))
 }
