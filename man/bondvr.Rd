@@ -15,7 +15,7 @@ bondvr(start, maturity, nominal, coupon, paymentFreq, role,
 
 \item{nominal}{numeric to set the notional principal of the bond,}
 
-\item{coupon}{numeric the coupon/interest rate 0.02 = 2% pa default is 0.0.}
+\item{coupon}{numeric the coupon/interest rate 0.02 = 2pcpa default is 0.0.}
 
 \item{paymentFreq}{a character string with period of coupon payments,}
 
@@ -47,7 +47,7 @@ Convenience function with a simplified parameter list to create and
 \examples{
 {
     b <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
-              coupon = 0.02, couponFreq = "3 months", role = "long",
+              coupon = 0.02, paymentFreq = "3 months", role = "long",
               rateResetFreq = "1 years", rateResetSpread = 0.01 )
     }
 }

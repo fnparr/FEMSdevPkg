@@ -14,7 +14,7 @@ mortgage(start, maturity, nominal, coupon, paymentFreq, role,
 
 \item{nominal}{numeric to set the notional principal of the bond,}
 
-\item{coupon}{numeric initial interest rate 0.02 = 2% pa default is 0.0.}
+\item{coupon}{numeric initial interest rate 0.02 = 2pcpa default is 0.0.}
 
 \item{paymentFreq}{character string period of payments (interest + principal)}
 

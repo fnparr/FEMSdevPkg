@@ -80,12 +80,6 @@ setMethod(f = "EventSeries", signature = c("ContractType","list", "character"),
 #' @include RiskFactor.R
 #' @include Portfolio.R
 #' @include ContractType.R
-#' @examples{
-#'   pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-#'                coupon = 0.02, couponFreq = "1 years", role = "long")
-#'   serverURL <- "https://demo.actusfrf.org:8080/"
-#'   evs1 <-generateEventSeries(pam1, list(), serverURL)
-#'  }
 setGeneric(name = "generateEventSeries",
            def = function(contract, riskFactors, serverURL){
              standardGeneric("generateEventSeries")
@@ -110,6 +104,12 @@ setGeneric(name = "generateEventSeries",
 #' @param  riskFactors list        list of S4 ref Class=RiskFactor
 #' @param  serverURL   character   URL of ACTUS server to simulate the contract
 #' @return              S4 ref     class=EventSeries
+#' @examples{
+#'   pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
+#'                coupon = 0.02, paymentFreq = "1 years", role = "long")
+#'   serverURL <- "https://demo.actusfrf.org:8080/"
+#'   evs1 <-generateEventSeries(pam1, list(), serverURL)
+#'  }
 #' @export
 #'
 setMethod(f = "generateEventSeries", signature = c("ContractType","list", "character"),

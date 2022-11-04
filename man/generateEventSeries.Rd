@@ -20,11 +20,3 @@ an EventSeries with cashflow events for the contract
 Defines a generic method on S4 Class Eventseries. The instance is
 generateEventSeries < contract riskFactors serverURL >
 }
-\examples{
-{
-  pam1 <- bond("2013-12-31", maturity = "5 years", nominal = 50000,
-               coupon = 0.02, couponFreq = "1 years", role = "long")
-  serverURL <- "https://demo.actusfrf.org:8080/"
-  evs1 <-generateEventSeries(pam1, list(), serverURL)
- }
-}

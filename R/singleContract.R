@@ -27,7 +27,7 @@ library(lubridate)
 #' @param start   character string yyyy-mm-dd the start date of the mortgage.
 #' @param maturity   character string setting the lifetime of the mortgage.
 #' @param nominal    numeric to set the notional principal of the bond,
-#' @param coupon     numeric initial interest rate 0.02 = 2% pa default is 0.0.
+#' @param coupon     numeric initial interest rate 0.02 = 2pcpa default is 0.0.
 #' @param paymentFreq character string period of payments (interest + principal)
 #' @param role      character string setting whether lender or borrower role. 
 #' @param rateResetFreq optional character string setting a period of RateReset
@@ -127,7 +127,7 @@ mortgage <- function(start, maturity, nominal, coupon, paymentFreq, role,
 #' @param start      character string yyyy-mm-dd the start date of the bond.
 #' @param maturity   character string (lubridate) period for term of the bond.
 #' @param nominal    numeric to set the notional principal of the bond,
-#' @param coupon    numeric the coupon/interest rate 0.02 = 2% pa default is 0.0.
+#' @param coupon    numeric the coupon/interest rate 0.02 = 2pcpa default is 0.0.
 #' @param paymentFreq a character string with period of coupon payments,
 #' @param role      a character string setting the contract role.
 #' @param rateResetFreq optional character string setting a period of RateReset
@@ -137,7 +137,7 @@ mortgage <- function(start, maturity, nominal, coupon, paymentFreq, role,
 #'               rateResetFreq, rateResetSpread )
 #' @examples {
 #'     b <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
-#'               coupon = 0.02, couponFreq = "3 months", role = "long",
+#'               coupon = 0.02, paymentFreq = "3 months", role = "long",
 #'               rateResetFreq = "1 years", rateResetSpread = 0.01 )
 #'     }
 #' @include PrincipalAtMaturity.R

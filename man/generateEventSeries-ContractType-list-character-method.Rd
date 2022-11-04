@@ -31,3 +31,11 @@ This is an internal method on EventSeries, and not exported.
   generateEventSeries <contract>, risk-factors>, <serverURL> is the
   exported wrapper function which is exported from FEMSdevPkg and calls this.
 }
+\examples{
+{
+  pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
+               coupon = 0.02, paymentFreq = "1 years", role = "long")
+  serverURL <- "https://demo.actusfrf.org:8080/"
+  evs1 <-generateEventSeries(pam1, list(), serverURL)
+ }
+}

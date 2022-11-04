@@ -103,13 +103,12 @@ evs6 <- generateEventSeries(ann3, list(rfx_rising), serverURL)
 evs6$events_df
 cashflowPlot(evs6)
 
-# -------- TESTED up to HERE  _ FNP 31st October 2022 
+# Portfolio Testing starts here --------  
 
 cdfn  <- paste0(mydatadir,"/AnnuityPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
 ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
 unlist(ptf$contracts[[1]]$contractTerms)
-unlist(lapply(ptf$contracts,function(x){return(x$isCompound)}))
 unlist(ptf$riskFactors)
 
 cfls  <- generateEvents(ptf,serverURL)
@@ -125,13 +124,9 @@ unlist(cfls[[1]])
  plotlist[["cumulative income"]]
  plotlist[["monthly liquidity change"]]
  plotlist[["accumulated liquidity"]]
- 
- 
-# 2.0  Open a shiny application allowing browser controlled review/examples 
-runDaDFiR3demo()
 
 # 2.1  Open updated shiny application with browser controlled review examples
-runDaDFiR3demo2()
+ runDaDFiR3demo2()
 
 # 4 Choose and extract a single contract from the sample portfolio; generate
 #   EventSeries of cashflow events and plot for visual review 
