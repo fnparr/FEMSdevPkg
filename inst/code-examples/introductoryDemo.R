@@ -1,7 +1,7 @@
 #  introductoryDemo   -  documentation with example of package us
 #  0. To access this demo user needs to have created a directory into which 
 #     files can be copied - we show directory ~/mycode then issuing R commands: 
-library(FEMSdevPkg)
+library(FEMSdevBase)
 mycodedir <- "~/mycode"
 installSampleCode(mycodedir)
 
@@ -105,7 +105,7 @@ cashflowPlot(evs6)
 
 # -------- TESTED up to HERE  _ FNP 31st October 2022 
 
-cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
+cdfn  <- paste0(mydatadir,"/AnnuityPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
 ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
 unlist(ptf$contracts[[1]]$contractTerms)
