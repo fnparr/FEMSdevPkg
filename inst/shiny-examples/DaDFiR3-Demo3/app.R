@@ -1,8 +1,6 @@
 library(shiny)
 library(shinythemes)
-library(zoo)
 library(FEMSdevBase)
-library(xts)
 library(ggplot2)
 
 shinycssloaders::withSpinner(
