@@ -40,8 +40,7 @@ This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
    mydatadir <- "~/mydata"
    installSampleData(mydatadir)
    cdfn  <- "~/mydata/BondPortfolio.csv"
-   rfdfn <- "~/mydata/RiskFactors.csv"
-   ptf <- samplePortfolio(cdfn,rfdfn)
+   ptf <- samplePortfolio(cdfn)
    falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
                                    "YC_EA_AAA",100)

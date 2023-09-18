@@ -90,11 +90,12 @@ cashflowPlot(evs6)
 # 5.1 Create and show portfolios
 cdfn  <- paste0(mydatadir,"/AnnuityPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
-ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
-unlist(ptf$contracts[[1]]$contractTerms)
-unlist(ptf$riskFactors)
 
-cfls  <- generateEvents(ptf,serverURL)
+ptf   <-  samplePortfolio(cdfn = cdfn)
+unlist(ptf$contracts[[1]]$contractTerms)
+rfxlist <- riskFactors_df2list(riskFile2dataframe(rdfn,sep=","))
+
+cfls  <- generateEvents(ptf,serverURL, rfxlist)
 unlist(lapply(cfls,function(x){return(x$status)}))
 unlist(cfls[[1]])
 

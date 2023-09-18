@@ -35,9 +35,8 @@ setMethod(f = "EventSeries", signature = c("ContractType","list", "character"),
           definition = function(contract, riskFactors, serverURL){
             ptf <- Portfolio()
             ptf$contracts <- list(contract)  # singleContractPortfolio
-            ptf$riskFactors <- riskFactors   # some number of rfs
             # Run the cashflow generation on this portfolio
-            cshfl_rslt1 <- generateEvents(ptf,serverURL)[[1]]
+            cshfl_rslt1 <- generateEvents(ptf,serverURL,riskFactors)[[1]]
             #first cashflow from single contract ptf
             stopifnot (cshfl_rslt1$status == "Success") # possibl better info
             evs_list <- cshfl_rslt1$events

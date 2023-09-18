@@ -5,7 +5,7 @@ library(utils)
 library(timeSeries)
 
 # ***************************************
-# file2dataframe(filename)
+# xxxfile2dataframe(filename) xxx=contractFile OR riskFile
 #    reads named file; creates clean df
 #    unify file2Contracts_df(filename)
 #    and file2riskFactors_df(filename)

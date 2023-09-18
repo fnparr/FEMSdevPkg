@@ -5,17 +5,13 @@
 \alias{Portfolio-class}
 \title{class Portfolio}
 \description{
-A Portfolio consists of a list of contracts and a list of riskFactors
-defining a scenario, A portfolio argument can be used as the input
-parameter for a generateEvents( ) request
+A Portfolio consists of a list of contracts. This is one of the required
+input parameter for a generateEvents(portfolio, scenario) request
 }
 \section{Fields}{
 
 \describe{
 \item{\code{contracts}}{List of contracts, class=ContractType, in the portfolio.}
-
-\item{\code{riskFactors}}{List of class=ReferenceIndex's defining a risk Scenario.
-possibly better to change to riskFactorIndexList}
 }}
 
 

@@ -2,13 +2,11 @@
 % Please edit documentation in R/runShinyDemo.R
 \name{runDaDFiR3demo3}
 \alias{runDaDFiR3demo3}
-\title{runDaDFiR3demo3()  Launches V3(Sep2023) Rshiny demo application}
+\title{runDaDFiR3demo3()  Launches  latest Rshiny demo application}
 \usage{
 runDaDFiR3demo3()
 }
 \description{
-runDaDFiR3demo3()  Launches  latest Rshiny demo application
- 
 Demo3 is a  reactive (browser controlled) application with tabs for: 
 (1) plotting  provided selected risk scenario reference rate data 
 in a display window. You can chose between "rising", "falling", "steady" 
@@ -19,6 +17,5 @@ plots of income and liquidity; month by month or cumulative for a selected
 interest rate scenario; (4) performing the same analysis for an uploaded 
 portfolio of ACTUS contracts; (5) viewing a help page which includes 
 instruction on how to configurer the demo to work with a specified ACTUS 
-server - with additional details for when it is implemented as a Docker 
-container
+server - with additional details for when it is implemented as a Docker container
 }
