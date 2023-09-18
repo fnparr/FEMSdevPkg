@@ -10,5 +10,4 @@ runDaDFiR3demo()
 Launches a browser controlled application plotting the provided sample 
 reference rate data in a display window. You can chose between plots 
 of  5yTreasuryBill_fallingRates, 5yTreasuryBill_recoveringRates, etc
-runDaDFiR3demo()  Launches  version 1 DaDFiR3 RShiny Demo
 }
