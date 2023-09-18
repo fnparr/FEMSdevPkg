@@ -59,9 +59,9 @@ pam22 <- bondvr("2020-12-31", maturity = "5 years", nominal = 50000,
                 coupon = 0.02, paymentFreq = "6 months", role = "long",
                 rateResetFreq = "Fixed rate", rateResetSpread = 0.01 )
 unlist(pam21$contractTerms)
-evs21 <- generateEventSeries(pam21, list(rfx_falling), serverURL)
-evs21$events_df
-cashflowPlot(evs21)
+evs22 <- generateEventSeries(pam22, list(rfx_falling), serverURL)
+evs22$events_df
+cashflowPlot(evs22)
 
 # 4.1 Testing mortgage( ) implicit fixed rate 
 ann1 <- mortgage("2020-12-31",maturity ="20 years", nominal= 1000, 
