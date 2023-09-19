@@ -93,7 +93,10 @@ rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
 
 ptf   <-  samplePortfolio(cdfn = cdfn)
 unlist(ptf$contracts[[1]]$contractTerms)
-rfxlist <- riskFactors_df2list(riskFile2dataframe(rdfn,sep=","))
+rfxlist <- sampleReferenceIndexList(rfdfn)
+rfxlist[[1]]$marketObjectCode  # show off the first referenceIndex from the list
+rfxlist[[1]]$riskFactorID
+rfxlist[[1]]$data
 
 cfls  <- generateEvents(ptf,serverURL, rfxlist)
 unlist(lapply(cfls,function(x){return(x$status)}))
