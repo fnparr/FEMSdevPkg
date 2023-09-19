@@ -76,13 +76,8 @@ setGeneric(name = "generateEvents",
            def = function(ptf,serverURL,riskFactors,...){
              standardGeneric("generateEvents")
            })
-# WE HAVE REMOVED THIS FUNCTION
-# ************************************************************************
-# generateEvents(<Portfolio>, ServerURL) - instance of generic method 
-# ************************************************************************
 
 
-# THIS METHOD WE WANT TO KEEP 
 # ************************************************************************
 # generateEvents(<Portfolio>, ServerURL, list<riskFactors>) 
 #    -- instance of generic method, proto-scenario
@@ -162,13 +157,9 @@ setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
 #'    }
 #'
 samplePortfolio <- function(cdfn) {
-  # DEBUG TO BE REMOVED
-  cdfn <- "~/mydata/BondPortfolio.csv"
-  # END DEBUG
   ptf <- Portfolio()            # create portfolio object no attributes set
                                 # read in contract data from named file
                                 # install in portfolio object
-                                # riskfactors first - contract.moc valid check
   ptf$contracts <-   contracts_df2list(contractFile2dataframe(cdfn))
                                 # portfolio is now initialized and ready for
                                 # cashflow generation
