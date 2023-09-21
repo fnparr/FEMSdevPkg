@@ -5,6 +5,46 @@
 # **************************************************
 library(lubridate)
 # **************************************
+#' \code{loan}
+#'
+#'     Function loan() creates and returns a PAM or an ANN
+#'
+#' @param ctype   character eith ANN or PAM
+#' @param start   character string yyyy-mm-dd the start date of the mortgage.
+#' @param maturity   character string setting the lifetime of the mortgage.
+#' @param nominal    numeric to set the notional principal of the bond,
+#' @param coupon     numeric initial interest rate 0.02 = 2 pa default is 0.0.
+#' @param paymentFreq character string period of payments (interest + principal)
+#' @param role      character string setting whether lender or borrower role.
+#' @param rateResetFreq optional character string setting a period of RateReset
+#' @param rateResetSpread optional numeric with rate spread for variable rate
+#' @return    initialized Annuity contract contract with specified attributes.
+#' @usage {
+#'         ctr1<-  loan(ctype, start, maturity, nominal, coupon, paymentFreq,
+#'                      role, rateResetFreq, rateResetSpread )
+#'        }
+#' @examples {
+#'     l <- loan("ANN", "2020-12-31", maturity = "10 years", nominal = 10000,
+#'               coupon = 0.07, paymentFreq = "3 months", role = "long",
+#'               rateResetFreq = "1 year", rateResetSpread = 0.01 )
+#'     }
+#' @export
+loan <- function(ctype, start, maturity, nominal, coupon,
+                 paymentFreq,role,
+                 rateResetFreq,rateResetSpread){
+  if (ctype== "PAM") {
+    cntr1 <- bondvr(start, maturity, nominal, coupon, paymentFreq,role,
+                    rateResetFreq=rateResetFreq,
+                    rateResetSpread=rateResetSpread )
+  } else {
+    cntr1 <- mortgage(start, maturity, nominal, coupon, paymentFreq,role,
+                      rateResetFreq=rateResetFreq,
+                      rateResetSpread=rateResetSpread )
+  }
+  return(cntr1)
+}
+
+# **************************************
 #' \code{mortgage}
 #' 
 #'     Function mortgage() creates and returns a fixed or variable rate ANN

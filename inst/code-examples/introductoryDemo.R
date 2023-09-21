@@ -59,9 +59,9 @@ pam22 <- bondvr("2020-12-31", maturity = "5 years", nominal = 50000,
                 coupon = 0.02, paymentFreq = "6 months", role = "long",
                 rateResetFreq = "Fixed rate", rateResetSpread = 0.01 )
 unlist(pam21$contractTerms)
-evs21 <- generateEventSeries(pam21, list(rfx_falling), serverURL)
-evs21$events_df
-cashflowPlot(evs21)
+evs22 <- generateEventSeries(pam22, list(rfx_falling), serverURL)
+evs22$events_df
+cashflowPlot(evs22)
 
 # 4.1 Testing mortgage( ) implicit fixed rate 
 ann1 <- mortgage("2020-12-31",maturity ="20 years", nominal= 1000, 
@@ -90,11 +90,15 @@ cashflowPlot(evs6)
 # 5.1 Create and show portfolios
 cdfn  <- paste0(mydatadir,"/AnnuityPortfolio.csv")
 rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
-ptf   <-  samplePortfolio(cdfn = cdfn,rfdfn)
-unlist(ptf$contracts[[1]]$contractTerms)
-unlist(ptf$riskFactors)
 
-cfls  <- generateEvents(ptf,serverURL)
+ptf   <-  samplePortfolio(cdfn = cdfn)
+unlist(ptf$contracts[[1]]$contractTerms)
+rfxlist <- sampleReferenceIndexList(rfdfn)
+rfxlist[[1]]$marketObjectCode  # show off the first referenceIndex from the list
+rfxlist[[1]]$riskFactorID
+rfxlist[[1]]$data
+
+cfls  <- generateEvents(ptf,serverURL, rfxlist)
 unlist(lapply(cfls,function(x){return(x$status)}))
 unlist(cfls[[1]])
 

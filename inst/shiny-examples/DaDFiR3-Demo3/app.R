@@ -1,6 +1,6 @@
 library(shiny)
 library(shinythemes)
-library(FEMSdevBase)
+#library(FEMSdevBase)
 library(ggplot2)
 
 shinycssloaders::withSpinner(
@@ -264,29 +264,29 @@ server <- function(input, output) {
     #reactive creation of the events for the bond
     if(input$rfScenarioBond == "increasing Rates"){
       evs1 <- reactive({generateEventSeries(contract = cnt1(), 
-                                            list(rfx_rising),
-                                            serverURL()  
+                                       riskFactors = list(rfx_rising),
+                                       serverURL = serverURL()  
       )
       })
     }
     if(input$rfScenarioBond == "decreasing Rates"){
       evs1 <- reactive({generateEventSeries(contract = cnt1(), 
-                                            list(rfx_falling),
-                                            serverURL()  
+                                       riskFactors =  list(rfx_falling),
+                                       serverURL =  serverURL()  
       )
       })
     }
     if(input$rfScenarioBond == "steady Rates"){
-      evs1 <- reactive({generateEventSeries(contract = cnt1(), 
-                                            list(rfx_steady),
-                                            serverURL()  
+      evs1 <- reactive({generateEventSeries(contract = cnt1(),
+                                       riskFactors = list(rfx_steady),
+                                       serverURL = serverURL()  
       )
       })
     }
     if(input$rfScenarioBond == "recovering Rates"){
       evs1 <- reactive({generateEventSeries(contract = cnt1(), 
-                                            list(rfx_recovering),
-                                            serverURL()  
+                                       riskFactors = list(rfx_recovering),
+                                       serverURL = serverURL()  
       )
       })
     }
@@ -355,10 +355,10 @@ server <- function(input, output) {
     if(input$ptfFile == "MortgagePortfolio"){
       cdfn <- system.file("extdata","AnnuityPortfolio.csv",package = "FEMSdevBase")
     }
-    rfdfn <- system.file("extdata","RiskFactors.csv",package = "FEMSdevBase")
+    #rfdfn <- system.file("extdata","RiskFactors.csv",package = "FEMSdevBase")
     
     #create the portfolio with the respective files
-    ptf   <-  samplePortfolio(cdfn,rfdfn)
+    ptf   <-  samplePortfolio(cdfn = cdfn)
     
     portfolioDF <- read.csv(cdfn)
     #portfolioDF <- portfolioDF[ , colSums(portfolioDF == "NULL") < nrow(portfolioDF)] 
@@ -401,7 +401,7 @@ server <- function(input, output) {
     if(is.null(input$uploadedFile) != TRUE){
       file <- reactive(input$uploadedFile)
       cdfn_u <- file()$datapath
-      rfdfn <- system.file("extdata","RiskFactors.csv",package = "FEMSdevBase")
+      #rfdfn <- system.file("extdata","RiskFactors.csv",package = "FEMSdevBase")
       
       portfolioDF_u <- read.csv(cdfn_u)
       portfolioDF_u <- portfolioDF_u[,c("contractType","statusDate","contractRole","contractID",
@@ -414,7 +414,7 @@ server <- function(input, output) {
       
       
       #create the portfolio with the respective files
-      ptf1   <-  samplePortfolio(cdfn_u,rfdfn)
+      ptf1   <-  samplePortfolio(cdfn_u)
       
       
       #create eventSeries for the selected contract

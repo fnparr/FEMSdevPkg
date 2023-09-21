@@ -24,7 +24,6 @@ startDemo <- function(){
 createPortfolioFromExcelData <- function(){
   mydatadir <- "~/mydata"
   cdfn  <- paste0(mydatadir,"/BondPortfolio.csv")
-  rfdfn <- paste0(mydatadir,"/RiskFactors.csv")
-  ptf   <-  samplePortfolio(cdfn,rfdfn)
+  ptf   <-  samplePortfolio(cdfn)
   return(ptf)
 }

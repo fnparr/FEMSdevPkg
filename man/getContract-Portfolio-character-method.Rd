@@ -28,8 +28,7 @@ getContract(ptf, cid) takes as input an S4 ref to a Class=Portfolio object
    mydatadir <- "~/mydata"
    installSampleData(mydatadir)
    cdfn  <- "~/mydata/BondPortfolio.csv"
-   rfdfn <- "~/mydata/RiskFactors.csv"
-   ptf <- samplePortfolio(cdfn,rfdfn)
+   ptf <- samplePortfolio(cdfn)
    cids <- getContractIDs(ptf)
    cntr <- getContract(ptf, cids[1])
    }

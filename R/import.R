@@ -1,11 +1,11 @@
 # import.R 
 # import.R - working development version of import.R
-# fnp Feb 2022
+# fnp Feb 2022, Sep 2023
 library(utils)
 library(timeSeries)
 
 # ***************************************
-# file2dataframe(filename)
+# xxxfile2dataframe(filename) xxx=contractFile OR riskFile
 #    reads named file; creates clean df
 #    unify file2Contracts_df(filename)
 #    and file2riskFactors_df(filename)
@@ -25,7 +25,6 @@ contractFile2dataframe <- function(cdfn, sep = ",") {
 }
 
 riskFile2dataframe <- function(fname, sep = ","){
-  # this read.csv works for csv with no dayCountConvention column. Warning
   df = utils::read.csv(fname)
   # convert all missing data into text null
   df[is.na(df)] <- "NULL"
@@ -65,11 +64,12 @@ contracts_df2list<- function(contracts_df){
 #   convert date, value pairs in risk Factor row
 #   all riskFactors are referenceIndex for now
 # ************************************************
-riskFactors_df2list <- function(riskFactors_df){
+
+riskFactors_df2list <- function(rfxsdf){
   rfxlist <- list()
   nhdrs <- 4        # rfType, moc, base, dataPairCount are " row headers"
-  for ( irow in 1:nrow(riskFactors_df)){
-      rfRow <- riskFactors_df[irow,]
+  for ( irow in 1:nrow(rfxsdf)){
+      rfRow <- rfxsdf[irow,]
       tset <- as.character(rfRow[nhdrs-1+(1:rfRow$dataPairCount)*2])
           # vector of dates
       vset <- as.numeric(rfRow[nhdrs+(1:rfRow$dataPairCount)*2])

@@ -17,7 +17,7 @@
 List of generated cashflow results - one entry per contract
 }
 \description{
-The generateEvents(Portfolio, character, list, character) function takes as
+The generateEvents(Portfolio, character, list) function takes as
   input: (1) an initialized S4 Portfolio of ACTUS contracts, (2) an ACTUS 
   serverURL,  and (3)  a list of riskFactors defining the risk scenario; 
   the function constructs a JSON representation of the Portfolio contents and
@@ -30,8 +30,7 @@ The generateEvents(Portfolio, character, list, character) function takes as
    mydatadir <- "~/mydata"
    installSampleData(mydatadir)
    cdfn  <- "~/mydata/BondPortfolio.csv"
-   rfdfn <- "~/mydata/RiskFactors.csv"
-   ptf   <-  samplePortfolio(cdfn,rfdfn)
+   ptf   <-  samplePortfolio(cdfn)
    serverURL <- "https://demo.actusfrf.org:8080/"
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
