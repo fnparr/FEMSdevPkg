@@ -47,10 +47,11 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
           definition= function(yieldCurveID, referenceDate, tenorRates,
                                dayCountConvention, compoundingFrequency) {
             yc <- new("YieldCurve")
-            yc$yieldCurveId <- yieldCurveID
+            yc$yieldCurveID <- yieldCurveID
             yc$referenceDate <- referenceDate
             yc$tenorRates <- tenorRates
             yc$dayCountConvention <- dayCountConvention
             yc$compoundingFrequency <- compoundingFrequency
             return(yc)
           })
+
