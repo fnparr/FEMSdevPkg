@@ -1,5 +1,5 @@
 # YieldCurve.R  FEMSdevPkg code by Francis Parr Oct 2023 
-#   updates earlier FEMS code by Henriette-Elise Breymann
+#   updates earlier git wbreymann/FEMS code by Henriette-Elise Breymann
 # Licensing and Copyright notices to be added  XXXX
 # **************************************************
 # defines: class YieldCurve, YieldCurve() constructor,
@@ -43,7 +43,41 @@ setGeneric(name = "YieldCurve",
                           dayCountConvention, compoundingFrequency )  
                   standardGeneric("YieldCurve") )
 
-# exported constructor with parameters as listed in the generic 
+# ***********************************************************************
+#  YieldCurve() exported constructor for YieldCurve objects 
+# ************************************************************************
+#' YieldCurve(yieldCurveID, referenceDate, tenorRates, dayCountConvention,
+#'             compoundingFrequency )
+#'
+#'   YieldCurve(character, character, namedNumericVector, character,character)
+#'   function takes as input: (1) a YieldCurveID label, (2) a referenceDate
+#'   character string, (3) a named vector of numeric tenorRates, (4) a 
+#'   character string ACTUS dayCountConvention and (5) a character string 
+#'   compoundingFrequency with values in { "NONE", "YEARLY","CONTINUOUS"}.
+#'   The function checks that the input dayCountConvention is a valid ACTUS code
+#'   and mappable to the dayCountConvention values supported in 
+#'   fmdates::year_frac() - used to compute arbitrage free forward rates.  
+#'   An S4 YieldCurve object is created and returned with attributes initialized
+#'   to these values. 
+#'
+#' @export
+#' @param yieldCurveID  character  label uniquely identifying this yieldCurve
+#' @param referenceDate character date yyyy-mm-dd tenorRates observed this day 
+#' @param tenorRates numeric  pa rates (0.02=2%) vector, names "1M", "2Y" etc 
+#' @param dayCountConvention character: "30E360","30E360ISDA","A360","A365","AA"
+#' @param compoundingFrequency character: "NONE", "YEARLY", "CONTINUOUS"
+#' @return  YieldCurve S4 object initialized 
+#' @export
+#' @examples {
+#'    ycID <- "yc001"
+#'    rd <- "2023-10-31"
+#'    tr <-  c(1.1, 2.0, 3.5 )
+#'    names(tr) <- c("1M", "1Y", "5Y")
+#'    dcc <- "30E360"
+#'    cf <- "NONE"
+#'    yc <- YieldCurve(ycID,rd,tr,dcc,cf)
+#' }
+#'
 setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
                                      "character", "character"),
           definition= function(yieldCurveID, referenceDate, tenorRates,
