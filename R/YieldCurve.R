@@ -66,7 +66,7 @@ setGeneric(name = "YieldCurve",
 #' @param tenorRates numeric  pa rates (0.02=2%) vector, names "1M", "2Y" etc 
 #' @param dayCountConvention character: "30E360","30E360ISDA","A360","A365","AA"
 #' @param compoundingFrequency character: "NONE", "YEARLY", "CONTINUOUS"
-#' @return  YieldCurve S4 object initialized 
+#' @return               fully initialized S4 class YieldCurve object
 #' @export
 #' @examples {
 #'    ycID <- "yc001"
@@ -110,11 +110,50 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
             return(yc)
           })
 
-# exported method getForwardRates()
 setGeneric(name = "getForwardRates",
            def = function(yieldCurve, Tfrom, Tto )  
              standardGeneric("getForwardRates") )
 
+# ************************************************************************
+# getForwardRates(<YieldCurve>, Tfrom, Tto) 
+# ************************************************************************
+#' getForwardRates(<yieldCurve>, Tfrom, Tto)
+#'
+#'   Function getforwardRates(YieldCurve, character, character) takes as
+#'   input: (1) an initialized S4 YieldCurve object, (2) a character Tfrom date
+#'   in yyyy-mm-dd format and (3) a character Tto date in yyyy-mm-ff from. 
+#'   The function returns the perannum forward interest rate for a loan starting
+#'   at Tfrom and maturing at Tto based on arbitrage free projection od the 
+#'   supplied YieldCurve data with dayCountConvention and compoundung as 
+#'   set in attributes of this yield Curve. 
+#'   Tfrom must be earlier (<) Tto 
+#'   
+#'   getForwardRates() uses yearFraction() which in turn depends on and includes 
+#'   fmdates::year_frac(), lubridate::ymd(); getForwardRates() also uses   
+#'   function approx() from RBase to interpolate YieldCurve values
+#'   
+#'   The initial implementation of getForwardrates() restricts Tfrom and Tto to
+#'   single date strings rather than vectors and compoundingFrequency == "NONE"  
+#'
+#' @param yieldCurve  class=YieldCurve S4 object with tenorRates, referenceDate
+#' @param Tfrom character  yyyy-mm-dd date for start of forward rate interval
+#' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
+#' @return Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
+#' @export
+#' @include yearFraction.R      year fractions with specified dayCountConvention
+#' @importFrom fmdates year_frac    
+#' @importFrom lubridate ymd
+#' @examples {
+#'    ycID <- "yc001"
+#'    rd <- "2023-10-31"
+#'    tr <-  c(1.1, 2.0, 3.5 )
+#'    names(tr) <- c("1M", "1Y", "5Y")
+#'    dcc <- "30E360"
+#'    cf <- "NONE"
+#'    yc <- YieldCurve(ycID,rd,tr,dcc,cf)
+#'    rate <- getForwardRates(yc,"2024-01-01","2024-06-01")
+#' }
+#'
 setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
                                                 "character"),
           definition= function(yieldCurve, Tfrom, Tto) {
