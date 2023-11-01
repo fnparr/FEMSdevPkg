@@ -14,7 +14,6 @@
 #' This data is organized as a set of spot rates for user selected tenors 
 #' at the time of the reference data.  
 #' 
-#' @include externalFunctionWrappers.R  
 #' @import methods
 #' @importFrom methods new
 #' @export YieldCurve
@@ -140,9 +139,7 @@ setGeneric(name = "getForwardRates",
 #' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
 #' @return Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
 #' @export
-#' @include yearFraction.R      year fractions with specified dayCountConvention
-#' @importFrom fmdates year_frac    
-#' @importFrom lubridate ymd
+#' @include yearFraction.R  year fractions with specified dayCountConvention
 #' @examples {
 #'    ycID <- "yc001"
 #'    rd <- "2023-10-31"
