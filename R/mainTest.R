@@ -10,4 +10,8 @@ names(tr) <- c("1M", "1Y", "5Y")
 dcc <- "30E360"
 cf <- "NONE"
 yc <- YieldCurve(ycID,rd,tr,dcc,cf)
-
+# valid case 
+dcc_e <- "30/360"
+yc_e <- YieldCurve(ycID,rd,tr,dcc_e,cf)
+# should generate error message for invalid dcc
+# could also check for cf == "NONE" 
