@@ -20,9 +20,10 @@
 #' @exportClass YieldCurve 
 #' @field yieldCurveID  character label identifying this yieldcurve object
 #' @field referenceDate character yyyy-mm-dd date for when YC valid 
-#' @field rates numeric vector spot rates on refdate; rates are per annum 
+#' @field tenorRates numeric vector spot rates on refdate; rates are per annum 
 #'              i.e. 2% pa = 0.02    Each rated labelled with tenor 
-#'              rates$names = "1D" "1W" "1M" "3M" "6M" "1Y" "2Y" "5Y"  
+#'              rates$names = "1D" "1W" "1M" "3M" "6M" "1Y" "2Y" "5Y" 
+#' @field tenorYffs numeric vector of tenor names converted to year fractions  
 #' @field dayCountConvention character ACTUS string eg "30E360"
 #' @field yfdcc character  mapped dayCountConvention used in fmdates:year_frac
 #' @field compoundingFrequency character "NONE", "YEARLY", "CONTINUOUS"
@@ -32,6 +33,7 @@ setRefClass("YieldCurve",
               yieldCurveID         = "character",
               referenceDate        = "character",
               tenorRates           = "numeric",
+              tenorYffs            = "numeric",
               dayCountConvention   = "character",
               yfdcc                = "character",
               compoundingFrequency = "character"
@@ -95,7 +97,7 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
               yfdcc <- yfdccs[[dayCountConvention]]
             } else {
               stop(paste("ErrorIn::YieldCurve:: ", dayCountConvention, 
-                         " is not a valid ACTUS dcc or no map to a year-frac dcc!",
+                      " is not a valid ACTUS dcc or no map to a year-frac dcc!",
                          sep=" "))
             }
             
@@ -103,8 +105,9 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
             yc$yieldCurveID <- yieldCurveID
             yc$referenceDate <- referenceDate
             yc$tenorRates <- tenorRates
+            yc$tenorYffs  <- tenorNames2yffs(names(tenorRates))
             yc$dayCountConvention <- dayCountConvention
-            yc$yfdcc <- yfdcc
+            yc$yfdcc <- yfdcc  # mapped from dayCountConvention with error check
             yc$compoundingFrequency <- compoundingFrequency
             return(yc)
           })
@@ -134,7 +137,7 @@ setGeneric(name = "getForwardRates",
 #'   The initial implementation of getForwardrates() restricts Tfrom and Tto to
 #'   single date strings rather than vectors and compoundingFrequency == "NONE"  
 #'
-#' @param yieldCurve  class=YieldCurve S4 object with tenorRates, referenceDate
+#' @param yc    class=YieldCurve S4 object with tenorRates, 
 #' @param Tfrom character  yyyy-mm-dd date for start of forward rate interval
 #' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
 #' @return Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
@@ -153,7 +156,48 @@ setGeneric(name = "getForwardRates",
 #'
 setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
                                                 "character"),
-          definition= function(yieldCurve, Tfrom, Tto) {
-# implementation V1 for single Tfrom, Tto value pair with Tfrom < Tto             
+              definition= function(yieldCurve, Tfrom, Tto) {
+        # implementation V1 for single Tfrom, Tto value pair with Tfrom < Tto
+        # yc$referenceDate < Tfrom
+            
+        #  1. get yearFractions of Tfrom, Tto relative to yc$referenceDate
+        yfFrom <- yearFraction(yc$referenceDate, Tfrom, yc$yfdcc) 
+        yfTo   <- yearFraction(yc$referenceDate, Tto,   yc$yfdcc)
+        
+        #  0. in YieldCurve constructor we need to have converted the tenors to 
+        #     year fractions and saved those 
+          
+        #  2. use Rbase::approx to interpolate a yieldCurve value - these times
+        
+            
+            
+            
               
           })
+
+# ***********************************************************
+# tenorNames2yffs(tnames)
+#    function to convert a vector of tenor names to a numeric vector of
+#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
+#    used in YieldCurve( ) constructor but not exported; converted tenorNames
+#    vector saved in yc$tenorYffs
+# ***********************************************************
+ tenorNames2yffs <- function(tnames) {
+   # computing tenors as year fractions 
+   # get units as year fractions; pick up last char of tenorNames  and map to
+   # year fraction for unit; inner product with tenorNAME number strings, last
+   # char dropped, converted to numeric 
+   
+   pyfs <-  c(1/365, 7/365, 1/12, 1.0 )   # simple yf for D W M Y
+   names(pyfs) <- c("D","W","M","Y")
+   tenorYfs <- as.numeric(substr(tnames,1,nchar(tnames)-1))* pyfs[ 
+     substr(tnames,nchar(tnames),nchar(tnames))]
+   
+   # could be made more accurate by (1) different pyfs for 360,365 day years etc 
+   # or possibly  (2) convert to week and month multiples then use 
+   # yc$referenceDate and convert with date arithmetic followed by yearFraction( ) 
+   # - but do we want tenorRates to be so date sensitive?
+   return(tenorYfs)
+ }
+
+
