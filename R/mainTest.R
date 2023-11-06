@@ -23,3 +23,6 @@ frac <- yearFraction(Tfrom, Tto, yfdcc)
 frac
 Rout <- interpolateYieldCurve(yc,0.083333)
 Rout
+frwdRate <- getForwardRates(yc, Tfrom,Tto)
+frwdRate
+

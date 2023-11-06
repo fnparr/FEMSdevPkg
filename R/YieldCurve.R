@@ -165,6 +165,18 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
         yfTo   <- yearFraction(yc$referenceDate, Tto,   yc$yfdcc)
           
         #  2. use Rbase::approx to interpolate a yieldCurve value - these times
+        rateFrom <- interpolateYieldCurve(yc, yfFrom)
+        rateTo   <- interpolateYieldCurve(yc, yfTo)
+        
+        #  3. Estimate forward rate with compoundingFrequency == NONE
+        if (yc$compoundingFrequency == "NONE") {
+          
+      frwdRate <- (((1 + rateTo*yfTo)/(1+ rateFrom*yfFrom)) - 1 )/(yfTo - yfFrom)
+      return(frwdRate)
+        }
+        else {  
+      stop(paste("ErrorIn::YieldCurve::getForwardRates: compoundingFrequency ", 
+                  yc$compoundingFrequency , " not supported !!!"))    }
         
             
             
