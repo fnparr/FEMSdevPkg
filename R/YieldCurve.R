@@ -33,7 +33,7 @@ setRefClass("YieldCurve",
               yieldCurveID         = "character",
               referenceDate        = "character",
               tenorRates           = "numeric",
-              tenorYffs            = "numeric",
+              tenorYfs            = "numeric",
               dayCountConvention   = "character",
               yfdcc                = "character",
               compoundingFrequency = "character"
@@ -105,7 +105,7 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
             yc$yieldCurveID <- yieldCurveID
             yc$referenceDate <- referenceDate
             yc$tenorRates <- tenorRates
-            yc$tenorYffs  <- tenorNames2yffs(names(tenorRates))
+            yc$tenorYfs  <- tenorNames2yfs(names(tenorRates))
             yc$dayCountConvention <- dayCountConvention
             yc$yfdcc <- yfdcc  # mapped from dayCountConvention with error check
             yc$compoundingFrequency <- compoundingFrequency
@@ -163,9 +163,6 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
         #  1. get yearFractions of Tfrom, Tto relative to yc$referenceDate
         yfFrom <- yearFraction(yc$referenceDate, Tfrom, yc$yfdcc) 
         yfTo   <- yearFraction(yc$referenceDate, Tto,   yc$yfdcc)
-        
-        #  0. in YieldCurve constructor we need to have converted the tenors to 
-        #     year fractions and saved those 
           
         #  2. use Rbase::approx to interpolate a yieldCurve value - these times
         
@@ -182,10 +179,10 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
 #    used in YieldCurve( ) constructor but not exported; converted tenorNames
 #    vector saved in yc$tenorYffs
 # ***********************************************************
- tenorNames2yffs <- function(tnames) {
+ tenorNames2yfs <- function(tnames) {
    # computing tenors as year fractions 
    # get units as year fractions; pick up last char of tenorNames  and map to
-   # year fraction for unit; inner product with tenorNAME number strings, last
+   # year fraction for unit; inner product with tenorName number strings, last
    # char dropped, converted to numeric 
    
    pyfs <-  c(1/365, 7/365, 1/12, 1.0 )   # simple yf for D W M Y
@@ -196,8 +193,21 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
    # could be made more accurate by (1) different pyfs for 360,365 day years etc 
    # or possibly  (2) convert to week and month multiples then use 
    # yc$referenceDate and convert with date arithmetic followed by yearFraction( ) 
-   # - but do we want tenorRates to be so date sensitive?
+   # - but do we want tenorRates to be so date senyitive?
    return(tenorYfs)
  }
 
-
+# **********************************************************
+# interpolateYieldCurve(yc, tyf)
+#     This YieldCurve method takes as input (1) yc a yieldCurve object, and 
+#     (2) a numeric tenor  value tyf expressed as a fractional number of years
+#     It uses linear approximation provided by RBase function approx() to 
+#     linearly interpolate from the tenorRate data points and the precomputed 
+#     tenorYfs year fraction x-values saved in yc, to estimate the pa interest
+#     rate for tenor tyf. This numeric value is returned.  
+# ***********************************************************
+ interpolateYieldCurve <- function(yc,tyf) {
+   tyfRate <- approx(yc$tenorYfs,yc$tenorRates, tyf, 
+                     method = "linear", rule = 2)
+   return(tyfRate$y)  # pass back just the estimated value from (x,y) pair 
+ }
