@@ -25,4 +25,8 @@ Rout <- interpolateYieldCurve(yc,0.083333)
 Rout
 frwdRate <- getForwardRates(yc, Tfrom,Tto)
 frwdRate
-
+riskSpread <- 0.02
+discountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
+discountF
+growthF <- getGrowthFactor(yc,Tfrom,Tto)
+growthF

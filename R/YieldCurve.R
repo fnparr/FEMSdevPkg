@@ -169,6 +169,8 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
         rateTo   <- interpolateYieldCurve(yc, yfTo)
         
         #  3. Estimate forward rate with compoundingFrequency == NONE
+        #     Formula from wbreymann/FEMS/DynamicYieldCurve.R lines 417-420
+        
         if (yc$compoundingFrequency == "NONE") {
           
       frwdRate <- (((1 + rateTo*yfTo)/(1+ rateFrom*yfFrom)) - 1 )/(yfTo - yfFrom)
@@ -177,15 +179,11 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
         else {  
       stop(paste("ErrorIn::YieldCurve::getForwardRates: compoundingFrequency ", 
                   yc$compoundingFrequency , " not supported !!!"))    }
-        
-            
-            
-            
               
           })
 
 # ***********************************************************
-# tenorNames2yffs(tnames)
+# tenorNames2yfs(tnames)
 #    function to convert a vector of tenor names to a numeric vector of
 #    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
 #    used in YieldCurve( ) constructor but not exported; converted tenorNames
@@ -223,3 +221,33 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
                      method = "linear", rule = 2)
    return(tyfRate$y)  # pass back just the estimated value from (x,y) pair 
  }
+ 
+ # ***********************************************************
+ # getDiscountFactor(yc, Tfrom, Tto, riskSpread )
+ #    This yield curve method takes as input (1) yc a yieldCurve object, (2)
+ #    a date Tfrom  in yyyy-mm-dd format for which valuation is being done (3)
+ #    a date Tto in yyyy-mm-dd format at which a future cashflow occurs and 
+ #    a numeric pa riskSpread 0.02 = 2% pa capturing the risk category of the 
+ #    contract generating this future cash flow. The function return a numeric
+ #    discounting factor to be applied to the amount of the future Tto cashflow
+ #    Compounding with yc$compoundingFrequency should be added 
+ # ***********************************************************
+ getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
+    frwdRate <- getForwardRates(yc,Tfrom,Tto)
+    factor <- 1/( 1 + frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc)
+    return (factor)
+ }
+ # ***********************************************************
+ # getGrowthFactor(yc, Tfrom, Tto)
+ #    This yield curve method takes as input (1) yc a yieldCurve object, (2)
+ #    a date Tfrom  in yyyy-mm-dd format at which a past cashflow occurred (3)
+ #    a date Tto in yyyy-mm-dd format specifying the date at which received cash 
+ #    is to be valued. Compounding with yc$counpoundingFrequency to be added  
+ # ***********************************************************
+ getGrowthFactor <- function(yc,Tfrom,Tto) {
+   frwdRate <- getForwardRates(yc,Tfrom,Tto)
+   factor <- ( 1 + frwdRate )*yearFraction(Tfrom,Tto,yc$yfdcc)
+   return (factor)
+ }
+ 
+ 
