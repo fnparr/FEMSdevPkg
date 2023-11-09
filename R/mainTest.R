@@ -6,7 +6,7 @@ source("R/yearFraction.R")
 source("R/YieldCurve.R")
 ycID <- "yc001"
 rd <- "2023-10-31"
-tr <-  c(1.1, 2.0, 3.5 )
+tr <-  c(1.1, 2.0, 3.5 )/100
 names(tr) <- c("1M", "1Y", "5Y")
 dcc <- "30E360"
 cf <- "NONE"
@@ -30,3 +30,4 @@ discountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 discountF
 growthF <- getGrowthFactor(yc,Tfrom,Tto)
 growthF
+

@@ -23,7 +23,7 @@
 #' @field tenorRates numeric vector spot rates on refdate; rates are per annum 
 #'              i.e. 2% pa = 0.02    Each rated labelled with tenor 
 #'              rates$names = "1D" "1W" "1M" "3M" "6M" "1Y" "2Y" "5Y" 
-#' @field tenorYffs numeric vector of tenor names converted to year fractions  
+#' @field tenorYfs numeric vector of tenor names converted to year fractions  
 #' @field dayCountConvention character ACTUS string eg "30E360"
 #' @field yfdcc character  mapped dayCountConvention used in fmdates:year_frac
 #' @field compoundingFrequency character "NONE", "YEARLY", "CONTINUOUS"
@@ -72,7 +72,7 @@ setGeneric(name = "YieldCurve",
 #' @examples {
 #'    ycID <- "yc001"
 #'    rd <- "2023-10-31"
-#'    tr <-  c(1.1, 2.0, 3.5 )
+#'    tr <-  c(1.1, 2.0, 3.5 )/100
 #'    names(tr) <- c("1M", "1Y", "5Y")
 #'    dcc <- "30E360"
 #'    cf <- "NONE"
@@ -146,7 +146,7 @@ setGeneric(name = "getForwardRates",
 #' @examples {
 #'    ycID <- "yc001"
 #'    rd <- "2023-10-31"
-#'    tr <-  c(1.1, 2.0, 3.5 )
+#'    tr <-  c(1.1, 2.0, 3.5 )/100
 #'    names(tr) <- c("1M", "1Y", "5Y")
 #'    dcc <- "30E360"
 #'    cf <- "NONE"
@@ -234,7 +234,7 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  # ***********************************************************
  getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
     frwdRate <- getForwardRates(yc,Tfrom,Tto)
-    factor <- 1/( 1 + frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc)
+    factor <- 1/( 1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
     return (factor)
  }
  # ***********************************************************
@@ -246,7 +246,7 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  # ***********************************************************
  getGrowthFactor <- function(yc,Tfrom,Tto) {
    frwdRate <- getForwardRates(yc,Tfrom,Tto)
-   factor <- ( 1 + frwdRate )*yearFraction(Tfrom,Tto,yc$yfdcc)
+   factor <-  1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
    return (factor)
  }
  
