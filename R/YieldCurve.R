@@ -251,3 +251,5 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  }
  
  
+ 
+ 
