@@ -3,12 +3,12 @@
 # author(s): Francis Parr, Nils Andri Bundi 
 # This version 25 October 2022
 # **************************************************
-#' @import lubridate
 # **************************************
 #' \code{loan}
 #'
 #'     Function loan() creates and returns a PAM or an ANN
-#'
+#' 
+#' @import lubridate
 #' @param ctype   character eith ANN or PAM
 #' @param start   character string yyyy-mm-dd the start date of the mortgage.
 #' @param maturity   character string setting the lifetime of the mortgage.

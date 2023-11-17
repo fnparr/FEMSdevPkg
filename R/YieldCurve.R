@@ -113,7 +113,7 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
           })
 
 setGeneric(name = "getForwardRates",
-           def = function(yieldCurve, Tfrom, Tto )  
+           def = function(yc, Tfrom, Tto )  
              standardGeneric("getForwardRates") )
 
 # ************************************************************************
@@ -142,7 +142,8 @@ setGeneric(name = "getForwardRates",
 #' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
 #' @return Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
 #' @export
-#' @include yearFraction.R  year fractions with specified dayCountConvention
+#' @include yearFraction.R  
+#' year fractions with specified dayCountConvention
 #' @examples {
 #'    ycID <- "yc001"
 #'    rd <- "2023-10-31"
@@ -156,7 +157,7 @@ setGeneric(name = "getForwardRates",
 #'
 setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
                                                 "character"),
-              definition= function(yieldCurve, Tfrom, Tto) {
+              definition= function(yc, Tfrom, Tto) {
         # implementation V1 for single Tfrom, Tto value pair with Tfrom < Tto
         # yc$referenceDate < Tfrom
             
@@ -172,13 +173,19 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
         #     Formula from wbreymann/FEMS/DynamicYieldCurve.R lines 417-420
         
         if (yc$compoundingFrequency == "NONE") {
-          
-      frwdRate <- (((1 + rateTo*yfTo)/(1+ rateFrom*yfFrom)) - 1 )/(yfTo - yfFrom)
-      return(frwdRate)
-        }
-        else {  
-      stop(paste("ErrorIn::YieldCurve::getForwardRates: compoundingFrequency ", 
-                  yc$compoundingFrequency , " not supported !!!"))    }
+          frwdRate <- (((1 + rateTo*yfTo)/(1+ rateFrom*yfFrom)) - 1 )/(yfTo - yfFrom)
+          return(frwdRate)
+        } else if(yc$compoundingFrequency == "YEARLY") {
+          frwdRate <- ((1 + rateTo)^yfTo / (1 + rateFrom)^yfFrom)^
+            (1/(yfTo - yfFrom)) - 1
+          return(frwdRate)
+        } else if(yc$compoundingFrequency == "CONTINUOUS"){
+          frwdRate <- (rateTo*yfTo - rateFrom*yfFrom)/(yfTo - yfFrom)
+          return(frwdRate)
+        } else {  
+          stop(paste("ErrorIn::YieldCurve::getForwardRates: compoundingFrequency ", 
+                  yc$compoundingFrequency , " not supported !!!"))
+          }
               
           })
 
