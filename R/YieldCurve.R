@@ -41,11 +41,36 @@ setRefClass("YieldCurve",
 
 setGeneric(name = "YieldCurve",
            def = function(yieldCurveID, referenceDate, tenorRates,
-                          dayCountConvention, compoundingFrequency )  
-                  standardGeneric("YieldCurve") )
+                          dayCountConvention, compoundingFrequency){  
+                  standardGeneric("YieldCurve")})
 
 # ***********************************************************************
 #  YieldCurve() exported constructor for YieldCurve objects 
+
+# ***********************************************************
+# tenorNames2yfs(tnames)
+#    function to convert a vector of tenor names to a numeric vector of
+#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
+#    used in YieldCurve( ) constructor but not exported; converted tenorNames
+#    vector saved in yc$tenorYffs
+# ***********************************************************
+tenorNames2yfs <- function(tnames) {
+  # computing tenors as year fractions 
+  # get units as year fractions; pick up last char of tenorNames  and map to
+  # year fraction for unit; inner product with tenorName number strings, last
+  # char dropped, converted to numeric 
+  
+  pyfs <-  c(1/365, 7/365, 1/12, 1.0 )   # simple yf for D W M Y
+  names(pyfs) <- c("D","W","M","Y")
+  tenorYfs <- as.numeric(substr(tnames,1,nchar(tnames)-1))* pyfs[ 
+    substr(tnames,nchar(tnames),nchar(tnames))]
+  
+  # could be made more accurate by (1) different pyfs for 360,365 day years etc 
+  # or possibly  (2) convert to week and month multiples then use 
+  # yc$referenceDate and convert with date arithmetic followed by yearFraction( ) 
+  # - but do we want tenorRates to be so date senyitive?
+  return(tenorYfs)
+}
 # ************************************************************************
 #' YieldCurve(yieldCurveID, referenceDate, tenorRates, dayCountConvention,
 #'             compoundingFrequency )
@@ -113,8 +138,8 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
           })
 
 setGeneric(name = "getForwardRates",
-           def = function(yc, Tfrom, Tto )  
-             standardGeneric("getForwardRates") )
+           def = function(yc, Tfrom, Tto ){  
+             standardGeneric("getForwardRates")})
 
 # ************************************************************************
 # getForwardRates(<YieldCurve>, Tfrom, Tto) 
@@ -136,7 +161,7 @@ setGeneric(name = "getForwardRates",
 #'   
 #'   The initial implementation of getForwardrates() restricts Tfrom and Tto to
 #'   single date strings rather than vectors and compoundingFrequency == "NONE"  
-#'
+#' @export
 #' @param yc    class=YieldCurve S4 object with tenorRates, 
 #' @param Tfrom character  yyyy-mm-dd date for start of forward rate interval
 #' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
@@ -188,31 +213,6 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
           }
               
           })
-
-# ***********************************************************
-# tenorNames2yfs(tnames)
-#    function to convert a vector of tenor names to a numeric vector of
-#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
-#    used in YieldCurve( ) constructor but not exported; converted tenorNames
-#    vector saved in yc$tenorYffs
-# ***********************************************************
- tenorNames2yfs <- function(tnames) {
-   # computing tenors as year fractions 
-   # get units as year fractions; pick up last char of tenorNames  and map to
-   # year fraction for unit; inner product with tenorName number strings, last
-   # char dropped, converted to numeric 
-   
-   pyfs <-  c(1/365, 7/365, 1/12, 1.0 )   # simple yf for D W M Y
-   names(pyfs) <- c("D","W","M","Y")
-   tenorYfs <- as.numeric(substr(tnames,1,nchar(tnames)-1))* pyfs[ 
-     substr(tnames,nchar(tnames),nchar(tnames))]
-   
-   # could be made more accurate by (1) different pyfs for 360,365 day years etc 
-   # or possibly  (2) convert to week and month multiples then use 
-   # yc$referenceDate and convert with date arithmetic followed by yearFraction( ) 
-   # - but do we want tenorRates to be so date senyitive?
-   return(tenorYfs)
- }
 
 # **********************************************************
 # interpolateYieldCurve(yc, tyf)
