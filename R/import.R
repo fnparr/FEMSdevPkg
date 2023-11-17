@@ -1,8 +1,8 @@
 # import.R 
 # import.R - working development version of import.R
 # fnp Feb 2022, Sep 2023
-library(utils)
-library(timeSeries)
+#' @import utils
+#' @import timeSeries
 
 # ***************************************
 # xxxfile2dataframe(filename) xxx=contractFile OR riskFile

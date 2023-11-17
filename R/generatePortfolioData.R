@@ -5,7 +5,7 @@
 # static behavior of a toy bank 
 # Lubridate is part of the tidyverse and OK to use - but avoid until requirement
 # becomes clear ( fewer dependent packages is better ) FNP 
-library(lubridate)
+#' @import lubridate
 #' @importFrom stats runif
 #' @importFrom utils write.csv
 

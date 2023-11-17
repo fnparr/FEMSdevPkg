@@ -3,7 +3,7 @@
 # author(s): Francis Parr, Nils Andri Bundi 
 # This version 25 October 2022
 # **************************************************
-library(lubridate)
+#' @import lubridate
 # **************************************
 #' \code{loan}
 #'
