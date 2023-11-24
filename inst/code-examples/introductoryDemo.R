@@ -12,7 +12,7 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 
 # 2.0   Test single contracts of each contract type before portfolios 
-serverURL <- "https://demo.actusfrf.org:8080/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
 # 2.1  Create a single, (fixed rate) PAM bond with in line term specification,
 #      generate an EventSeries of cash flow events for that Contract and Plot 
 pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
