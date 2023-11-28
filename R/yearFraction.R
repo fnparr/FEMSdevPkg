@@ -40,7 +40,8 @@ setGeneric(name = "yearFraction",
 #'    yfdcc <- "30e/360"
 #'    frac <- yearFraction(Tfrom, Tto, yfdcc)
 #' }
-#'
+#' 
+#' @export
 setMethod(f = "yearFraction", signature = c("character", "character", "character"),
           definition = function(Tfrom, Tto, yfdcc){
             
