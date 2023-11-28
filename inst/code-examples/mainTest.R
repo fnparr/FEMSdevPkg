@@ -17,7 +17,7 @@ yc_e <- YieldCurve(ycID,rd,tr,dcc_e,cf)
 # should generate error message for invalid dcc
 # could also check for cf == "NONE" 
 Tfrom <- "2024-01-01"
-Tto <- "2024-07-01"
+Tto <- "2025-07-01"
 yfdcc <- "30e/360"
 frac <- yearFraction(Tfrom, Tto, yfdcc)
 frac

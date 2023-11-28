@@ -39,21 +39,6 @@ setRefClass("YieldCurve",
               compoundingFrequency = "character"
             ))
 
-setGeneric(name = "YieldCurve",
-           def = function(yieldCurveID, referenceDate, tenorRates,
-                          dayCountConvention, compoundingFrequency){  
-                  standardGeneric("YieldCurve")})
-
-# ***********************************************************************
-#  YieldCurve() exported constructor for YieldCurve objects 
-
-# ***********************************************************
-# tenorNames2yfs(tnames)
-#    function to convert a vector of tenor names to a numeric vector of
-#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
-#    used in YieldCurve( ) constructor but not exported; converted tenorNames
-#    vector saved in yc$tenorYffs
-# ***********************************************************
 tenorNames2yfs <- function(tnames) {
   # computing tenors as year fractions 
   # get units as year fractions; pick up last char of tenorNames  and map to
@@ -72,6 +57,22 @@ tenorNames2yfs <- function(tnames) {
   return(tenorYfs)
 }
 # ************************************************************************
+
+setGeneric(name = "YieldCurve",
+           def = function(yieldCurveID, referenceDate, tenorRates,
+                          dayCountConvention, compoundingFrequency){  
+                  standardGeneric("YieldCurve")})
+
+# ***********************************************************************
+#  YieldCurve() exported constructor for YieldCurve objects 
+
+# ***********************************************************
+# tenorNames2yfs(tnames)
+#    function to convert a vector of tenor names to a numeric vector of
+#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
+#    used in YieldCurve( ) constructor but not exported; converted tenorNames
+#    vector saved in yc$tenorYffs
+# ***********************************************************
 #' YieldCurve(yieldCurveID, referenceDate, tenorRates, dayCountConvention,
 #'             compoundingFrequency )
 #'
@@ -241,7 +242,20 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  # ***********************************************************
  getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
     frwdRate <- getForwardRates(yc,Tfrom,Tto)
-    factor <- 1/( 1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
+    if(yc$compoundingFrequency == "CONTINUOUS") {
+      factor <- exp(-(frwdRate + riskSpread)*yearFraction(Tfrom,Tto,yc$yfdcc))
+      return (factor)
+    } else if(yc$compoundingFrequency == "YEARLY") {
+      factor <- 1/(1 + (frwdRate + riskSpread ))^yearFraction(Tfrom,Tto,yc$yfdcc)
+      return (factor)
+    } else if(yc$compoundingFrequency == "NONE") {
+      factor <- 1/(1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
+      return (factor)
+    } else {  
+      stop(paste("ErrorIn::YieldCurve::getDiscountFactor: compoundingFrequency ", 
+                 yc$compoundingFrequency , " not supported !!!"))
+    }
+    # factor <- 1/( 1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
     return (factor)
  }
  # ***********************************************************
@@ -253,7 +267,20 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  # ***********************************************************
  getGrowthFactor <- function(yc,Tfrom,Tto) {
    frwdRate <- getForwardRates(yc,Tfrom,Tto)
-   factor <-  1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
+   if(yc$compoundingFrequency == "CONTINUOUS") {
+     factor <- exp(frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc))
+     return (factor)
+   } else if(yc$compoundingFrequency == "YEARLY") {
+     factor <- (1 + frwdRate)^yearFraction(Tfrom,Tto,yc$yfdcc)
+     return (factor)
+   } else if(yc$compoundingFrequency == "NONE") {
+     factor <- 1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
+     return (factor)
+   } else {  
+     stop(paste("ErrorIn::YieldCurve::getGrowthFactor: compoundingFrequency ", 
+                yc$compoundingFrequency , " not supported !!!"))
+   }
+   # factor <-  1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
    return (factor)
  }
  
