@@ -1,0 +1,89 @@
+---
+title: "yieldcurves"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{yieldcurves}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+author: "Henriette Elise Breymann, Gian-Andrin Tommasini"
+date: "`r Sys.Date()`"
+---
+# Setup
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning = FALSE}
+library(FEMSdevPkg)
+```
+The following vignette is based on the vignette "linking" in the pkgdown package.
+(Just an example on how we could include other vignettes in our vignettes.)
+```{r, echo = FALSE}  
+vignette("linking", package = "pkgdown")
+# opens the vignette "linking" in the pkgdown package in browser
+```
+
+# Yield curves
+Create a Yield curve object with the function `YieldCurve()`. The function takes the following arguments:
+This is the valid case.
+```{r}
+ycID <- "yc001"
+rd <- "2023-10-31"
+tr <-  c(1.1, 2.0, 3.5 )/100
+names(tr) <- c("1M", "1Y", "5Y")
+dcc <- "30E360"
+cf <- "NONE"
+yc <- YieldCurve(ycID,rd,tr,dcc,cf)
+# valid case
+```
+
+This is the invalid case.
+```{r, error = TRUE}
+dcc_e <- "30/360"
+yc_e <- YieldCurve(ycID,rd,tr,dcc_e,cf)
+# should generate error message for invalid dcc
+# could also check for cf == "NONE" 
+```
+
+Now lets get the Forward rates for a given time period.
+```{r}
+Tfrom <- "2024-01-01"
+Tto <- "2025-07-01"
+frwdRate <- getForwardRates(yc, Tfrom,Tto)
+frwdRate
+```
+The forward rate for the period from `r as.Date(Tfrom)` to `r as.Date(Tto)` is `r round(frwdRate, 4)`.
+Now we would also want to see the discount rate or the growth factor. However, these functions are not public yet.
+
+But we can see how the forward rate changes if we change the compounding frequency.
+First we create new YieldCurve objects with different compounding frequencies.
+```{r}
+ycID <- "yc002"
+rd <- "2023-10-31"
+tr <-  c(1.1, 2.0, 3.5 )/100
+names(tr) <- c("1M", "1Y", "5Y")
+dcc <- "30E360"
+cf <- "YEARLY"
+yc2 <- YieldCurve(ycID,rd,tr,dcc,cf)
+
+ycID <- "yc003"
+rd <- "2023-10-31"
+tr <-  c(1.1, 2.0, 3.5 )/100
+names(tr) <- c("1M", "1Y", "5Y")
+dcc <- "30E360"
+cf <- "CONTINUOUS"
+yc3 <- YieldCurve(ycID,rd,tr,dcc,cf)
+```
+Then we generate the forward rates for the same time period as before.
+```{r}
+frwdRate2 <- getForwardRates(yc2, Tfrom,Tto)
+frwdRate3 <- getForwardRates(yc3, Tfrom,Tto)
+
+frwdRate2
+frwdRate3
+
+```
+The forward rate for the period from `r as.Date(Tfrom)` to `r as.Date(Tto)` is `r round(frwdRate2, 4)` with yearly compounding and `r round(frwdRate3, 4)` with continuous compounding.
