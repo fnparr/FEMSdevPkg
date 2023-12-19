@@ -1,0 +1,97 @@
+---
+title: "portfolio"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{portfolio}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+author: "Henriette Elise Breymann, Gian-Andrin Tommasini"
+date: "`r Sys.Date()`"
+---
+# Setup
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup, warning = FALSE}
+library(FEMSdevPkg)
+```
+For the calculations, a server from [ACTUS Financial Research Foundation](www.actusfrf.com) hosted by ZHAW is used.
+Here we define the serverURL required for all calculations.
+```{r}
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+```
+Now we are all set to start creating contracts.
+
+# Single Contracts
+## Fixed Rate Contracts
+Let's start with a simple PAM (Principal at Maturity) contract.
+```{r}
+pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
+               coupon = 0.02, paymentFreq = "1 year", role = "long",
+               rateResetFreq = "Fixed rate")
+```
+
+We can have a look at the contract terms.
+```{r}
+unlist(pam1$contractTerms)
+```
+
+With the function `generateEventSeries()` we can generate all events of the contract.
+The functions takes the following arguments:
+- `contract`: The contract object
+- `riskFactors``: A list of risk factors (can also be empty)
+- `serverURL`: The URL of the server to be used for the calculations
+
+```{r}
+evs1 <- generateEventSeries(pam1, list(), serverURL)
+unlist(list(contractID = evs1$contractID,
+            contractType=evs1$contractType,
+            statusDate= evs1$statusDate,
+            riskFactors = evs1$riskFactors
+))
+evs1$events_df
+```
+
+The events can be plotted afterwards by calling the function `cashflowPlot()`.
+```{r}
+cashflowPlot(evs1)
+```
+
+## Variable Rate Contracts
+Contracts can also have variable interest rates. Herefore, we need to initialize some interest rate risk factors first.
+
+First of all, let's load the sample data from the package.
+Suggestion: We could make it available inside the package and load it from there.
+```{r}
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+```
+
+Now we can load the sample data.
+```{r}
+falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+rising_fp <-  paste0(mydatadir,"/UST5Y_risingRates.csv")
+rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
+                                    "YC_EA_AAA",100)
+rfx_rising <- sampleReferenceIndex(rising_fp,"UST5Y_risingRates",
+                                   "YC_EA_AAA",100)
+```
+
+After that we can create a contract with variable rates and generate the events and outputs as before.
+```{r}
+pam2 <- bondvr("2020-12-31", maturity = "5 years", nominal = 50000,
+               coupon = 0.02, paymentFreq = "3 months", role = "long",
+               rateResetFreq = "1 years", rateResetSpread = 0.01 )
+unlist(pam2$contractTerms)
+evs2 <- generateEventSeries(pam2, list(rfx_falling), serverURL)
+evs2$events_df
+```
+And also the cashflow plot.
+**Need to figure out a way to adjust the size of the plot, not good yet!!**
+```{r, width = 12, height = 8}
+cashflowPlot(evs2)
+```
