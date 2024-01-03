@@ -56,7 +56,7 @@ setMethod("CashflowAnalysis", c(),
           )
 
 # *********************************
-# Generic method to create/initialize CashflowAnalysis- needs export + document
+# Generic method to create/initialize CashflowAnalysis- needs export + documen
 setMethod("CashflowAnalysis", 
           c ( analysisID = "character",
                           analysisDescription = "character",
