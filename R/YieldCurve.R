@@ -43,6 +43,13 @@ setGeneric(name = "YieldCurve",
            def = function(yieldCurveID, referenceDate, tenorRates,
                           dayCountConvention, compoundingFrequency )  
                   standardGeneric("YieldCurve") )
+# TO DO We may need to export this function if users need null YieldCurve 
+#       objects to  initialize an CashflowAnalysis before having a meaningful
+#       yield curve object around 
+setMethod(f = "YieldCurve", signature = c(), 
+          definition = function() {
+            return(new("YieldCurve"))
+          })
 
 # ***********************************************************************
 #  YieldCurve() exported constructor for YieldCurve objects 
@@ -101,7 +108,7 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
                          sep=" "))
             }
             
-            yc <- new("YieldCurve")
+            yc <- YieldCurve() 
             yc$yieldCurveID <- yieldCurveID
             yc$referenceDate <- referenceDate
             yc$tenorRates <- tenorRates

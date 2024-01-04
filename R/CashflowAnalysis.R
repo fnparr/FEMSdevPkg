@@ -56,21 +56,20 @@ setMethod("CashflowAnalysis", c(),
           )
 
 # *********************************
-# Generic method to create/initialize CashflowAnalysis- needs export + documen
+# Generic method to create/initialize CashflowAnalysis- needs export + document
 setMethod("CashflowAnalysis", 
           c ( analysisID = "character",
-                          analysisDescription = "character",
-                          enterpriseID = "character",
-                          yieldCurve = "YieldCurve",
-                          portfolio = "Portfolio",
-                          currency = "character",
-                          scenario = "list",
-                          actusServerURL = "character",
-                          timeline = "Timeline"
-                          ), 
-           function (analysisID, analysisDescription, enterpriseID,
-                                 yieldCurve, portfolio, currency, scenario, 
-                                 actusServerURL, timeline) {
+              analysisDescription = "character",
+              enterpriseID = "character",
+              yieldCurve = "YieldCurve",
+              portfolio = "Portfolio",
+              currency = "character",
+              scenario = "list",
+              actusServerURL = "character",
+              timeline = "Timeline"
+              ), 
+           function (analysisID, analysisDescription, enterpriseID, yieldCurve, 
+                     portfolio, currency, scenario, actusServerURL, timeline) {
             cfla <- CashflowAnalysis()
             cfla$analysisID <-          analysisID
             cfla$analysisDescription <- analysisDescription

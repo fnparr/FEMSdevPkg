@@ -1,3 +1,25 @@
+# ******** Test of CashflowAnalysis creation 
+# will need to clear the environment 
+rm(list=ls())
+#  need to source files we refer to - testing Cashflow.R functions
+source("R/Portfolio.R")
+source("R/YieldCurve.R")
+source("R/Timeline.R")
+source("R/CashflowAnalysis.R")
+# Test 1.0 create CashflowAnalysis - essential fields only - others class
+cfla <- CashflowAnalysis( analysisID = "cfla001",
+                          analysisDescription = "this_analysis_descr",
+                          enterpriseID = "entp001",
+                          yieldCurve = YieldCurve(),
+                          portfolio =  Portfolio(),
+                          currency = "USD",
+                          scenario = list(),
+                          actusServerURL = "https://demo.actusfrf.org:8080/",
+                          timeline = Timeline())
+cfla$analysisID 
+
+
+
 # ******** YieldCurve tests 
 # will need to clear the environment 
 rm(list=ls())
