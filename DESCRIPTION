@@ -62,7 +62,6 @@ Collate:
     'CashflowAnalysis.R'
     'demoSteps.R'
     'generatePortfolioData.R'
-    'genmtdtest.R'
     'runShinyDemo.R'
     'util.R'
 RoxygenNote: 7.2.3
