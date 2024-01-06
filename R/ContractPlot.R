@@ -1,7 +1,7 @@
-#*************************************************************
+# ************************************************************
 # Copyright (c) 2015 by ZHAW.
 # Please see accompanying distribution file for license.
-#*************************************************************
+# ***********************************************************
 
 # define the generic cashflowPlot(evs) function 
 # not appropriate to export this - no value for users to redefine plot 
