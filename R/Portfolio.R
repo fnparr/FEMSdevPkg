@@ -60,18 +60,18 @@ setMethod(f = "Portfolio", signature = "ContractType",
           return(ptf)
           })
 
-# #' generateEvents < >     Generic method definition
-# #' 
-# #' Defines a generic method on S4 Class Portfolio. Instances will call out
-# #' to an ACTUS server at location serverURL to generate cashflow events for 
-# #' contracts in the portfolio using the risk scenario in the portfolio. 
-# #' Instances of this generic are: 
-# #'  signature ( "Portfolio", serverURL, riskFactors, ... )
-# #'
-# #' @param ptf   S4 reference Class=Portfolio
-# #' @param serverURL  character string, the URL of ACTUS server to call out to. 
-# #' @param riskfactors list of S4 Class=ReferenceIndex
-# #' @return          List of generated cashflow results - one entry per contract
+#' generateEvents < >     Generic method definition
+#' 
+#' Defines a generic method on S4 Class Portfolio. Instances will call out
+#' to an ACTUS server at location serverURL to generate cashflow events for 
+#' contracts in the portfolio using the risk scenario in the portfolio. 
+#' Instances of this generic are: 
+#'  signature ( "Portfolio", serverURL, riskFactors, ... )
+#'
+#' @param ptf   S4 reference Class=Portfolio
+#' @param serverURL  character string, the URL of ACTUS server to call out to. 
+#' @param riskfactors list of S4 Class=ReferenceIndex
+#' @return          List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
            def = function(ptf,serverURL,riskFactors,cfla){
              standardGeneric("generateEvents")
