@@ -13,6 +13,7 @@
 #    setScenario(<cflana>, <scenario>)
 #    simulateContracts(cflana>) 
 #    setYieldCurve(<cflana>, <yieldCurve>) )
+#    cashflowEventsByPeriod(cfla)
 #    doAnalysis(<cflana>)
 #.   getAnalysisReports(<cflana>)
 # *********************************************************************
@@ -85,7 +86,7 @@ setMethod("CashflowAnalysis", c(),
 #'   report point using aggregated bucket flows for the contract and a 
 #'   correction for residual cashflow project to occur beyond the bucket horizon
 #'   - applying discounting and growth factors derived from the supplied Yield 
-#'   Curve Data (7) Computing some key rations for the Enterprise based on these 
+#'   Curve Data (7) Computing some key ratios for the Enterprise based on these 
 #'   results    
 #'
 #' @param analysisID  character: a unique ID for this Cashflow Analysis
