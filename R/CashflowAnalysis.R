@@ -31,6 +31,7 @@ setRefClass("CashflowAnalysis",
               actusServerURL = "character",
               timeline = "Timeline",
               cashflowEventsLoL = "list",
+              cashflowEventsByPeriod = "data.frame",
               incomeLiquidityReports = "data.frame",
               analysisReports = "data.frame"
             ))
@@ -99,7 +100,7 @@ setMethod("CashflowAnalysis", c(),
 #' @param actusServerURL character - url of an ACTUS server simulating contracts
 #' @param timeline S$ Timeline object: future times for which reports generated   
 #' 
-#' @return  a CashflowAnalysis S4 object: initialized/ready for simulation step
+#' @return    CashflowAnalysis S4 object: initialized/ready for simulation step
 #' @export
 #' @import    jsonlite
 #' @import    httr
@@ -120,6 +121,7 @@ setMethod("CashflowAnalysis", c(),
 #'                              scenario = list(rfx),
 #'                              actusServerURL = serverURL,
 #'                              timeline = Timeline())
+#'  }
 #'
 setMethod("CashflowAnalysis", 
           c ( analysisID = "character",

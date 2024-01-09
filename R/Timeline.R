@@ -78,8 +78,17 @@ setMethod(f = "Timeline", signature = c(),
 #'   have periodIndex=999. Valuations will be generated for the 
 #'   timeline statusDate 2024-01-01 and for the four subsequent report times.  
 #'
-#' @param analysisID  character: a unique ID for this Cashflow Analysis
-#' @param analysisDescription character: a short text describing this analysis
+#' @param statusDate character yyyy-mm-01 date=statusdate of portfolio contracts
+#' @param monthsPerPeriod integer length in months of period between reports
+#' @param reportCount integer number of reports(income, liquidity) to produce
+#' @param periodCount integer number of periods including valuation periods
+#' 
+#' @return Timeline S4 object - initialized, ready to use inCashflowAnalysis()
+#' @export
+#' @import lubridate
+#' @examples {
+#' tl<-Timeline("2024-01-01", 3, 4, 8)
+#' }
 setMethod(f = "Timeline", 
           signature = c("character","numeric", "numeric", "numeric"),
           definition = function(statusDate, monthsPerPeriod, reportCount, 

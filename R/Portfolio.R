@@ -35,7 +35,7 @@ setRefClass("Portfolio",
 #' @param  contract   S4 reference Class=ContractType, a contract to include. 
 #' @param  ...        Not used
 setGeneric(name = "Portfolio",
-           def = function(contract, ...){
+           def = function(contract, contractList){
              standardGeneric("Portfolio")
            })
 #' Portfolio ( )  - no parameters instance of Portfolio< > 
@@ -53,11 +53,23 @@ setMethod(f = "Portfolio", signature = c(),
 #' contract as its contents
 #' @param contract  S4 reference class=ContractType
 #' @return   S4 reference class=Portfolio, initialized attributes
-setMethod(f = "Portfolio", signature = "ContractType",
+setMethod(f = "Portfolio", 
+          signature = c(contract="ContractType", contractList="missing"),
           definition = function (contract) {
           ptf <- Portfolio()
-          ptf$contracts = list(contract)
+          ptf$contracts <- list(contract)
           return(ptf)
+          })
+# this  method is really superior - because if we have a single contract it is 
+# always easy to insert it into a list and pass that. Up until now there has 
+# been no constructor for portfolio taking a contractList. We should deprecate 
+# the single contract constructor - if this new method works (FNP Jan 2024) 
+setMethod(f = "Portfolio", 
+          signature = c(contract="missing", contractList = "list"),
+          definition = function(contractList) {
+            ptf <- Portfolio()
+            ptf$contracts <- contractList
+            return(ptf)
           })
 
 #' generateEvents < >     Generic method definition
