@@ -65,7 +65,7 @@ setMethod("CashflowAnalysis", c(),
 #'
 #'   This method is used to start a cashflow analysis of contract holdings of 
 #'   an enterprise. The user supplies information specifying the analysis to 
-#'   br performed. The method is a constructor returning an initialized
+#'   be performed. The method is a constructor returning an initialized
 #'   S4 CashflowAnalysis object which is then used to step through the analysis
 #'   process saving results at each step. The completed analysis will provide 
 #'   projected liquidity change, income and valuation for each held contract 
@@ -208,4 +208,79 @@ setMethod (f = "generateEvents",
              return(logmsg) 
            }
 )
-             
+
+# ************************************************************************
+# events2dfByPeriod(<CashflowAnalysis> )
+# ************************************************************************
+# ****** generic method first - a CashflowAnalysis is the only parameter 
+
+setGeneric("events2dfByPeriod",
+           function(cfla) 
+             { standardGeneric("events2dfByPeriod") }
+)
+# ***** method instance   signature = (<cashflowAnalysis>)   
+#' events2dfByPeriod(<cashflowAnalysis>)
+#'
+#'   This method reorganizes a list(by contract) of lists of cashflow events
+#'   into a data frame with columns for: contractID, period, and for each 
+#'   ACTUS cashflow event field. The input cashflowAnalysis object myst be in 
+#'   the following state: (1) portfolio, and timeline fields must be initialized
+#'   (2) statusDate of the timeline must be the same as statusdate of all 
+#'   contracts in the portfolio (3) generateEvents(cfla) must have been run to 
+#'   populate cfla$cashflowEventsLoL, and (4) the status of each contract 
+#'   simulation must be "Success" . You can check this using: 
+#'  > unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)})) 
+#'  
+#'   If these conditions are met, events2dfByPeriod() will reorganize the data
+#'   in cfla$cashflowEventsLoL as a dataframe with columns: 
+#'      TBD
+#'   and save that as cfla$cashflowEventsByPeriod for use in subsequent analysis
+#'   steps on the cashflowAnalysis object. 
+#'   
+#'   A text message is returned reporting on any issues in this processing step.
+#'   
+#'   Processing steps: (0) check valid cfla$cashflowEventsLoL, (1) merge 
+#'   eventsLOL into eventsDF, (2) add periodIndex column,  (3) sort by 
+#'   (contractID, periodIndex), (4) save as cfla$cashFlowEventsByPeriod. 
+#'   
+#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @return      Log summarizing which contracts were successfully simulated 
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    ptf   <-  samplePortfolio(cdfn)
+#'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
+#'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'                              analysisDescription = "this_analysis_descr",
+#'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
+#'                              portfolio =  ptf2015, currency = "USD", 
+#'                              scenario = list(rfx), 
+#'                              actusServerURL = serverURL, 
+#'                              timeline = Timeline())
+#'    logMsgs1  <- generateEvents(cfla = cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#' } 
+setMethod (f = "events2dfByPeriod", 
+signature = c(cfla = "CashflowAnalysis") ,
+definition = function(cfla){ 
+    if (! is.null(cfla$cashflowEventsLoL) && 
+         all(unlist(lapply(cfla$cashflowEventsLoL,
+                           function(x){return(x$status)})) == "Success" ) )
+    { msg <- "OK" 
+      df1 <- mergecfls(cfla$cashflowEventsLoL)
+      df1["periodIndex"] <- sapply( df1$time, 
+         function(x){return(date2PeriodIndex(cfla$timeline, substr(x,1,10)))})
+      df2 <- df1[c("contractId","periodIndex","time","type", "payoff",
+                   "currency", "nominalValue","nominalRate","nominalAccrued")]
+      cfla$cashflowEventsByPeriod <- df2
+    }
+    else
+    {  msg <- "Cannot rearrange by Period - check state of cashflowEventsLoL"}
+    return(msg)
+})
