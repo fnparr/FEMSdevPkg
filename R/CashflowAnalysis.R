@@ -32,16 +32,15 @@ setRefClass("CashflowAnalysis",
               timeline = "Timeline",
               cashflowEventsLoL = "list",
               cashflowEventsByPeriod = "data.frame",
-              incomeLiquidityReports = "data.frame",
-              analysisReports = "data.frame"
+              contractLiquidityVectors = "list",
+              incomeReports = "list",
+              allReports = "data.frame"
             ))
 # **************************************
-# constructors CashflowAnalysis(...) for a cash flow analysis object
+# constructora CashflowAnalysis(...) for a cash flow analysis object
 # *************************************
-# CashflowAnalysis < >  -  generic function definition 
-#
 #  **** Generic CashflowAnalysis(<>) ********
-# Defines generic S4 constructor method on class CashflowAnalysis
+# Defines generic S4 constructor method for class CashflowAnalysis
 setGeneric("CashflowAnalysis",
             function(analysisID, analysisDescription, enterpriseID,
                           yieldCurve, portfolio, currency, scenario, 
@@ -102,8 +101,6 @@ setMethod("CashflowAnalysis", c(),
 #' 
 #' @return    CashflowAnalysis S4 object: initialized/ready for simulation step
 #' @export
-#' @import    jsonlite
-#' @import    httr
 #' @examples {
 #'    mydatadir <- "~/mydata"
 #'    installSampleData(mydatadir)
@@ -256,19 +253,20 @@ setGeneric("events2dfByPeriod",
 #'    serverURL <- "https://demo.actusfrf.org:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    tl1 <- Timeline("2015-01-01",3,4,8)
 #'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
-#'                              timeline = Timeline())
+#'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(cfla = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #' } 
 setMethod (f = "events2dfByPeriod", 
-signature = c(cfla = "CashflowAnalysis") ,
-definition = function(cfla){ 
+           signature = c(cfla = "CashflowAnalysis") ,
+           definition = function(cfla){ 
     if (! is.null(cfla$cashflowEventsLoL) && 
          all(unlist(lapply(cfla$cashflowEventsLoL,
                            function(x){return(x$status)})) == "Success" ) )
@@ -284,3 +282,54 @@ definition = function(cfla){
     {  msg <- "Cannot rearrange by Period - check state of cashflowEventsLoL"}
     return(msg)
 })
+# **************************************
+# liquidityByPeriod2vec(cfla) get liquidity change by period for each contract
+# *************************************
+#  **** Generic liquidityByPeriod2vec(... ) 
+setGeneric("liquidityByPeriod2vec",
+           function(cfla) 
+           { standardGeneric("liquidityByPeriod2vec") }
+)
+#  *******************************
+#  method instance **liquidityByPeriod2vec(<cfla>)** CashflowAnalysis parameter
+#' liquidityByPeriod2df(<cashflowAnalysis>)
+#'
+#'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
+#'   change from each contract for each regular period - period 999 is extracted
+#'   separately for residual (far future) valuations. It saves a list of 
+#'   liquidity change vectors, one for each contract. The liquidity change
+#'   vectors record a net liquidity change for each period in the timeline
+#'   for that contract. All eventtype payoffs contribute to 
+#'   liquidity change for the period in which they occur. This liquiditByPeriod
+#'   dataframe is used for: (1) liquidityReports - will be a reformatted subset
+#'   using values for periodIndex in the range 1:reportCount, and (2) liquidity
+#'   change for all periods is will be used in the aggregated period step of 
+#'   contract valuation. 
+#'  
+#'   Processing steps in the method: (1) subset cashflowByPerioddf to remove"
+#'   beyond the periodHorizon events; (2) Aggregate payoffs for each contract x
+#'   period combination;  (3) use split on the contract id to convert the 
+#'   aggregated df to a list where each element has its cid value (repeated),
+#'   a vector of period indices and a vector of period net liquidity change 
+#'   values. Use lapply() on this list to produce a list of 
+#'   <contractId, liquidity> vector pairs. 
+
+setMethod(f = "liquidityByPeriod2vec",
+          signature = c(cfla = "CashflowAnalysis"),
+          definition = function(cfla) {
+    # subset cashflowEventsByPeriod periodIndex in 1:cfla$timeline$reportCount 
+    df1 <- subset(cfla$cashflowEventsByPeriod, 
+                  periodIndex %in% 1:cfla$timeline$reportCount)
+    df2 <- aggregate(df1$payoff, 
+                     by=c(cid= list(df1$contractId), 
+                          period= list(df1$periodIndex)), FUN=sum)
+    df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y))
+    cfla$contractLiquidityVectors <- lapply( df2rows, function(z){
+        lvec <- z$x     # df aggregate requires that result has name x
+        names(lvec) <- z$period
+        return(list(cid=z$cid[[1]],lvec= lvec))
+        }      
+    )
+    return(msg <-"OK")
+ })
+    
