@@ -33,11 +33,12 @@ setRefClass("CashflowAnalysis",
               cashflowEventsLoL = "list",
               cashflowEventsByPeriod = "data.frame",
               contractLiquidityVectors = "list",
+              liquidityReports = "list",
               incomeReports = "list",
               allReports = "data.frame"
             ))
 # **************************************
-# constructora CashflowAnalysis(...) for a cash flow analysis object
+# constructor CashflowAnalysis(...) for a cash flow analysis object
 # *************************************
 #  **** Generic CashflowAnalysis(<>) ********
 # Defines generic S4 constructor method for class CashflowAnalysis
@@ -290,9 +291,9 @@ setGeneric("liquidityByPeriod2vec",
            function(cfla) 
            { standardGeneric("liquidityByPeriod2vec") }
 )
-#  *******************************
-#  method instance **liquidityByPeriod2vec(<cfla>)** CashflowAnalysis parameter
-#' liquidityByPeriod2df(<cashflowAnalysis>)
+#'  *******************************
+#'   liquidityByPeriod2df(cfla= <cashflowAnalysis>). -method instance
+#' *******************************
 #'
 #'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
 #'   change from each contract for each regular period - period 999 is extracted
@@ -315,7 +316,7 @@ setGeneric("liquidityByPeriod2vec",
 #'   <contractId, liquidity> vector pairs. 
 #'   
 #' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
-#' @return      Log summarizing which contracts were successfully simulated 
+#' @return      Log summarizing whether processins was successful 
 #' @export
 #' @examples {
 #'    mydatadir <- "~/mydata"
@@ -357,4 +358,84 @@ setMethod(f = "liquidityByPeriod2vec",
     )
     return(msg <-"OK")
  })
-    
+
+# **************************************
+# Method:  lv2LiquidityReports(...) 
+# *************************************
+#  **** Generic lv2LiquidityReports(<>) ********
+# Defines generic method to map liquidity vectors list to liquidityReports
+setGeneric("lv2LiquidityReports",
+           function(cfla) 
+             { standardGeneric("lv2LiquidityReports") }
+)
+
+#'  *******************************
+#'   lv2LiquidityReports(cfla= CashflowAnalysis) -method instance
+#' *******************************
+#'
+#'   This method generates a liquidityReport (vector) for each contract using 
+#'   the data in cfla$contractLiquidityVectors and saves this as a list keyed by 
+#'   contractID in cfla$liquidityReports. The method is exported
+#'   
+#'   Differences between liquidityReports and contractLiquidityVectors are:
+#'   (1) a contractLiquidityVector can have up to cfla$timeline$periodCount 
+#'   elements, (2) but it actually only has entries for periods in which at least
+#'   one liquidity changing event happens ( so it can also have fewer than 
+#'   cfla$timeline$reportCount entries (3) a liquidityReport vector must have 
+#'   exactly reportCount elements (4) contractLiquidityVectors record the 
+#'   change in liquidity for each period in which the related contract sees
+#'   liquidity changing events (5) It is more convenient for liquidity
+#'   reporting to state the cumulative change in enterprise liquidity caused by
+#'   each contract at each report date. That way, by aggregating the 
+#'   liquidIty reports for all contracts, We can immediately see if the 
+#'   enterprise is solvent at each report date. 
+#'   
+#'   The method returns a message indicating whether processing was successful.   
+#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @return      Log summarizing whether processing was successful 
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    ptf   <-  samplePortfolio(cdfn)
+#'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
+#'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    tl1 <- Timeline("2015-01-01",3,4,8)
+#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'                              analysisDescription = "this_analysis_descr",
+#'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
+#'                              portfolio =  ptf2015, currency = "USD", 
+#'                              scenario = list(rfx), 
+#'                              actusServerURL = serverURL, 
+#'                              timeline = tl1)
+#'    logMsgs1  <- generateEvents(cfla = cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
+#'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
+#' }      
+setMethod(f = "lv2LiquidityReports",
+          signature = c(cfla = "CashflowAnalysis"),
+          definition = function(cfla) {
+            rseq <- seq(1,cfla$timeline$reportCount)
+            clvs <- cfla$contractLiquidityVectors
+            cfla$liquidityReports  <- lapply (names(clvs), function(y){
+              lv <-clvs[[y]]$lvec
+              vv <- c()
+              rep0 <- cumsum(unlist(sapply(rseq, function(x) {
+                # not the xth element of lv but the element with name=period_x
+                if ( x %in% names(lv)) vv[[x]] <- lv[[as.character(x)]]
+                else  vv[[x]] <- 0
+                return(vv)
+              }) ) )
+              names(rep0) <- rseq
+              # for a list of <cid, lvec> pairs, must create a list of lists
+              # use lapply() to get a list out; ok to iterate thru a base vector  
+              return(list(cid= clvs[[y]]$cid, lvec=rep0))
+              })
+    msg <- "lv2LiquidityReport processing OK" 
+    return(msg)
+})
