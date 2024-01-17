@@ -19,6 +19,9 @@
 # *********************************************************************
 # class CashflowAnalysis
 # *************************************
+#' @include YieldCurve.R
+#' @include Portfolio.R
+#' @include Timeline.R
 setRefClass("CashflowAnalysis",
             fields = list(
               analysisID = "character",
