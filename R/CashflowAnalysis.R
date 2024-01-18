@@ -348,7 +348,7 @@ setMethod(f = "liquidityByPeriod2vec",
           definition = function(cfla) {
     # subset cashflowEventsByPeriod periodIndex in 1:cfla$timeline$reportCount 
     df1 <- subset(cfla$cashflowEventsByPeriod, 
-                  periodIndex %in% 1:cfla$timeline$reportCount)
+                  periodIndex %in% 1:cfla$timeline$periodCount)
     df2 <- aggregate(df1$payoff, 
                      by=c(cid= list(df1$contractId), 
                           period= list(df1$periodIndex)), FUN=sum)
