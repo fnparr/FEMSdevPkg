@@ -3,7 +3,7 @@
 \name{liquidityByPeriod2vec,CashflowAnalysis-method}
 \alias{liquidityByPeriod2vec,CashflowAnalysis-method}
 \title{*******************************
-  liquidityByPeriod2df(cfla= <cashflowAnalysis>). -method instance
+  liquidityByPeriod2vec(cfla= <cashflowAnalysis>). -method instance
 *******************************}
 \usage{
 \S4method{liquidityByPeriod2vec}{CashflowAnalysis}(cfla)

@@ -295,7 +295,7 @@ setGeneric("liquidityByPeriod2vec",
            { standardGeneric("liquidityByPeriod2vec") }
 )
 #'  *******************************
-#'   liquidityByPeriod2df(cfla= <cashflowAnalysis>). -method instance
+#'   liquidityByPeriod2vec(cfla= <cashflowAnalysis>). -method instance
 #' *******************************
 #'
 #'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
@@ -442,3 +442,123 @@ setMethod(f = "lv2LiquidityReports",
     msg <- "lv2LiquidityReport processing OK" 
     return(msg)
 })
+
+# **************************************
+# Method:  eventsdf2incomeReports(...) 
+# *************************************
+#  **** Generic eventsdf2incomeReports(<>) ********
+# This method defines a generic method for incomeReports from eventsByPeriod df 
+setGeneric("eventsdf2incomeReports",
+           function(cfla) 
+           { standardGeneric("eventsdf2incomeReports") }
+)
+#'  *******************************
+#'   eventsdf2incomeReports(cfla= CashflowAnalysis) -method instance
+#' *******************************
+#'
+#'   This method generates an incomeReport (vector) for each contract using the
+#'   data in cfla$cashflowEventsByPeriod (dataframe), and saves this as a list 
+#'   keyed by contractID in cfla$incomeReports. The method is exported.
+#'   
+#'   The processing steps are: (1) subset the cashflowEvents data frame to 
+#'   select events in the reportPeriods and with eventType in ("IP", "FP"). 
+#'   (2) aggregate the event payoff amounts for each contractId x reportPeriod,  
+#'   and (3) convert the resulting dataframe into a list of incomeReport vectors 
+#'   indexed by contractID (4) for contracts in the portfolio with no income 
+#'   create null income reports - every contract should have a report  
+#'   
+#'   Note that the incomeReports from this are "analytic" income; not values 
+#'   that would be acceptable to an accountant. Also with current ACTUS event
+#'   types, we do not record any income for zero coupon PAMS with a premium 
+#'   discount at IED ( no event type available representing income separable from
+#'   the principal flow events) 
+#'   
+#'   Method eventsdf2IncomeReport( ) generates income reports from the 
+#'   cashflowsByPeriod df in a single method, while the corresponding liquidity
+#'   reports do this with the sequence of method calls: liquidityByPeriod2vec( ) 
+#'   AND lv2LiquidityReports(cfla). The reason is that the intermediate result,
+#'   for liquidity- the list by contractId of vectors with aggregated liquidity 
+#'   change for each period, needs to be save dand made available for contract
+#'   valuations. There is no corresponding need for aggregated income by period
+#'   for each contract to be saved. Also for liquidity cumulative reports are 
+#'   the most useful, but income reports state income in the preceding period.  
+#'   
+#'   The method returns a message indicating whether processing was successful.
+#'      
+#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @return      Log summarizing whether processing was successful 
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    ptf   <-  samplePortfolio(cdfn)
+#'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
+#'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    tl1 <- Timeline("2015-01-01",3,4,8)
+#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'                              analysisDescription = "this_analysis_descr",
+#'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
+#'                              portfolio =  ptf2015, currency = "USD", 
+#'                              scenario = list(rfx), 
+#'                              actusServerURL = serverURL, 
+#'                              timeline = tl1)
+#'    logMsgs1  <- generateEvents(cfla = cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs5  <- eventsdf2incomeReports(cfla= cflas2015)
+#' } 
+#'      
+setMethod(f = "eventsdf2incomeReports",
+          signature = c(cfla = "CashflowAnalysis"),
+          definition = function(cfla) {
+            # step1 - subset
+            df1 <- subset(cfla$cashflowEventsByPeriod,  
+                              periodIndex %in% 1:cfla$timeline$reportCount  
+                            & type %in%  c("IP", "FP")
+                         )
+            # step2 agegate 
+            df2 <- aggregate(df1$payoff, 
+                             by=c(cid= list(df1$contractId), 
+                                  period= list(df1$periodIndex)), FUN=sum 
+                             )
+            # step3 - convert to income vectors list
+            df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y))
+            civs <- lapply( df2rows, function(z){
+              ivec <- z$x     # df aggregate requires that result has name x
+              names(ivec) <- z$period
+              return(list(cid=z$cid[[1]],ivec= ivec))
+            }) 
+            rseq <- seq(1,cfla$timeline$reportCount)
+            irs  <- lapply (names(civs), function(y){
+              iv <-civs[[y]]$ivec
+              vv <- c()
+              rep0 <- unlist(sapply(rseq, function(x) {
+                # not the xth element of lv but the element with name=period_x
+                if ( x %in% names(iv)) vv[[x]] <- iv[[as.character(x)]]
+                else  vv[[x]] <- 0
+                return(vv)
+              }) ) 
+              names(rep0) <- rseq
+              return(list(cid= civs[[y]]$cid, ivec=rep0))
+            })
+            # step4  - add in  0,0,0 ...0 reports for contracts with no income
+            piks <- sapply(irs, function(x) return(x$cid))
+            noir <- rep(0,cfla$timeline$reportCount)
+            names(noir) <- rseq
+            cfla$incomeReports <- lapply( 
+              sapply(cfla2015$portfolio$contracts,
+                     function(x) return (x$contractTerms$contractID)
+              ),
+              function(y){ 
+                if (y %in% piks) 
+                      return(list(cid= y, ivec= irs[[match(y,piks)]]$ivec ))
+                else 
+                      return (list(cid= y, ivec= noir))
+              })
+            msg <- "incomeReport processing OK" 
+            return(msg)
+         })
+            
