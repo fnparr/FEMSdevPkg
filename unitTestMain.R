@@ -1,4 +1,4 @@
-# ******** Unit Tests of CashflowAnalysis class 
+# ******** Unit Tests of ContractAnalysis class 
 # README. fnp Jan 2024
 #  Fetch the package  > devtools::github_install("fnparr/FEMSdevPkg@dev")
 #  In the Rstudio "Build" tab : "Build" -> "more" -> "load All"
@@ -14,8 +14,8 @@ date2PeriodIndex(tl, "2025-02-01")
 date2PeriodIndex(tl, "2025-04-01")
 date2PeriodIndex(tl,"2027-12-31")
 
-# Test 1.0 create CashflowAnalysis - essential fields only - others class()
-cfla <- CashflowAnalysis( analysisID = "cfla001",
+# Test 1.0 create ContractAnalysis - essential fields only - others class()
+cfla <- ContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -26,7 +26,7 @@ cfla <- CashflowAnalysis( analysisID = "cfla001",
                           timeline = Timeline())
 cfla$analysisID
 
-# Test 1.1 will add a meaningful portfolio into the CashflowAnalysis object
+# Test 1.1 will add a meaningful portfolio into the ContractAnalysis object
 #  cfla is a cashflow_Analysis with 19 Bond contracts 
 #  clfa is a cashflow_Analysis with a single  riskfactor list can be empty! 
 
@@ -36,7 +36,7 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf <- samplePortfolio(cdfn)
-cfla <- CashflowAnalysis( analysisID = "cfla001",
+cfla <- ContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -53,7 +53,7 @@ class(cntr1)
 unlist(cntr1$contractTerms)
 ptf1 <- Portfolio(cntr1)
 length(ptf1$contracts)
-cfla1 <- CashflowAnalysis( analysisID = "cfla001",
+cfla1 <- ContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -64,7 +64,7 @@ cfla1 <- CashflowAnalysis( analysisID = "cfla001",
                           timeline = Timeline())
 
 # Test 2.0 we have to modify the definition of generic generateEvents() to 
-#        add a cashflowAnalysis (cfla) parameter - so provide retesting 
+#        add a ContractAnalysis (cfla) parameter - so provide retesting 
 #        contract and portfolio simulations from exportTestMain.R 
 #.      This Test 2.0 simulates a PAM contract, no risk factors, shows IED event
 rm(list=ls())
@@ -91,14 +91,14 @@ rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 cfls  <- generateEvents(ptf,serverURL,list(rfx))
 unlist(lapply(cfls,function(x){return(x$status)}))
 
-#Test 3.0 generateEvents(<cashflowAnalysis>)  single PAM no rfs case first 
+#Test 3.0 generateEvents(<ContractAnalysis>)  single PAM no rfs case first 
 rm(list=ls())
 serverURL <- "https://demo.actusfrf.org:8080/"
 pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
                coupon = 0.02, paymentFreq = "1 year", role = "long",
                rateResetFreq = "Fixed rate")
 ptf1 <- Portfolio(pam1)
-cfla1 <- CashflowAnalysis( analysisID = "cfla001",
+cfla1 <- ContractAnalysis( analysisID = "cfla001",
                            analysisDescription = "this_analysis_descr",
                            enterpriseID = "entp001",
                            yieldCurve = YieldCurve(),
@@ -110,7 +110,7 @@ cfla1 <- CashflowAnalysis( analysisID = "cfla001",
 msg <- generateEvents(cfla= cfla1)
 cfla1$cashflowEventsLoL[[1]]$status
 
-#Test 3.1 generateEvents(<cashflowAnalysis>)  sample PAM portfolio
+#Test 3.1 generateEvents(<ContractAnalysis>)  sample PAM portfolio
 rm(list=ls())
 mydatadir <- "~/mydata"
 installSampleData(mydatadir)
@@ -119,7 +119,7 @@ ptf   <-  samplePortfolio(cdfn)
 serverURL <- "https://demo.actusfrf.org:8080/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-cfla <- CashflowAnalysis( analysisID = "cfla001",
+cfla <- ContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -131,7 +131,7 @@ cfla <- CashflowAnalysis( analysisID = "cfla001",
 msg <- generateEvents(cfla= cfla)
 unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)}))
 
-#Test 3.2 include real Timeline in cashflowAnalysis - prelim to events2dfByPeriod
+#Test 3.2 include real Timeline in ContractAnalysis - prelim to events2dfByPeriod
 
 # For that we need a portfolio with consistent statusDate for all contracts. The
 # sample BondPortfolio does not do this .. but we can subset the sample Bond
@@ -148,7 +148,7 @@ unlist(lapply(ptf2015$contracts,
               function(x){return(x$contractTerms["statusDate"])}))
 # now construct a relevant Timeline with this statusDate
 tl1 <- Timeline("2015-01-01",3,4,8)
-cfla2015 <- CashflowAnalysis( analysisID = "cfla001",
+cfla2015 <- ContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -174,7 +174,7 @@ serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,8)
-cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 
@@ -200,7 +200,7 @@ serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,10)
-cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 
@@ -228,7 +228,7 @@ serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,8,16)
-cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 

@@ -1,14 +1,14 @@
-# CashflowAnalysis.R  FEMS dev code by Francis Parr Jan 2024
+# ContractAnalysis.R  FEMS dev code by Francis Parr Jan 2024
 # included in FEMSdevPkg; Licensing and Copyright notices from there
-# Defines class CashflowAnalysis
+# Defines class ContractAnalysis
 # Performs liquidity, income and valuation analyses on portfolio of contracts
 # for specified timeline, risk scenario and yield curve 
 # creates and saves a dataframe with (liquidityD,income, NPV) for each report
 # date in the defined timeline 
 # **************************************************
-# defines: class CashflowAnalysis, CashflowAnalysis() constructor,
+# defines: class ContractAnalysis, ContractAnalysis() constructor,
 # defines and exports:
-#    CashflowAnalysis(<enterprise inf>, <portfolio>,<timeline> ...)
+#    ContractAnalysis(<enterprise inf>, <portfolio>,<timeline> ...)
 #    setPortfolio(<cflana>,<portfolio>)
 #    setScenario(<cflana>, <scenario>)
 #    simulateContracts(cflana>) 
@@ -17,12 +17,12 @@
 #    doAnalysis(<cflana>)
 #.   getAnalysisReports(<cflana>)
 # *********************************************************************
-# class CashflowAnalysis
+# class ContractAnalysis
 # *************************************
 #' @include YieldCurve.R
 #' @include Portfolio.R
 #' @include Timeline.R
-setRefClass("CashflowAnalysis",
+setRefClass("ContractAnalysis",
             fields = list(
               analysisID = "character",
               analysisDescription = "character",
@@ -41,35 +41,35 @@ setRefClass("CashflowAnalysis",
               allReports = "data.frame"
             ))
 # **************************************
-# constructor CashflowAnalysis(...) for a cash flow analysis object
+# constructor ContractAnalysis(...) for a cash flow analysis object
 # *************************************
-#  **** Generic CashflowAnalysis(<>) ********
-# Defines generic S4 constructor method for class CashflowAnalysis
-setGeneric("CashflowAnalysis",
+#  **** Generic ContractAnalysis(<>) ********
+# Defines generic S4 constructor method for class ContractAnalysis
+setGeneric("ContractAnalysis",
             function(analysisID, analysisDescription, enterpriseID,
                           yieldCurve, portfolio, currency, scenario, 
                           actusServerURL, timeline
-                          ) { standardGeneric("CashflowAnalysis") }
+                          ) { standardGeneric("ContractAnalysis") }
            )
-#  ***** No parameters CashflowAnalysis( )
-# CashflowAnalysis ( )  - no parameters instance of CashflowAnalysis()  
+#  ***** No parameters ContractAnalysis( )
+# ContractAnalysis ( )  - no parameters instance of ContractAnalysis()  
 #   no parameters method for internal use only 
-# Creates an empty CashflowAnalysis with no attributes initialized. 
-# return  S4 reference with class=CashflowAnalysis no attributes initialized.
-setMethod("CashflowAnalysis", c(), 
-          function(){ return( new("CashflowAnalysis")) }
+# Creates an empty ContractAnalysis with no attributes initialized. 
+# return  S4 reference with class=ContractAnalysis no attributes initialized.
+setMethod("ContractAnalysis", c(), 
+          function(){ return( new("ContractAnalysis")) }
           )
 
 # ************************************************************************
-# cashflowAnalysis( < > ) constructor to create/initialize a CashflowAnalysis
+# ContractAnalysis( < > ) constructor to create/initialize a ContractAnalysis
 # ************************************************************************
-#' CashflowAnalysis(analysisID, analysisDescription, enterpriseID, yieldCurve, 
+#' ContractAnalysis(analysisID, analysisDescription, enterpriseID, yieldCurve, 
 #'                  portfolio, currency, scenario, actusServerURL, Timeline )
 #'
 #'   This method is used to start a cashflow analysis of contract holdings of 
 #'   an enterprise. The user supplies information specifying the analysis to 
 #'   be performed. The method is a constructor returning an initialized
-#'   S4 CashflowAnalysis object which is then used to step through the analysis
+#'   S4 ContractAnalysis object which is then used to step through the analysis
 #'   process saving results at each step. The completed analysis will provide 
 #'   projected liquidity change, income and valuation for each held contract 
 #'   at a set of specified report periods for a specified risk scenario. The
@@ -80,7 +80,7 @@ setMethod("CashflowAnalysis", c(),
 #'   determine a projected contract value at each defined future report time for
 #'   each contract in the enterprise portfolio. 
 #'   
-#'   Steps in the CashflowAnalysis are: (1) Initialization (2) Portfolio 
+#'   Steps in the ContractAnalysis are: (1) Initialization (2) Portfolio 
 #'   simulation generating projected cashflow behavior for each contract 
 #'   (3) Bucket the cashevents for each contract to enable reporting for each
 #'   period in the timeline (4) Compute contract income for each report period 
@@ -103,7 +103,7 @@ setMethod("CashflowAnalysis", c(),
 #' @param actusServerURL character - url of an ACTUS server simulating contracts
 #' @param timeline S$ Timeline object: future times for which reports generated   
 #' 
-#' @return    CashflowAnalysis S4 object: initialized/ready for simulation step
+#' @return    ContractAnalysis S4 object: initialized/ready for simulation step
 #' @export
 #' @examples {
 #'    mydatadir <- "~/mydata"
@@ -113,7 +113,7 @@ setMethod("CashflowAnalysis", c(),
 #'    serverURL <- "https://demo.actusfrf.org:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-#'    cfla <- CashflowAnalysis( analysisID = "cfla001",
+#'    cfla <- ContractAnalysis( analysisID = "cfla001",
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001",
 #'                              yieldCurve = YieldCurve(),
@@ -124,7 +124,7 @@ setMethod("CashflowAnalysis", c(),
 #'                              timeline = Timeline())
 #'  }
 #'
-setMethod("CashflowAnalysis", 
+setMethod("ContractAnalysis", 
           c ( analysisID = "character",
               analysisDescription = "character",
               enterpriseID = "character",
@@ -137,7 +137,7 @@ setMethod("CashflowAnalysis",
               ), 
            function (analysisID, analysisDescription, enterpriseID, yieldCurve, 
                      portfolio, currency, scenario, actusServerURL, timeline) {
-            cfla <- CashflowAnalysis()
+            cfla <- ContractAnalysis()
             cfla$analysisID <-          analysisID
             cfla$analysisDescription <- analysisDescription
             cfla$enterpriseID <-        enterpriseID
@@ -151,16 +151,16 @@ setMethod("CashflowAnalysis",
           })
 
 # ************************************************************************
-# generateEvents(<CashflowAnalysis> )
+# generateEvents(<ContractAnalysis> )
 # ************************************************************************
-#' generateEvents(<cashflowAnalysis>)
+#' generateEvents(<ContractAnalysis>)
 #'
-#'   The generateEvents(CashflowAnalysis) function takes as input a S4
-#'   CashflowAnalysis object with the following attributes set: (1) the 
+#'   The generateEvents(ContractAnalysis) function takes as input a S4
+#'   ContractAnalysis object with the following attributes set: (1) the 
 #'   portfolio of contracts held by the enterprise (2) the actusServerURL
 #'   and (3) the scenario / riskFactor list to be used. The function sends a 
 #'   simulation request to the designated ACTUS server with the contract and 
-#'   risk data and saves the results of the simulation in the cashflowAnalysis
+#'   risk data and saves the results of the simulation in the ContractAnalysis
 #'   The method return a log message with a report on which contracts were 
 #'   successfully simulated
 #'
@@ -177,7 +177,7 @@ setMethod("CashflowAnalysis",
 #'    serverURL <- "https://demo.actusfrf.org:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-#'    cfla <- CashflowAnalysis( analysisID = "cfla001", 
+#'    cfla <- ContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf, currency = "USD", 
@@ -189,7 +189,7 @@ setMethod("CashflowAnalysis",
 #'
 setMethod (f = "generateEvents", 
            signature = c(ptf="missing", serverURL="missing", 
-                         riskFactors="missing", cfla = "CashflowAnalysis") ,
+                         riskFactors="missing", cfla = "ContractAnalysis") ,
            definition = function(cfla){
              # sends input portfolio contracts and riskFactors to server as JSON
              simulationRsp <- simulationRequest(cfla$portfolio,
@@ -211,20 +211,20 @@ setMethod (f = "generateEvents",
 )
 
 # ************************************************************************
-# events2dfByPeriod(<CashflowAnalysis> )
+# events2dfByPeriod(<ContractAnalysis> )
 # ************************************************************************
-# ****** generic method first - a CashflowAnalysis is the only parameter 
+# ****** generic method first - a ContractAnalysis is the only parameter 
 
 setGeneric("events2dfByPeriod",
            function(cfla) 
              { standardGeneric("events2dfByPeriod") }
 )
-# ***** method instance   signature = (<cashflowAnalysis>)   
-#' events2dfByPeriod(<cashflowAnalysis>)
+# ***** method instance   signature = (<ContractAnalysis>)   
+#' events2dfByPeriod(<ContractAnalysis>)
 #'
 #'   This method reorganizes a list(by contract) of lists of cashflow events
 #'   into a data frame with columns for: contractID, period, and for each 
-#'   ACTUS cashflow event field. The input cashflowAnalysis object myst be in 
+#'   ACTUS cashflow event field. The input ContractAnalysis object myst be in 
 #'   the following state: (1) portfolio, and timeline fields must be initialized
 #'   (2) statusDate of the timeline must be the same as statusdate of all 
 #'   contracts in the portfolio (3) generateEvents(cfla) must have been run to 
@@ -236,7 +236,7 @@ setGeneric("events2dfByPeriod",
 #'   in cfla$cashflowEventsLoL as a dataframe with columns: 
 #'      TBD
 #'   and save that as cfla$cashflowEventsByPeriod for use in subsequent analysis
-#'   steps on the cashflowAnalysis object. 
+#'   steps on the ContractAnalysis object. 
 #'   
 #'   A text message is returned reporting on any issues in this processing step.
 #'   
@@ -258,7 +258,7 @@ setGeneric("events2dfByPeriod",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -269,7 +269,7 @@ setGeneric("events2dfByPeriod",
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #' } 
 setMethod (f = "events2dfByPeriod", 
-           signature = c(cfla = "CashflowAnalysis") ,
+           signature = c(cfla = "ContractAnalysis") ,
            definition = function(cfla){ 
     if (! is.null(cfla$cashflowEventsLoL) && 
          all(unlist(lapply(cfla$cashflowEventsLoL,
@@ -295,7 +295,7 @@ setGeneric("liquidityByPeriod2vec",
            { standardGeneric("liquidityByPeriod2vec") }
 )
 #'  *******************************
-#'   liquidityByPeriod2vec(cfla= <cashflowAnalysis>). -method instance
+#'   liquidityByPeriod2vec(cfla= <ContractAnalysis>). -method instance
 #' *******************************
 #'
 #'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
@@ -332,7 +332,7 @@ setGeneric("liquidityByPeriod2vec",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -344,7 +344,7 @@ setGeneric("liquidityByPeriod2vec",
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #' } 
 setMethod(f = "liquidityByPeriod2vec",
-          signature = c(cfla = "CashflowAnalysis"),
+          signature = c(cfla = "ContractAnalysis"),
           definition = function(cfla) {
     # subset cashflowEventsByPeriod periodIndex in 1:cfla$timeline$reportCount 
     df1 <- subset(cfla$cashflowEventsByPeriod, 
@@ -373,7 +373,7 @@ setGeneric("lv2LiquidityReports",
 )
 
 #'  *******************************
-#'   lv2LiquidityReports(cfla= CashflowAnalysis) -method instance
+#'   lv2LiquidityReports(cfla= ContractAnalysis) -method instance
 #' *******************************
 #'
 #'   This method generates a liquidityReport (vector) for each contract using 
@@ -408,7 +408,7 @@ setGeneric("lv2LiquidityReports",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -421,7 +421,7 @@ setGeneric("lv2LiquidityReports",
 #'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
 #' }      
 setMethod(f = "lv2LiquidityReports",
-          signature = c(cfla = "CashflowAnalysis"),
+          signature = c(cfla = "ContractAnalysis"),
           definition = function(cfla) {
             rseq <- seq(1,cfla$timeline$reportCount)
             clvs <- cfla$contractLiquidityVectors
@@ -453,7 +453,7 @@ setGeneric("eventsdf2incomeReports",
            { standardGeneric("eventsdf2incomeReports") }
 )
 #'  *******************************
-#'   eventsdf2incomeReports(cfla= CashflowAnalysis) -method instance
+#'   eventsdf2incomeReports(cfla= ContractAnalysis) -method instance
 #' *******************************
 #'
 #'   This method generates an incomeReport (vector) for each contract using the
@@ -499,7 +499,7 @@ setGeneric("eventsdf2incomeReports",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- CashflowAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -512,7 +512,7 @@ setGeneric("eventsdf2incomeReports",
 #' } 
 #'      
 setMethod(f = "eventsdf2incomeReports",
-          signature = c(cfla = "CashflowAnalysis"),
+          signature = c(cfla = "ContractAnalysis"),
           definition = function(cfla) {
             # step1 - subset
             df1 <- subset(cfla$cashflowEventsByPeriod,  

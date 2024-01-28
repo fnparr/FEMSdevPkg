@@ -53,7 +53,7 @@ Collate:
     'Portfolio.R'
     'yearFraction.R'
     'YieldCurve.R'
-    'CashflowAnalysis.R'
+    'ContractAnalysis.R'
     'ContractLeg.R'
     'PrincipalAtMaturity.R'
     'singleContract.R'
