@@ -519,7 +519,7 @@ setMethod(f = "eventsdf2incomeReports",
                               periodIndex %in% 1:cfla$timeline$reportCount  
                             & type %in%  c("IP", "FP")
                          )
-            # step2 agegate 
+            # step2 aggregate 
             df2 <- aggregate(df1$payoff, 
                              by=c(cid= list(df1$contractId), 
                                   period= list(df1$periodIndex)), FUN=sum 
