@@ -38,6 +38,7 @@ setRefClass("ContractAnalysis",
               contractLiquidityVectors = "list",
               liquidityReports = "list",
               incomeReports = "list",
+              nominalValueReports = "list",
               allReports = "data.frame"
             ))
 # **************************************
@@ -561,4 +562,151 @@ setMethod(f = "eventsdf2incomeReports",
             msg <- "incomeReport processing OK" 
             return(msg)
          })
-            
+
+# *********************************************
+# nominalValueReports( )  - generic method and instances 
+# ********************************************
+# functions to generate a list of <cid-nominalValueReportVector> pairs 
+#  generic: nominalValueReports( ) ; 
+#  nominalValueReports(<contractAnalysis,cid>) - NV report for one contract cid 
+#  nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
+#. contracts in the contractAnalysis and saves in  
+#  cntan$nominalValueReports. Each NV report is a vector of numeric
+#  the method returns a log msg - no known causes for error 
+#
+# nominalValueReports(cntan, cid)
+#
+# This method instance uses the cntan$cashflowEventsByPeriod dataframe 
+# and returns a vector of nominalValue reports for the contract with
+# contractId == cid 
+# The returned reportVector has length= cntan$timeline$reportCount+1) because a
+# valuation at time 0  i.e. statusDate is included 
+# **********
+# Consistency of the reportMethods for liquidity, income, nominal
+# shorter names are better: nominalValueReports() not eventsdf2liquidityReports
+# value naming in each report vector - we should add this: sd, rep1, rep2 etc 
+# ***
+# **************************************
+# Method:  nominalValueReports(...) 
+# *************************************
+#  **** Generic nominalValueReports(<>) ********
+# A generic method for creating and saving a list of nominalValueReports  
+setGeneric("nominalValueReports",
+           function(cntan, cid) 
+           { standardGeneric("nominalValueReports") }
+)
+#  **** Single contract nominalValueReports(<>) ********
+#  Uses ContractsAnalysis data to build nominalValue report vector for a 
+#  specific contract (cid) in the ContractsAnalysis$portfolio. Returns the
+#  report with nominalValuations at statusDate and each report date
+
+setMethod(f = "nominalValueReports",
+          signature = c(cntan = "ContractAnalysis", cid= "character"),
+          definition = function(cntan, cid) {
+  #  cntan <- cfla2015
+  #  cid <- 101
+  df <- cntan$cashflowEventsByPeriod
+  # subset df: this cid,  report horizon rows; <periodIndex, nominalValue> cols
+  nreps <- cntan$timeline$reportCount
+  df1 <- df[(df$contractId == cid) & (df$periodIndex <= nreps),]
+  df2 <- df1[c("periodIndex","nominalValue")]
+  # Keep the last-in-period event rows - discard earlier event rows  
+  df3 <- df2[sapply(unique(df2$periodIndex), function(x)
+    max(which(x == df2$periodIndex)) 
+  ),]
+  # get nominalValue of contract cid at statusDate from cntan$portfolio
+  # (contracts are in portfolio order in df3) 
+  nvsd  <- cntan$portfolio$contracts[[match(cid,unique(df$contractId))
+  ]]$contractTerms["notionalPrincipal"]
+  # pass1 report:  has values for any "active period" report 
+  rvals <- unlist(sapply(seq(1,nreps), function (i) {
+    if ((i) %in% df3$periodIndex )  
+      v<- df3$nominalValue[match(i, df3$periodIndex)]
+    else                                  
+      v<- NA
+    return(v)
+  }))
+  # add statusDate nominalValue as "0th" report
+  rvals <- unlist(append(rvals,nvsd,0))
+  # pass2 report: forward fill inactive period NAs from preceding report value
+  rvalsF <- na.locf(rvals) 
+  
+  return(rvalsF)  
+})
+
+#'  *******************************
+#'   nominalValues(cntan = ContractAnalysis) - exported method instance
+#' *******************************
+#' 
+#' nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
+#' contracts in the contractAnalysis and saves this in cntan$nominalValueReports.
+#' Each NV report is a vector of numeric values - one for statusDate and a 
+#' value for each reportDate, so cntan$nominalValueReports is a list of 
+#' list(cid,nominalValueVector) elements. 
+#' The method returns a log msg - no known causes for error 
+#'
+#' Method nominalValueReports(cntan) uses cntan$cashflowEventsByPeriod dataframe
+#' for input data except for the statusDate value for each contract which comes 
+#' from cntan$portfolio.
+#' 
+#' ************
+#' We get nominalValue at each reportDate for a specific contract as follows: 
+#' Step(1): subset the cntan$cashflowEventsByPeriod dataframe to rows with this
+#' cid and periodIndex == a report period i.e. periodIndex <= reportCount. 
+#' Step(2): subset this dataframe to the columns: periodIndex and nominalValue.
+#' Step(3): subset further: for each period make a list of eventrow indexes for
+#' that period; keep the last-event-in-period, discard the others. Since the 
+#' nominalValue of the contract cannot change after the last event,
+#' the reported nominalValue at the time of this last event is the correct value
+#' to report for the period. 
+#' Step(4): convert dataframe nominalValues to a report vector with na for 
+#' report periods in which there was no event generating nominalValue status
+#' Step(5): add StatusDate nominalPrincipal from contractTerms as first 0th element
+#' Step(6): use library(zoo) na.locf() to forward fill missing (na) values in 
+#' the nominalValueReport vector with "the most recent" value from left. Since
+#' there was no intervening event to change nominalValue this is still correct.
+#'
+#' The list of nominalValueReports for all contracts in the contractsAnalysis
+#' is by reapplying the single contract algorithm to the events dataframe for
+#' each unique cid in the events dataframe
+#'      
+#' @param cntan  ContractsAnalysis S4 object with portfolio, cashflowevents data
+#' @return      Log summarizing whether processing was successful
+#' @import zoo
+#' @importFrom zoo na.locf  
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/BondPortfolio.csv"
+#'    ptf   <-  samplePortfolio(cdfn)
+#'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
+#'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    tl1 <- Timeline("2015-01-01",3,4,8)
+#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'                              analysisDescription = "this_analysis_descr",
+#'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
+#'                              portfolio =  ptf2015, currency = "USD", 
+#'                              scenario = list(rfx), 
+#'                              actusServerURL = serverURL, 
+#'                              timeline = tl1)
+#'    logMsgs1  <- generateEvents(cfla = cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs6  <- nominalValueReports(cntan= cfla2015)
+#' } 
+     
+setMethod(f = "nominalValueReports",
+          signature = c(cntan = "ContractAnalysis"),
+          definition = function(cntan) {
+  df <- cntan$cashflowEventsByPeriod
+  cntan$nominalValueReports <- lapply( unique(df$contractId), function(cid) {
+    list(cid= cid, nvreps= nominalValueReports(cntan,cid))
+  })
+  msg <- "NominalValue reports generated"
+  return(msg)
+})
+
+

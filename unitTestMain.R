@@ -238,3 +238,5 @@ cfla2015 <- ContractAnalysis( analysisID = "cfla001",
 logMsgs1  <- generateEvents(cfla = cfla2015)
 logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
+
+logMsgs6 <- nominalValueReports(cfla2015)
