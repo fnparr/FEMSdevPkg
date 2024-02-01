@@ -38,7 +38,8 @@ Imports:
       shiny,
       shinythemes,
       timeDate,
-      timeSeries
+      timeSeries,
+      zoo
 ImportFrom: methods new      
 Encoding: UTF-8
 LazyData: true
@@ -47,24 +48,26 @@ Collate:
     'ContractABC.R'
     'ContractType.R'
     'Annuity.R'
-    'ContractLeg.R'
-    'PrincipalAtMaturity.R'
-    'singleContract.R'
+    'Timeline.R'
     'RiskFactor.R'
     'import.R'
     'Portfolio.R'
+    'yearFraction.R'
+    'YieldCurve.R'
+    'ContractAnalysis.R'
+    'ContractLeg.R'
+    'PrincipalAtMaturity.R'
+    'singleContract.R'
     'EventSeries.R'
     'ContractPlot.R'
     'Option.R'
     'ReferenceIndex.R'
-    'yearFraction.R'
-    'YieldCurve.R'
     'demoSteps.R'
     'generatePortfolioData.R'
     'runShinyDemo.R'
     'util.R'
 RoxygenNote: 7.2.3
-Suggests: 
+Suggests:
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)

@@ -4,7 +4,7 @@
 \alias{Portfolio}
 \title{Portfolio < >  -  generic function definition}
 \usage{
-Portfolio(contract, ...)
+Portfolio(contract, contractList)
 }
 \arguments{
 \item{contract}{S4 reference Class=ContractType, a contract to include.}

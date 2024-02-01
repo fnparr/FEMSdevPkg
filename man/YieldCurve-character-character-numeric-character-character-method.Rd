@@ -49,5 +49,4 @@ YieldCurve(character, character, namedNumericVector, character,character)
    cf <- "NONE"
    yc <- YieldCurve(ycID,rd,tr,dcc,cf)
 }
-
 }
