@@ -8,3 +8,23 @@ A text string in this format can be read as yaml, then passed as a yaml structur
 to create a data.tree accountsTree. 
 
 A sample sequence of r language commands to do this is illustrated below. 
+```
+library(data.tree)
+library(yaml)
+yaml<- "
+name: Powerplant Accounts
+Assets:
+  Current:
+  ShortTerm:
+  Longterm:
+Liabilities:
+  Debt:
+  Equity:
+Operations:
+  Revenues:
+  Expenses:
+"
+accountsList <- yaml.load(yaml)
+accountsNode <- as.Node(accountsList, interpretNullAsList = TRUE)
+print(accountsNode)
+```
