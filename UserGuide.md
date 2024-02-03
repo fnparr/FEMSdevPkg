@@ -28,3 +28,9 @@ accountsList <- yaml.load(yaml)
 accountsNode <- as.Node(accountsList, interpretNullAsList = TRUE)
 print(accountsNode)
 ```
+This accounts tree structure can also be writtten out to a local file with: write_yaml(yaml, <filename> ) 
+and then read back in  to initialize another Financial Model with the same accounts tree using: 
+yaml <- read_yaml(<filename>) 
+
+
+
