@@ -83,3 +83,22 @@ accnts2Node$Operations$Expenses$income <- incNull[1]
 Aggregate( node=accnts2Node, attribute = "income",  aggFun = sum)
 accnts2Node$attributesAll
 
+# Test 0.5 Use set and a recursive function to do aggregation ( on vectors)
+
+# 0.5.1. A vectorSum () with innput: a list of equal length numeric vectors
+#        use this as a component of VectorAggregate on trees.
+
+vecSum <- function(vseq) {
+  vlen <- length(vseq[[1]])
+  vsum <- rep(0,vlen)
+  for (i in 1:vlen){
+    vsum[i] <-  sum( 
+      sapply(vseq, function(v)
+        return(v[i]))
+      ) 
+  }
+  return(vsum)
+}
+# tests of VectorSum 
+vecSum(list(incCurrent,incShortTerm))
+vecSum(list(incCurrent,incShortTerm,incLongTerm))
