@@ -64,6 +64,12 @@ incShortTerm <- c(rep1= 10.0, rep2= 10.1, rep3=10.2)
 incLongTerm <- c(rep1 = 0.5, rep2= 0.8, rep3 = 20.9 )
 incDebt <- c(rep1= - 0.1, rep2 = - 0.5 , rep3 = - 0.5)
 
+# We would like Aggregate to aggregate these vectors up the tree 
+# BUT standard aggregate  seems to refuse to work with vectors ( all of the 
+# length and same name structure) So here we simplify and ask it to work 
+# just with the first income report value 
+# => that Aggregate CAN do but it seems not to set the aggregated value at 
+#  any higher up intermediate nodes which is what we wanted 
 accnts2Node$Assets$Current$income <- incCurrent[1]
 accnts2Node$Assets$ShortTerm$income <- incShortTerm[1]
 accnts2Node$Assets$Longterm$income <- incLongTerm[1]
