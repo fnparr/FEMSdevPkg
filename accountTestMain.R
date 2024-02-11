@@ -70,13 +70,13 @@ incDebt <- c(rep1= - 0.1, rep2 = - 0.5 , rep3 = - 0.5)
 # just with the first income report value 
 # => that Aggregate CAN do but it seems not to set the aggregated value at 
 #  any higher up intermediate nodes which is what we wanted 
-accnts2Node$Assets$Current$income <- incCurrent[1]
-accnts2Node$Assets$ShortTerm$income <- incShortTerm[1]
-accnts2Node$Assets$Longterm$income <- incLongTerm[1]
-accnts2Node$Liabilities$Debt$income <- incDebt[1]
-accnts2Node$Liabilities$Equity$income <- incNull[1]
-accnts2Node$Operations$Revenues$income <- incNull[1]
-accnts2Node$Operations$Expenses$income <- incNull[1]
+accnts2Node$Assets$Current$income <- incCurrent
+accnts2Node$Assets$ShortTerm$income <- incShortTerm
+accnts2Node$Assets$Longterm$income <- incLongTerm
+accnts2Node$Liabilities$Debt$income <- incDebt
+accnts2Node$Liabilities$Equity$income <- incNull
+accnts2Node$Operations$Revenues$income <- incNull
+accnts2Node$Operations$Expenses$income <- incNull
 
 # now write the aggregate function which propagates to all accounts in tree
 # needs to be able to ignore na values in aggregation 
@@ -88,10 +88,44 @@ accnts2Node$attributesAll
 # 0.5.1. Test utility function VectorSum(veclist) which takes as input a list 
 #         of equal lengthNumeric vectors and return the elementwise aggregte 
 #         values as output. Function VectorSum( ) is defined in Accounts.R
-
-# tests of VectorSum 
 incCurrent <- c(rep1= 1.0, rep2= 1.1, rep3=1.2)
 incShortTerm <- c(rep1= 10.0, rep2= 10.1, rep3=10.2)
 incLongTerm <- c(rep1 = 0.5, rep2= 0.8, rep3 = 20.9 )
 VectorSum(list(incCurrent,incShortTerm))
 VectorSum(list(incCurrent,incShortTerm,incLongTerm))
+
+# Test 0.5.2 Work towards: leaf2rootAggregate( )
+typeof(accnts2Node$children)
+names(accnts2Node$children)
+# Node$children is a list  keyed by the pathname segment values and presumably 
+# in position order 
+
+# Test 0.5.3 Test Income(account) which does vector elementwise aggregation on 
+#            income Reports vectors saving aggregated $income vector  in each  
+#           subaccount of the input (node) account. Income() is defined in 
+#           Accounts.R 
+
+# Should also have a function clearIncome(account) - to clear 
+accnts2Node$Assets$Current$income <- incCurrent
+accnts2Node$Assets$ShortTerm$income <- incShortTerm
+accnts2Node$Assets$Longterm$income <- incLongTerm
+accnts2Node$Liabilities$Debt$income <- incDebt
+accnts2Node$Liabilities$Equity$income <- incNull
+accnts2Node$Operations$Revenues$income <- incNull
+accnts2Node$Operations$Expenses$income <- incNull
+accnts2Node$Assets$Current$income
+Income(accnts2Node$Assets$Current) 
+Income(accnts2Node)
+accnts2Node$Assets$Current$income
+accnts2Node$income
+accnts2Node$Assets$income
+#print(accnts2Node,income)
+
+# 0.5.3  Use filterFun = is.leaf to get lists of leaf and non leaf pathnames
+# result is an indexable charcter matrix 
+accnts2Node$Get('path')
+accnts2Node$Get('path', filterFun = isLeaf)
+accnts2Node$Get('path',filterFun = isLeaf)[3,]
+accnts2Node$Get('path', filterFun = isLeaf)[3,1]
+accnts2Node$Get('path',filterFun = isNotLeaf)
+
