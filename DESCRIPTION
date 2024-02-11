@@ -55,6 +55,8 @@ Collate:
     'yearFraction.R'
     'YieldCurve.R'
     'ContractAnalysis.R'
+    'Accounts.R'
+    'FinancialModel.R'
     'ContractLeg.R'
     'PrincipalAtMaturity.R'
     'singleContract.R'

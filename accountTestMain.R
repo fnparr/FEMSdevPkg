@@ -85,20 +85,13 @@ accnts2Node$attributesAll
 
 # Test 0.5 Use set and a recursive function to do aggregation ( on vectors)
 
-# 0.5.1. A vectorSum () with innput: a list of equal length numeric vectors
-#        use this as a component of VectorAggregate on trees.
+# 0.5.1. Test utility function VectorSum(veclist) which takes as input a list 
+#         of equal lengthNumeric vectors and return the elementwise aggregte 
+#         values as output. Function VectorSum( ) is defined in Accounts.R
 
-vecSum <- function(vseq) {
-  vlen <- length(vseq[[1]])
-  vsum <- rep(0,vlen)
-  for (i in 1:vlen){
-    vsum[i] <-  sum( 
-      sapply(vseq, function(v)
-        return(v[i]))
-      ) 
-  }
-  return(vsum)
-}
 # tests of VectorSum 
-vecSum(list(incCurrent,incShortTerm))
-vecSum(list(incCurrent,incShortTerm,incLongTerm))
+incCurrent <- c(rep1= 1.0, rep2= 1.1, rep3=1.2)
+incShortTerm <- c(rep1= 10.0, rep2= 10.1, rep3=10.2)
+incLongTerm <- c(rep1 = 0.5, rep2= 0.8, rep3 = 20.9 )
+VectorSum(list(incCurrent,incShortTerm))
+VectorSum(list(incCurrent,incShortTerm,incLongTerm))

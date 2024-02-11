@@ -48,7 +48,7 @@ setRefClass("FinancialModel",
 # Defines generic S4 constructor method for class FinancialModel 
 # include parameters for 
 setGeneric("FinancialModel",
-           function(fmID, fmDescr, entprID, ptf, curr, timeline, 
+           function(fmID, fmDescr, entprID, accounts, ptf, curr, timeline, 
                     serverURL
                    ) { standardGeneric("FinancialModel") }
           )
