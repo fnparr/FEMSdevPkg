@@ -35,7 +35,7 @@ setRefClass("Portfolio",
 #' @param  contract   S4 reference Class=ContractType, a contract to include. 
 #' @param  ...        Not used
 setGeneric(name = "Portfolio",
-           def = function(contract, ...){
+           def = function(contract, contractList){
              standardGeneric("Portfolio")
            })
 #' Portfolio ( )  - no parameters instance of Portfolio< > 
@@ -44,7 +44,7 @@ setGeneric(name = "Portfolio",
 #' @return  S4 reference with class=Portfolio and no attributes initialized.
 setMethod(f = "Portfolio", signature = c(),
           definition = function( ){
-             return(new("Portfolio"))
+            return(new("Portfolio"))
           })
 #' Portfolio("ContractType")  Constructs Portfolio containing a single contract.
 #' 
@@ -53,12 +53,25 @@ setMethod(f = "Portfolio", signature = c(),
 #' contract as its contents
 #' @param contract  S4 reference class=ContractType
 #' @return   S4 reference class=Portfolio, initialized attributes
-setMethod(f = "Portfolio", signature = "ContractType",
+setMethod(f = "Portfolio", 
+          signature = c(contract="ContractType", contractList="missing"),
           definition = function (contract) {
-          ptf <- Portfolio()
-          ptf$contracts = list(contract)
-          return(ptf)
+            ptf <- Portfolio()
+            ptf$contracts <- list(contract)
+            return(ptf)
           })
+# This  method is really preferred - because if we have a single contract it is 
+# always easy to insert it into a list and pass that. Up until now there has 
+# been no constructor for portfolio taking a contractList. We should deprecate 
+# the single contract constructor (FNP Jan 2024) 
+setMethod(f = "Portfolio", 
+          signature = c(contract="missing", contractList = "list"),
+          definition = function(contractList) {
+            ptf <- Portfolio()
+            ptf$contracts <- contractList
+            return(ptf)
+          })
+
 
 #' generateEvents < >     Generic method definition
 #' 
@@ -66,14 +79,15 @@ setMethod(f = "Portfolio", signature = "ContractType",
 #' to an ACTUS server at location serverURL to generate cashflow events for 
 #' contracts in the portfolio using the risk scenario in the portfolio. 
 #' Instances of this generic are: 
-#'  signature ( "Portfolio", serverURL, riskFactors, ... )
+#'  signature ( "Portfolio", serverURL, riskFactors, "ContractAnalysis", ... )
 #'
-#' @param ptf   S4 reference Class=Portfolio
-#' @param serverURL  character string, the URL of ACTUS server to call out to. 
+#' @param ptf         S4 reference Class=Portfolio
+#' @param serverURL   character string, the URL of ACTUS server to call out to. 
 #' @param riskfactors list of S4 Class=ReferenceIndex
-#' @return          List of generated cashflow results - one entry per contract
+#' @param cntan       ContractAnalysis S4 object with list of contracts 
+#' @return      List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL,riskFactors,...){
+           def = function(ptf,serverURL,riskFactors,cntan){
              standardGeneric("generateEvents")
            })
 
@@ -110,29 +124,52 @@ setGeneric(name = "generateEvents",
 #'    cfls  <- generateEvents(ptf,serverURL,list(rfx))
 #' }
 #'
-setMethod (f = "generateEvents", signature = c("Portfolio","character","list") ,
+setMethod (f = "generateEvents", 
+           signature = c(ptf="Portfolio", serverURL="character",
+                         riskFactors= "list") ,
            definition = function(ptf,serverURL,riskFactors){
-             # send input portfolio contracts and riskFactors to server as JSON
-             #  Functional programming construction of preJson for Portfolio
-             contractDefs <- lapply(ptf$contracts,preJcontract)
-             riskFactors <-  preJSONrfxs(riskFactors)
-             fin_list <- list(contracts = contractDefs,
-                              riskFactors = riskFactors)
-             
-             # create final request body in json format
-             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = FALSE)
-             
-             # issue POST command to have server generate cashflows
-             response_events <- POST(paste0(serverURL, "eventsBatch"),
-                                     body = request_body,
-                                     content_type_json())
-             response_content <- content(response_events)
-             if (response_events$status_code != 200) {
-               print(response_content$error)
-               stop("ErrorIn::ContractType:: API response error; Check if all necessary contractTerms were set correctly!!!")
+             simulationRsp <- simulationRequest(ptf, serverURL, riskFactors)
+             response_content <- content(simulationRsp)
+             if (simulationRsp$status_code != 200) {
+               print( paste0("Contract simulation error. status_code= ",
+                             simulationRsp$status_code,
+                             "Error info= ", response_content$error)
+               )
+               stop("Error in contract simulation during generateEvents()" ) 
              }
+             #              return("returning from (ptf,severURL,rfs) version ")
              return(response_content)
            })
+
+# **********************************
+# simulationRequest( portfolio, serverURL, list )
+# *********************************
+# this internal function ( not exported from FEMSdevPkg 0 does the work of 
+# generating a a JSON simulation request and sending it to the ACTUS server.  
+# It returns a simulationRsp message without analysis whether it succeeded or 
+# failed. Function simulationRequest is used in both generateEvents(ptf,...)
+# and generateEvents(cfla), but these methods handle the results and error 
+# cases in different ways
+setGeneric (name = "simulationRequest", def = function(ptf,url,rfs){
+  standardGeneric("simulationRequest")
+})
+
+setMethod(f = "simulationRequest", 
+          signature = c(ptf= "Portfolio", url= "character", rfs = "list" ),
+          definition = function(ptf,url,rfs){
+            contractDefs <- lapply(ptf$contracts,preJcontract)
+            riskFactors <-  preJSONrfxs(rfs)
+            fin_list <- list(contracts = contractDefs,
+                             riskFactors = riskFactors)
+            # create final request body in json format
+            request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = FALSE)
+            
+            # issue POST command to have server generate cashflows
+            simulationRsp  <- POST(paste0(serverURL, "eventsBatch"),
+                                   body = request_body,
+                                   content_type_json())
+            return(simulationRsp)
+          })
 
 # CHANGE THIS FUNCTION TO REMOVE ALL RISK RELATED 
 # ************************************************************
@@ -325,7 +362,7 @@ monthlyAndCumulatedValue <- function(indf){
 #'    plotlist[["monthly income"]]                               
 #' }
 simulatePortfolio <-function(ptf, serverURL, riskFactors, scenarioName){
-  cfls <- generateEvents(ptf, serverURL, riskFactors )
+  cfls <- generateEvents(ptf=ptf, serverURL=serverURL, riskFactors= riskFactors)
   # merge all cashflow events for the portfolio into one dataframe 
   dfall <- mergecfls(cfls) 
   

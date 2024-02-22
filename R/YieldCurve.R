@@ -62,6 +62,15 @@ setGeneric(name = "YieldCurve",
            def = function(yieldCurveID, referenceDate, tenorRates,
                           dayCountConvention, compoundingFrequency){  
                   standardGeneric("YieldCurve")})
+#' YiedCurve ( )  - no parameters instance of YieldCurve 
+#' 
+#' Creates an empty YieldCurve with no attributes initialized. 
+#' @return  S4 reference with class=YieldCurve and no attributes initialized.
+setMethod(f = "YieldCurve", signature = c(),
+          definition = function( ){
+            return(new("YieldCurve"))
+          }
+)
 
 # ***********************************************************************
 #  YieldCurve() exported constructor for YieldCurve objects 
@@ -87,7 +96,6 @@ setGeneric(name = "YieldCurve",
 #'   An S4 YieldCurve object is created and returned with attributes initialized
 #'   to these values. 
 #'
-#' @export
 #' @param yieldCurveID  character  label uniquely identifying this yieldCurve
 #' @param referenceDate character date yyyy-mm-dd tenorRates observed this day 
 #' @param tenorRates numeric  pa rates (0.02=2%) vector, names "1M", "2Y" etc 
@@ -104,7 +112,6 @@ setGeneric(name = "YieldCurve",
 #'    cf <- "NONE"
 #'    yc <- YieldCurve(ycID,rd,tr,dcc,cf)
 #' }
-#'
 setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
                                      "character", "character"),
           definition= function(yieldCurveID, referenceDate, tenorRates,
@@ -127,7 +134,7 @@ setMethod(f = "YieldCurve", signature = c("character", "character","numeric",
                          sep=" "))
             }
             
-            yc <- new("YieldCurve")
+            yc <- YieldCurve()
             yc$yieldCurveID <- yieldCurveID
             yc$referenceDate <- referenceDate
             yc$tenorRates <- tenorRates
