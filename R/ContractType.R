@@ -34,19 +34,34 @@ setRefClass("ContractType",
                 contractStructure = "list"  # of contract legs
             ))
 
+
 setGeneric(name = "CT",
-           def = function(contract_name){
+           def = function(contractType){
              standardGeneric("CT")
            })
 
 setMethod(f = "CT", signature = c("character"),
-          definition = function(contract_name) {
+          definition = function(contractType) {
             # FNP cannot find actusDictionary so comment out test
             # if (!contract_name %in% names(actusDictionary$rflActus_attributes)) {
             #   stop(paste("ErrorIn::ContractType:: Type of Contract ",
             #              contract_name, " does not exist !!!"))
             # }
-            return( new (contract_name))
+            return( new (contractType))
+          })
+
+setGeneric(name = "ContractType",
+           def = function(termList){
+             standardGeneric("ContractType")
+           })
+
+setMethod(f = "ContractType", signature = c("list"),
+          definition = function(termList) {
+            cntr1 <- new( longName(tolower(termList$contractType)))
+            cntr1$contractTerms<- termList
+            cntr1$isCompound <- FALSE
+            cntr1$contractStructure <- list()
+            return( cntr1 )
           })
 
 # FNP is set(object, xxx) a default generic on reference Classes
