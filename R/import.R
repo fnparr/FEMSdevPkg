@@ -6,10 +6,6 @@
 # ACTUS contracts and imports as a portfolio
 # Licensing and Copyright notices from sibling FEMSdevBase files there
 # defines:
-#' @import utils
-#' @import timeSeries
-#' @import TAF
-
 # ************************************************************************
 # csvx2ptf(<fnameIn>) - function
 # ************************************************************************
@@ -46,6 +42,9 @@
 #' @return    dataframe - of contract term values, one row per contract
 #'            with reformatted information from file fnameIn
 #' @export
+#' @import utils
+#' @import timeSeries
+#' @import TAF
 #' @importFrom    TAF dos2unix
 #' @examples {
 #'   datadir <- "~/mydata"

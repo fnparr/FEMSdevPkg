@@ -10,12 +10,13 @@ installSampleCode(demodir)
 \item{demodir}{character - full path name of folder to write demo R code}
 }
 \description{
-This function copies the code of a sample R application importing and using 
+This function copies the code of a sample R application importing and using
  the FEMSdevPkg package in a user specified directory. The copied code
- introductoryDemo.R provides a simple guide and introduction to using the 
+ introductoryDemo.R provides a simple guide and introduction to using the
  package. This code is documented with comments  introductoryDemo.R is copied.
- 
- The input parameter <directory-file-path> of installSampleCode locates a 
+}
+\details{
+The input parameter <directory-file-path> of installSampleCode locates a
  directory where the sample data files should be copied to.
 }
 \examples{
@@ -23,5 +24,5 @@ This function copies the code of a sample R application importing and using
   demodir <- "~/mycode"
   installSampleCode(demodir)
   }
-  
+
 }

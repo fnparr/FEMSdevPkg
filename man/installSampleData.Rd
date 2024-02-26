@@ -10,27 +10,28 @@ installSampleData(mydatadir)
 \item{mydatadir}{character - full path name of directory to write sample csvs}
 }
 \description{
-This function copies asample csv data files into a user selected directory 
- where they can be easily inspected or modified. This demonstrates the 
- required format for additional contract and riskFactor data files to be 
- used in FEMSdev Pkg requests 
- .  
- Sample file BondPortfolio.csv specifies ACTUS contract terms for  a 
- portfolio of PrincipalAtMaturity ( bullet ) bonds. Sample file 
+This function copies sample csv data files into a user selected directory
+ where they can be easily inspected or modified. This demonstrates the
+ required format for additional contract and riskFactor data files to be
+ used in FEMSdev Pkg requests
+ .
+ Sample file BondPortfolio.csv specifies ACTUS contract terms for  a
+ portfolio of PrincipalAtMaturity ( bullet ) bonds. Sample file
  RiskFactors.csv specifies projected # future values for a collection of
- marketObjectCodes designated by contracts as their baseline for resetting 
- rates or, in the case of (european) stock options, market value of the 
- underlying 
- 
- The input parameter <directory-file-path> locates a directory where the 
- sample data files should be copied to. ( FEMSdevPkg contains a compressed 
+ marketObjectCodes designated by contracts as their baseline for resetting
+ rates or, in the case of (european) stock options, market value of the
+ underlying
+}
+\details{
+The input parameter <directory-file-path> locates a directory where the
+ sample data files should be copied to. ( FEMSdevPkg contains a compressed
  form of these sample csv files not conveniently visible or accessible to the
   FEMSdevPkg package user.
 }
 \examples{
- {              # directory ~/mydata must exist and be writable 
+ {              # directory ~/mydata must exist and be writable
   datadir <- "~/mydata"
   installSampleData(datadir)
   }
-  
+
 }
