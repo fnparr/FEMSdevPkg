@@ -64,7 +64,7 @@ cfla <- ContractAnalysis( analysisID = "cfla001",
                           portfolio =  Portfolio(),
                           currency = "USD",
                           scenario = list(),
-                          actusServerURL = "https://demo.actusfrf.org:8080/",
+                          actusServerURL = "https://dadfir3-app.zhaw.ch/",
                           timeline = Timeline())
 cfla$analysisID
 
@@ -85,7 +85,7 @@ cfla <- ContractAnalysis( analysisID = "cfla001",
                           portfolio =  ptf,
                           currency = "USD",
                           scenario = list(),
-                          actusServerURL= "http://localhost:8083",
+                          actusServerURL= "https://dadfir3-app.zhaw.ch/",
                           timeline = Timeline())
 #                          actusServerURL = "https://demo.actusfrf.org:8080/",
 typeof(cfla$portfolio$contracts)
@@ -103,7 +103,7 @@ cfla1 <- ContractAnalysis( analysisID = "cfla001",
                           portfolio =  ptf1,
                           currency = "USD",
                           scenario = list(),
-                          actusServerURL = "http://localhost:8083",
+                          actusServerURL = "https://dadfir3-app.zhaw.ch/",
                           timeline = Timeline())
 #                         actusServerURL = "https://demo.actusfrf.org:8080/",
 
@@ -112,8 +112,8 @@ cfla1 <- ContractAnalysis( analysisID = "cfla001",
 #        contract and portfolio simulations from exportTestMain.R 
 #.      This Test 2.0 simulates a PAM contract, no risk factors, shows IED event
 rm(list=ls())
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
                coupon = 0.02, paymentFreq = "1 year", role = "long",
                rateResetFreq = "Fixed rate")
@@ -130,8 +130,8 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf   <-  samplePortfolio(cdfn)
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 cfls  <- generateEvents(ptf,serverURL,list(rfx))
@@ -139,8 +139,8 @@ unlist(lapply(cfls,function(x){return(x$status)}))
 
 #Test 3.0 generateEvents(<ContractAnalysis>)  single PAM no rfs case first 
 rm(list=ls())
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
                coupon = 0.02, paymentFreq = "1 year", role = "long",
                rateResetFreq = "Fixed rate")
@@ -164,8 +164,8 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf   <-  samplePortfolio(cdfn)
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL<- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL<- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 cfla <- ContractAnalysis( analysisID = "cfla001",
@@ -200,8 +200,8 @@ unlist(lapply(ptf2015$contracts,
               function(x){return(x$contractTerms["statusDate"])}))
 # now construct a relevant Timeline with this statusDate
 tl1 <- Timeline("2015-01-01",3,4,8)
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL<- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL<- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 cfla2015 <- ContractAnalysis( analysisID = "cfla001",
@@ -225,8 +225,8 @@ cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf   <-  samplePortfolio(cdfn)
 ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,8)
@@ -251,8 +251,8 @@ cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf   <-  samplePortfolio(cdfn)
 ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,10)
@@ -279,8 +279,8 @@ ptf   <-  samplePortfolio(cdfn)
 ptfsd <- unlist(lapply(ptf$contracts,
                        function(x){return(x$contractTerms["statusDate"])}))
 ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-serverURL <- "https://demo.actusfrf.org:8080/"
-serverURL <- "http://localhost:8083/"
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,8,16)
