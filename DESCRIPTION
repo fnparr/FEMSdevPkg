@@ -57,6 +57,7 @@ Collate:
     'YieldCurve.R'
     'ContractAnalysis.R'
     'ContractLeg.R'
+    'LinearAmortizer.R'
     'PrincipalAtMaturity.R'
     'singleContract.R'
     'EventSeries.R'
