@@ -550,7 +550,7 @@ setMethod(f = "eventsdf2incomeReports",
             noir <- rep(0,cfla$timeline$reportCount)
             names(noir) <- rseq
             cfla$incomeReports <- lapply( 
-              sapply(cfla2015$portfolio$contracts,
+              sapply(cfla$portfolio$contracts,
                      function(x) return (x$contractTerms$contractID)
               ),
               function(y){ 
