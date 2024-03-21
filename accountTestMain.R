@@ -48,7 +48,7 @@ accounts <- setUniqueNodeIDs(accounts)
 print(accounts,"nodeID","actusCIDs", "functionIDs")
 
 # Test  5.  convert to data frame - row per leaf node - string of CIDs 
-treemap2 <- ToDataFrameTable(accounts,"path","nodeID","actusCIDs")
+treemap2 <- ToDataFrameTable(accounts,"path","nodeID","actusCIDs","liquidity")
 treemap2
 
 #Test 6.  use cid2NodeIdMap function to relate CIDs to owning NodeID 
@@ -67,13 +67,13 @@ cid2NodeId("ann005",accounts)
 
 # Test 8.1 Create A set of liquidity report vectors - change per period
 #  arbitrary test data - no significance  
-lqNull        <- c(rep1=  0.0, rep2=  0.0, rep3=  0.0)
-lqSteadyInc   <- c(rep1=  1.0, rep2=  1.1, rep3=  1.2)
-lqRoi         <- c(rep1= -2.0, rep2=  0.0, rep3=  3.0)
-lqRandom      <- c(rep1 = 1.8, rep2= -0.2, rep3 = 0.6 )
-lqPulse       <- c(rep1=  0.0, rep2=  3.0, rep3 = 0.0)
-lqGrow        <- c(rep1=  0.4, rep2=  0.2, rep3=  1.5)
-lqShrink      <- c(rep1= -4.9, rep2= -2.2, rep3= -1.0)
+lqNull        <- c(jun24=  0.0, dec24=  0.0, jun25=  0.0)
+lqSteadyInc   <- c(jun24=  1.0, dec24=  1.1, jun25=  1.2)
+lqRoi         <- c(jun24= -2.0, dec24=  0.0, jun25=  3.0)
+lqRandom      <- c(jun24 = 1.8, dec24= -0.2, jun25= 0.6 )
+lqPulse       <- c(jun24=  0.0, dec24=  3.0, jun25= 0.0)
+lqGrow        <- c(jun24=  0.4, dec24=  0.2, jun25=  1.5)
+lqShrink      <- c(jun24= -4.9, dec24= -2.2, jun25= -1.0)
 
 # Test 8.2  Create a list of liquidity reports, one per contract 
 #          This is cid test data to be set at leafs for tree aggregation of 
@@ -87,12 +87,14 @@ lqReportList <- list( "pam001" = lqSteadyInc,
                       "pam007"= lqShrink
                       )
 lqReportList["pam001"]
+names(lqReportList[[1]])
 print(unlist(lqReportList))
 # ****************
 # Test 8.3 Add(Liquidity) aggregated reports into accounts tree and print 
 # *************
 addAggregatedLiquidity(accounts, lqReportList)
 print(accounts, "liquidity")
+
 
 # *********************
 # **** INCOMPLETE ( OLDER)  WORK TOWARD THIS FOLLOWS .... 

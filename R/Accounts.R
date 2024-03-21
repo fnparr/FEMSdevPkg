@@ -79,10 +79,6 @@ cid2NodeId <- function(cid, accounts) {
   return(mp$nodes[which(mp$cids==cid)])
 }
 
-
-
-
-
 # ************
 # Functions for aggregating report vectors in the accounts tree  
 # ***********
