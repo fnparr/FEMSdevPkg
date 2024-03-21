@@ -87,7 +87,7 @@ lqReportList <- list( "pam001" = lqSteadyInc,
                       "pam007"= lqShrink
                       )
 lqReportList["pam001"]
-
+print(unlist(lqReportList))
 # ****************
 # Test 8.3 Add(Liquidity) aggregated reports into accounts tree and print 
 # *************

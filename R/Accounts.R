@@ -141,20 +141,3 @@ addAggregatedLiquidity <- function(account,cidReports){
   }  
   return(account$liquidity) # return specific report parents need 
 }
-# **************
-# Income(account) is a function which can be applied to the root of an accounts
-#                 tree. It picks up $income report vectors from leaf accounts in
-#                 and aggregates these vectors , saving them at $income vector
-#                 values at each sub-account of the account node argument 
-Income <- function(node) {
-  if (isNotLeaf(node))
-    node$income <- VectorSum(lapply(node$children, Income))
-  return(node$income) 
-}
-#  **********
-# clearNonleafIncome(account) will clear the income aggregate vecto in all non 
-#                leaf nodes descended from account. Income(account) will 
-#               recompute and reinstate aggregate income report vectors 
-clearNonleafIncome <- function(account) {
-accnts2Node$Set(income = NULL, filterFun = isNotLeaf)
-}
