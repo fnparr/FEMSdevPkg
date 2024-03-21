@@ -38,7 +38,7 @@ accounts$Assets$LongTerm$functionIDs
 # Test 2.  print accounts tree showing the contracts vectors at each leaf 
 print(accounts, "actusCIDs","functionIDs")
 
-# Test 3.  create path for a node as a string vector
+# Test 3.  create path for a node as a string vector, show CIDs indexable
 # tree indexing using climb and account name segments 
 accounts$Climb(name="Assets")$Climb(name="ShortTerm")$path 
 accounts$Climb(name="Assets")$Climb(name="ShortTerm")$path[1]
@@ -58,13 +58,88 @@ mp
 # Test 7.   cid2NodeId( ) return NodeID of owner for contract with  CID = cid
 cid2NodeId("pam001",accounts)
 cid2NodeId("ann005",accounts)
-# mp$nodes[which(mp$cids=="pam001")]
+
+# Test 8. Assign liquidity report vectors to each contract  
 
 # Next series of tests SHOULD be to attach liquidity reports to the contracts
 # and FunctionID - aggregate contract level report vectors back to leaf node 
 # aggregates then back up the tree 
 
-# **** INCOMPLETE ( OLDER)  WORK TOWARD THIS FOLLOWS ....  
+# Test 8.1 Create A set of liquidity report vectors - change per period
+#  arbitrary test data - no significance  
+lqNull        <- c(rep1=  0.0, rep2=  0.0, rep3=  0.0)
+lqSteadyInc   <- c(rep1=  1.0, rep2=  1.1, rep3=  1.2)
+lqRoi         <- c(rep1= -2.0, rep2=  0.0, rep3=  3.0)
+lqRandom      <- c(rep1 = 1.8, rep2= -0.2, rep3 = 0.6 )
+lqPulse       <- c(rep1=  0.0, rep2=  3.0, rep3 = 0.0)
+lqGrow        <- c(rep1=  0.4, rep2=  0.2, rep3=  1.5)
+lqShrink      <- c(rep1= -4.9, rep2= -2.2, rep3= -1.0)
+
+# Test 8.2  Create a list of liquidity reports, one per contract 
+#          This is cid test data to be set at leafs for tree aggregation of 
+#          reports 
+
+lqReportList <- list( "pam001" = lqSteadyInc,
+                      "pam002" = lqRoi,
+                      "ann003" = lqRandom,
+                      "pam004" = lqPulse,
+                      "ann005" = lqGrow,
+                      "pam007"= lqShrink
+                      )
+lqReportList["pam001"]
+
+# ****************
+# Test 8.3 Add(Liquidity) aggregated reports into accounts tree and print 
+# *************
+addAggregatedLiquidity(accounts, lqReportList)
+print(accounts, "liquidity")
+
+# *********************
+# **** INCOMPLETE ( OLDER)  WORK TOWARD THIS FOLLOWS .... 
+# ***********************
+# TESTS followng this are still in development 
+# ********
+# Test 8.3  Set an empty list attribute $reports at each accounts node 
+accounts <- setEmptyReportsList(accounts)
+print(accounts,"reports")
+print(accounts,"actusCIDs","reports","nodeID")
+
+
+vlist <- list(c(1, 1, 1))
+VectorSum(vlist )
+vlist <- NULL
+VectorSum(vlist)
+vlist <- list(c(1,1,1), NULL, c( 3,4,5))
+VectorSum(vlist)
+# ******
+addAggregateReport <- function(account,cidReports,reportName){
+  if (isNotLeaf(account))
+     account$reports[[reportName]] <- 
+        VectorSum(lapply(
+           account$children,
+           function(x) addAggregateReport(x,cidReports,reportName))
+        )
+  else if ( is.null(account$actusCIDs) ) {
+     vlen <- length(cidReports[[1]])
+     account$reports[[reportName]] <- rep(NULL, vlen)
+  }
+  else {
+     account$reports[[reportName]] <-
+        VectorSum(lapply(account$actusCIDs, function(cid) cidReports[cid]))
+  }  
+  return(account$reports[[reportName]]) # return specific report parents need 
+}
+
+
+# Test 8.4 (1) valid accountsTree with $reports? (2) valid cidReports ?
+print(accounts,"reports")
+unlist(lqReportList)
+accounts <- addAggregateReport(accounts,lqReportList,"liquidity")
+getLQ <- function(node) node$reports[["liquidity"]]
+getLQ(accounts$Assets$Current)
+print(accounts,"getLQ")
+accounts$Set(LQ= NULL)
+
 
 # Test 10.4 Test aggregation of numeric vectors ( income reports) to tree 
 incNull <- c(rep1= 0.0, rep2= 0.0, rep3 = 0.0)
@@ -72,6 +147,7 @@ incCurrent <- c(rep1= 1.0, rep2= 1.1, rep3=1.2)
 incShortTerm <- c(rep1= 10.0, rep2= 10.1, rep3=10.2)
 incLongTerm <- c(rep1 = 0.5, rep2= 0.8, rep3 = 20.9 )
 incDebt <- c(rep1= - 0.1, rep2 = - 0.5 , rep3 = - 0.5)
+
 
 # We would like Aggregate to aggregate these vectors up the tree 
 # BUT standard aggregate  seems to refuse to work with vectors ( all of the 
@@ -147,7 +223,7 @@ accnts2Node$Get('path', filterFun = isLeaf)[3,1]
 accnts2Node$Get('path',filterFun = isNotLeaf)
 
 # Test 10.6 function which takes a nodeId and a CIDs list, builds list
-#          of  <nodeID, CID> pairs ( NOW DEPRECATED )
+#          of nodeID, CID> pairs ( NOW DEPRECATED  replaced by cid2NodeIdMap())
 nodeCIDpairs <- function(nodeID, CIDs){
      outList <- list()
      sapply (CIDs, function(CID) {
