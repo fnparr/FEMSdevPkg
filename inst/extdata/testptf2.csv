@@ -1,0 +1,4 @@
+contractType,contractID,contractRole,statusDate,businessDayConvention,initialExchangeDate,maturityDate,dayCountConvention,accruedInterest,currency,notionalPrincipal,nominalInterestRate,cycleAnchorDateOfInterestPayment,cycleOfInterestPayment
+PAM,c001,RPA, 2023-12-01,NULL, 2023-12-02, 2024-12-02,30E360,0,USD,1000,0.03,NULL,NULL
+PAM,c002,RPA, 2023-12-01,NULL, 2023-12-03, 2024-12-03,30E360,0,USD,2000,0.04,NULL,NULL
+PAM,c003,RPA, 2023-12-01,NULL, 2023-12-04, 2024-12-04,30E360,0,USD,3000,0.05,NULL,NULL

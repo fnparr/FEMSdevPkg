@@ -36,8 +36,12 @@ loan <- function(ctype, start, maturity, nominal, coupon,
     cntr1 <- bondvr(start, maturity, nominal, coupon, paymentFreq,role,
                     rateResetFreq=rateResetFreq,
                     rateResetSpread=rateResetSpread )
-  } else {
+  } else if (ctype == "ANN"){
     cntr1 <- mortgage(start, maturity, nominal, coupon, paymentFreq,role,
+                      rateResetFreq=rateResetFreq,
+                      rateResetSpread=rateResetSpread )
+  } else if (ctype == "LAM"){
+    cntr1 <- lam(start, maturity, nominal, coupon, paymentFreq,role,
                       rateResetFreq=rateResetFreq,
                       rateResetSpread=rateResetSpread )
   }
@@ -243,6 +247,106 @@ bondvr <- function(start, maturity, nominal, coupon, paymentFreq, role,
   }
   
   return(bnd1)
+}
+
+# **************************************
+#' \code{lam}
+#' 
+#'     Function lam() creates and returns a fixed or variable rate LAM
+#'
+#'     Convenience function with a simplified parameter list to create and 
+#'     initialize a single Annuity fixed or variable rate mortgage contract.
+#' .
+#'     Variable rate bonds  are identified by a nonnull rateResetFrequency. For 
+#'     these variable rate bonds the default marketObjectCodeOfRateReset is 
+#'     "YC_EA_AAA"
+#'     
+#'     Terms statusDate and contractDealDate are set 1 day before start date. 
+#'     Term initialExchangeDate is set to start date. The cycleAnchorDates for
+#'     Interest and principal payments are set at ( IED + a period ). The 
+#'     maturityDate is set ( IED + Maturity period) defaults are set for 
+#'     currency, dayCountConvention, Calendar. Role, notionaPrincipal and 
+#'     nominalInterestRate are set as specified in the parameter list.
+#'              
+#' 
+#' @param start   character string yyyy-mm-dd the start date of the mortgage.
+#' @param maturity   character string setting the lifetime of the mortgage.
+#' @param nominal    numeric to set the notional principal of the bond,
+#' @param coupon     numeric initial interest rate 0.02 = 2pcpa default is 0.0.
+#' @param paymentFreq character string period of payments (interest + principal)
+#' @param role      character string setting whether lender or borrower role. 
+#' @param rateResetFreq optional character string setting a period of RateReset
+#' @param rateResetSpread optional numeric with rate spread for variable rate
+#' @return    initialized Annuity contract contract with specified attributes.
+#' @usage  lam(start, maturity, nominal, coupon, paymentFreq, role, 
+#'                  rateResetFreq, rateResetSpread )
+#' @examples {
+#'     l <- lam("2020-12-31", maturity = "10 years", nominal = 10000,
+#'               coupon = 0.07, paymentFreq = "3 months", role = "long",
+#'               rateResetFreq = "1 year", rateResetSpread = 0.01 )
+#'     }
+#' @include LinearAmortizer.R 
+#' @importFrom   lubridate period
+#' @importFrom   lubridate ymd
+#' @export
+lam <- function(start, maturity, nominal, coupon, paymentFreq, role,
+                     rateResetFreq=NULL, rateResetSpread=NULL){
+  lam1 <- LinearAmortizer()
+  
+  # Set contract identifying keys 
+  lam1$contractTerms[["contractType"]]  <- "LAM"
+  lam1$contractTerms[["contractID"]]    <- "lam001"
+  
+  # set contract IED
+  if (missing(start)){
+    stop("Parameter 'start' must be set to yyyy-mm-dd date !!!")
+  }
+  # other required atomic fields 
+  lam1$contractTerms[["initialExchangeDate"]] <- start # T00:00:00 to be added
+  
+  startDate <- lubridate::ymd(start)
+  lam1$contractTerms[["contractDealDate"]] <- as.character( startDate 
+                                                            - lubridate::period("1 day"))
+  lam1$contractTerms[["statusDate"]] <-  as.character( startDate 
+                                                       - lubridate::period("1 day"))
+  lam1$contractTerms[["maturityDate"]] <-  as.character( startDate 
+                                                         + lubridate::period(maturity))
+  lam1$contractTerms[["notionalPrincipal"]] <- nominal
+  lam1$contractTerms[["nominalInterestRate"]] <- coupon
+  
+  if(role=="long") {
+    lam1$contractTerms[["contractRole"]]  <- "RPA"
+  } else {
+    lam1$contractTerms[["contractRole"]] <- "RPL"
+  }
+  
+  lam1$contractTerms[["currency"]] <- "CHF"
+  lam1$contractTerms[["calendar"]] <- "NC"
+  lam1$contractTerms[["dayCountConvention"]] <- "30E360"
+  
+  # principal  and interest payments
+  payPeriod <- lubridate::period(paymentFreq)
+  payPcode <- period2code(paymentFreq)
+  firstPaymentDate <-   lubridate::add_with_rollback(startDate,
+                                                     payPeriod ) 
+  lam1$contractTerms[["cycleAnchorDateOfPrincipalRedemption"]] <- 
+    firstPaymentDate
+  lam1$contractTerms[["cycleAnchorDateOfInterestPayment"]] <- 
+    firstPaymentDate
+  lam1$contractTerms[["cycleOfPrincipalRedemption"]] <- payPcode
+  lam1$contractTerms[["cycleOfInterestPayment"]]     <- payPcode
+  
+  # if variable rate add RateReset terms 
+  if ( !(is.null(rateResetFreq) || rateResetFreq=="Fixed rate") ) {
+    rrPeriod <- lubridate::period(rateResetFreq)
+    rrPcode  <- period2code(rateResetFreq)
+    lam1$contractTerms[["cycleAnchorDateOfRateReset"]] <-
+      lubridate::add_with_rollback(startDate, rrPeriod) 
+    lam1$contractTerms[["cycleOfRateReset"]] <- rrPcode
+    lam1$contractTerms[["marketObjectCodeOfRateReset"]] <- "YC_EA_AAA"
+  }
+  
+  return(lam1)
 }
 
 # ****************************

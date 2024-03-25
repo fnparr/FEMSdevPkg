@@ -44,6 +44,7 @@ ImportFrom: methods new
 Encoding: UTF-8
 LazyData: true
 Collate: 
+    'Accounts.R'
     'ContractModel.R'
     'ContractABC.R'
     'ContractType.R'
@@ -55,20 +56,20 @@ Collate:
     'yearFraction.R'
     'YieldCurve.R'
     'ContractAnalysis.R'
-    'Accounts.R'
-    'FinancialModel.R'
     'ContractLeg.R'
+    'LinearAmortizer.R'
     'PrincipalAtMaturity.R'
     'singleContract.R'
     'EventSeries.R'
     'ContractPlot.R'
+    'FinancialModel.R'
     'Option.R'
     'ReferenceIndex.R'
     'demoSteps.R'
     'generatePortfolioData.R'
     'runShinyDemo.R'
     'util.R'
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.1
 Suggests:
     knitr,
     rmarkdown,

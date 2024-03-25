@@ -79,7 +79,7 @@ setMethod("FinancialModel", c(),
 #' 
 #' @return  FinancialModel S4 object: ready for analyses to be added 
 #' @export
-#' Hold off on examples until tested and sample Enterprise portfolio added 
+#' @examples {Hold off on examples until tested and sample Enterprise portfolio added}
 #'
 setMethod("FinancialModel", 
 c ( fmID = "character", fmDescr = "character", entprID = "character",
