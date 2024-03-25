@@ -47,9 +47,13 @@ accounts$Climb(name="Assets")$Climb(name="ShortTerm")$path[1]
 accounts <- setUniqueNodeIDs(accounts)
 print(accounts,"nodeID","actusCIDs", "functionIDs")
 
-# Test  5.  convert to data frame - row per leaf node - string of CIDs 
+# Test  5.1  convert to data frame - row per leaf node - string of CIDs 
 treemap2 <- ToDataFrameTable(accounts,"path","nodeID","actusCIDs","liquidity")
 treemap2
+# Test 5.2 convert to list of row prefixes ; use this for building reports
+treedf <- as.data.frame(accounts)
+treedf$levelName[1]
+treedf$levelName[2]
 
 #Test 6.  use cid2NodeIdMap function to relate CIDs to owning NodeID 
 mp <- cid2NodeIdMap(accounts) 
