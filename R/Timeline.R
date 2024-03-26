@@ -90,7 +90,8 @@ setMethod(f = "Timeline", signature = c(),
 #' tl<-Timeline("2024-01-01", 3, 4, 8)
 #' }
 setMethod(f = "Timeline", 
-          signature = c("character","numeric", "numeric", "numeric"),
+          signature = c(statusDate="character",monthsPerPeriod="numeric", 
+                        reportCount= "numeric", periodCount= "numeric"),
           definition = function(statusDate, monthsPerPeriod, reportCount, 
                                 periodCount){
             tl <- Timeline()

@@ -52,6 +52,8 @@ rm(list=ls())
 
 # Test 0.0 : Create and unit test a timeline  
 tl <- Timeline("2024-01-01", 3, 4, 8) 
+tl <- Timeline( statusDate="2024-01-01",monthsPerPeriod = 3,reportCount = 4,
+                periodCount = 8)
 date2PeriodIndex(tl, "2025-02-01")
 date2PeriodIndex(tl, "2025-04-01")
 date2PeriodIndex(tl,"2027-12-31")
