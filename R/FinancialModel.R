@@ -95,7 +95,7 @@ function (fmID, fmDescr, entprID, accounts, ptf, curr, timeline, serverURL) {
   fm$portfolio                  <- ptf
   fm$currency                   <- curr
   fm$timeline                   <- timeline
-  fm$ACTUSserverURL             <- serverURL
+  fm$serverURL             <- serverURL
   return (fm)
   }
 )

@@ -202,10 +202,10 @@ setMethod (f = "generateEvents",
                 logmsg <- "Contract simulations were successful"
              }
              else {
-                cntan$cashFlowEvents <- NULL
+                cntan$cashflowEventsLoL <- list()
                 logmsg <- paste0("Contract simulation error. status_code= ",
-                                 simulationRsp$status_code,
-                                 "Error info= ", response_content$error)
+                                 simulationRsp$status_code)
+   #                              "Error info= ", content$error)
              }
              return(logmsg) 
            }
