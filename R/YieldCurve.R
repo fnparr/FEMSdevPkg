@@ -39,6 +39,14 @@ setRefClass("YieldCurve",
               compoundingFrequency = "character"
             ))
 
+
+# ***********************************************************
+# tenorNames2yfs(tnames)
+#    function to convert a vector of tenor names to a numeric vector of
+#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
+#    used in YieldCurve( ) constructor but not exported; converted tenorNames
+#    vector saved in yc$tenorYffs
+# ***********************************************************
 tenorNames2yfs <- function(tnames) {
   # computing tenors as year fractions 
   # get units as year fractions; pick up last char of tenorNames  and map to
@@ -74,14 +82,6 @@ setMethod(f = "YieldCurve", signature = c(),
 
 # ***********************************************************************
 #  YieldCurve() exported constructor for YieldCurve objects 
-
-# ***********************************************************
-# tenorNames2yfs(tnames)
-#    function to convert a vector of tenor names to a numeric vector of
-#    year fractions e.g. tnames= ["1D" "1W" "1M" "6M" "1Y" "1.5Y" "2Y"] 
-#    used in YieldCurve( ) constructor but not exported; converted tenorNames
-#    vector saved in yc$tenorYffs
-# ***********************************************************
 #' YieldCurve(yieldCurveID, referenceDate, tenorRates, dayCountConvention,
 #'             compoundingFrequency )
 #'

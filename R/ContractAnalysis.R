@@ -62,10 +62,10 @@ setMethod("ContractAnalysis", c(),
           )
 
 # ************************************************************************
-# ContractAnalysis( < > ) constructor to create/initialize a ContractAnalysis
+# initContractAnalysis(< >) creates/initializes a ContractAnalysis instance
 # ************************************************************************
-#' ContractAnalysis(analysisID, analysisDescription, enterpriseID, yieldCurve, 
-#'                  portfolio, currency, scenario, actusServerURL, Timeline )
+#' initContractAnalysis(analysisID, analysisDescription, enterpriseID, 
+#' yieldCurve, portfolio, currency, scenario, actusServerURL, Timeline )
 #'
 #'   This method is used to start a cashflow analysis of contract holdings of 
 #'   an enterprise. The user supplies information specifying the analysis to 
@@ -114,7 +114,7 @@ setMethod("ContractAnalysis", c(),
 #'    serverURL <- "https://demo.actusfrf.org:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-#'    cfla <- ContractAnalysis( analysisID = "cfla001",
+#'    cfla <- initContractAnalysis( analysisID = "cfla001",
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001",
 #'                              yieldCurve = YieldCurve(),
@@ -125,19 +125,18 @@ setMethod("ContractAnalysis", c(),
 #'                              timeline = Timeline())
 #'  }
 #'
-setMethod("ContractAnalysis", 
-          c ( analysisID = "character",
-              analysisDescription = "character",
-              enterpriseID = "character",
-              yieldCurve = "YieldCurve",
-              portfolio = "Portfolio",
-              currency = "character",
-              scenario = "list",
-              actusServerURL = "character",
-              timeline = "Timeline"
-              ), 
-           function (analysisID, analysisDescription, enterpriseID, yieldCurve, 
-                     portfolio, currency, scenario, actusServerURL, timeline) {
+initContractAnalysis <- function (
+              analysisID = " ",
+              analysisDescription = " ",
+              enterpriseID = " ",
+              yieldCurve = YieldCurve(),
+              portfolio = Portfolio(),
+              currency = " ",
+              scenario = list(),
+              actusServerURL = " ",
+              timeline = Timeline()
+              )
+ {
             cfla <- ContractAnalysis()
             cfla$analysisID <-          analysisID
             cfla$analysisDescription <- analysisDescription
@@ -149,7 +148,7 @@ setMethod("ContractAnalysis",
             cfla$actusServerURL <-      actusServerURL
             cfla$timeline <-            timeline
             return(cfla)
-          })
+          }
 
 # ************************************************************************
 # generateEvents(<ContractAnalysis> )
@@ -178,7 +177,7 @@ setMethod("ContractAnalysis",
 #'    serverURL <- "https://demo.actusfrf.org:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-#'    cfla <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf, currency = "USD", 
@@ -259,7 +258,7 @@ setGeneric("events2dfByPeriod",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -333,7 +332,7 @@ setGeneric("liquidityByPeriod2vec",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -409,7 +408,7 @@ setGeneric("lv2LiquidityReports",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -500,7 +499,7 @@ setGeneric("eventsdf2incomeReports",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 
@@ -686,7 +685,7 @@ setMethod(f = "nominalValueReports",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
-#'    cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+#'    cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
 #'                              analysisDescription = "this_analysis_descr",
 #'                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
 #'                              portfolio =  ptf2015, currency = "USD", 

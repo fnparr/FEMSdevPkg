@@ -31,7 +31,7 @@ The generateEvents(ContractAnalysis) function takes as input a S4
    serverURL <- "https://demo.actusfrf.org:8080/"
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-   cfla <- ContractAnalysis( analysisID = "cfla001", 
+   cfla <- initContractAnalysis( analysisID = "cfla001", 
                              analysisDescription = "this_analysis_descr",
                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
                              portfolio =  ptf, currency = "USD", 

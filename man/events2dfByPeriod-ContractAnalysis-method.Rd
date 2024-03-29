@@ -47,7 +47,7 @@ This method reorganizes a list(by contract) of lists of cashflow events
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
    tl1 <- Timeline("2015-01-01",3,4,8)
-   cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+   cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
                              analysisDescription = "this_analysis_descr",
                              enterpriseID = "entp001", yieldCurve = YieldCurve(),
                              portfolio =  ptf2015, currency = "USD", 
