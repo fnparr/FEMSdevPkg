@@ -29,6 +29,7 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     aslo available in the installSampledata directory. 
 License: GPL ( >=2)
 Imports:
+      data.tree,
       fmdates,
       ggplot2,
       httr,
@@ -37,6 +38,7 @@ Imports:
       methods,
       shiny,
       shinythemes,
+      TAF,
       timeDate,
       timeSeries,
       zoo

@@ -143,6 +143,7 @@ fixNvrs <- function(cnvrsList){
    })
 }
 nnvrs <- fixNvrs(cfla$nominalValueReports)
+nnvrs
 
 # Test 5:  can we display aggregated nominal Values in the accounts tree 
 
