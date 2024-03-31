@@ -43,7 +43,7 @@ This method reorganizes the cashflowEventsByPeriod df to show the liquidity
    ptf   <-  samplePortfolio(cdfn)
    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-   serverURL <- "https://demo.actusfrf.org:8080/"
+   serverURL <-   "http://ractus.ch:8080/" 
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -54,7 +54,7 @@ This method reorganizes the cashflowEventsByPeriod df to show the liquidity
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(cfla = cfla2015)
+   logMsgs1  <- generateEvents(cntan = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 } 

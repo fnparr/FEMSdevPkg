@@ -106,7 +106,7 @@ setGeneric(name = "generateEventSeries",
 #' @examples{
 #'   pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 50000,
 #'                coupon = 0.02, paymentFreq = "1 years", role = "long")
-#'   serverURL <- "https://demo.actusfrf.org:8080/"
+#'   serverURL <- "http://ractus.ch:8080/"
 #'   evs1 <-generateEventSeries(pam1, list(), serverURL)
 #'  }
 #' @export

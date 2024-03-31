@@ -73,7 +73,7 @@ This method is used to start a cashflow analysis of contract holdings of
    installSampleData(mydatadir)
    cdfn  <- "~/mydata/BondPortfolio.csv"
    ptf   <-  samplePortfolio(cdfn)
-   serverURL <- "https://demo.actusfrf.org:8080/"
+   serverURL <- "http://ractus.ch:8080/" 
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
    cfla <- initContractAnalysis( analysisID = "cfla001",

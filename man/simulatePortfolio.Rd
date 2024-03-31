@@ -44,7 +44,7 @@ This functions takes as input (1) a portfolio of ACTUS contracts (2) a list
    falling_fp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx_falling <- sampleReferenceIndex(falling_fp,"UST5Y_fallingRates", 
                                    "YC_EA_AAA",100)
-   serverURL <- "https://demo.actusfrf.org:8080/"
+   serverURL <- "http://ractus.ch:8080/"
    plotlist <- simulatePortfolio(ptf, serverURL, list(rfx_falling),
                                rfx_falling$riskFactorID ) 
    plotlist[["monthly income"]]                               
