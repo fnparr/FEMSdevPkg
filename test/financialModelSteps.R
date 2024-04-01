@@ -41,3 +41,9 @@ cdfn  <- "~/mydata/fmTestPortfolio.csv"
 ptf   <-  samplePortfolio(cdfn)
 unlist(ptf$contracts[[1]]$contractTerms)
 
+# Step 4: Create a Timeline setting Status and report dates, period etc 
+tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, reportCount=3,
+               periodCount = 6)
+
+
+
