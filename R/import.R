@@ -260,7 +260,7 @@ installSampleData <- function (mydatadir){
                 "OptionsPortfolio.csv", "RiskFactors.csv",
                 "UST5Y_fallingRates.csv", "UST5Y_recoveringRates.csv",
                 "UST5Y_risingRates.csv", "UST5Y_steadyRates.csv",
-                "testptf1.csv", "testptf2.csv")) {
+                "testptf1.csv", "testptf2.csv", "fmTestPortfolio.csv")) {
     pn <- paste0(mydatadir,"/",fn)
     file.copy(from = system.file("extdata",fn, package = "FEMSdevPkg"),
               to = pn, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)

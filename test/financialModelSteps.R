@@ -29,7 +29,15 @@ Operations:
      functionIDs:
         - ocf008
 "
+yamlstring
 # Step 2: Use string above to create an accounts tree 
 accountsTree <- AccountsTree(yamlstring) 
 print(accountsTree$root,"actusCIDs", "nodeID")
+
+# Step 3: Import ACTUS contract definitions for the Financial Model Portfolio
+datadir <- "~/mydata"
+installSampleData(datadir)
+cdfn  <- "~/mydata/fmTestPortfolio.csv"
+ptf   <-  samplePortfolio(cdfn)
+unlist(ptf$contracts[[1]]$contractTerms)
 
