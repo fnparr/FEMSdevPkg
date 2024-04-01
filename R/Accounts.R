@@ -4,6 +4,7 @@
 # a FinancialModel accounts tree 
 library(data.tree)
 setOldClass("Node")   # Allows data.tree::Node to be used in S4 object slots
+library(yaml)
 # ************
 # class AccountsTree
 #  the saved attributes for convenient identification of accountNodes
@@ -19,6 +20,65 @@ setRefClass("AccountsTree",
               specification = "character"
             ))
 
+# **************
+#  AccountsTree( ) constructors 
+# **** Generic S4 constructor method for class AccountsTree
+setGeneric("AccountsTree",
+           function(yamlstring) { standardGeneric("AccountsTree") }
+)
+
+#  ***** No parameters AccountsTree( )
+# AccountsTree ( )  - no parameters instance of AccountsTree()  
+#   no parameters method for internal use only 
+# Creates and returns an empty AccountsTree with no attributes initialized. 
+setMethod("AccountsTree", c(), 
+          function(){ return( new("AccountsTree")) }
+)
+
+# ****** exported user AccountsTree(yamlstring)
+# ************************************************************************
+# AccountsTree(yamlstring) creates/initializes an AccountsTree instance
+# ************************************************************************
+#' AccountsTree(yamlstring )
+#'
+#' This method creates and initializes a new data.tree AccountsTree instance.
+#' Input paramter yamlstring is a character string  in yaml format describing 
+#' the desired AccountsTree structure using indentation for accounts nodes at 
+#' lower levels and listing zero or more ACTUS contractIDs at leaf nodes. The 
+#' tree is created in the $root attribute of the AccountsTree. Its nodes are 
+#' assigned unique nodeIDs. The new AccountsTree objects is returned 
+#' 
+#' @param yamlstring  character: string describing tree structure see examples
+#' @return  AccountsTree S4 object: initialized, ready for Financial Model use
+#' @export
+#' @import data.tree
+#' @import yaml
+#' @examples {
+#' yamlstring <- 
+#' "
+#'  name:  modelBank 
+#'  Assets:
+#'    Current:
+#'      actusCIDs:
+#'        - pam001
+#'        - ann002
+#'    ShortTerm:
+#'      actusCIDs:
+#'        - pam003
+#'  Liabilities:
+#'    Debt:
+#' "
+#' accountsTree <- AccountsTree(yamlstring)
+#' }
+
+setMethod(f = "AccountsTree", signature = c(yamlstring="character"),
+          definition= function(yamlstring) {
+            accountsTree <- AccountsTree() 
+            accountsTree$root <- treeFromYamlString(yamlstring)
+            accountsTree$root <- setUniqueNodeIDs (accountsTree$root)
+            return(accountsTree)
+          })
+
 # ***********
 # Function to create treeFromYamlString
 treeFromYamlString <- function(yamlstring) 
@@ -26,10 +86,12 @@ treeFromYamlString <- function(yamlstring)
 
 # ***************
 # Function to assign unique NodeID at each node 
-setUniqueNodeIDs <- function(accounts) {
-  accounts$Set(nodeID = 1:accounts$totalCount)
-  return(accounts)
+setUniqueNodeIDs <- function(root) {
+  root$Set(nodeID = 1:root$totalCount)
+  return(root)
 }
+
+# ******** AccountsTree.R file organized up to here 
 
 # **********
 # Function to set empty reports attribute at each account

@@ -42,6 +42,7 @@ Imports:
       TAF,
       timeDate,
       timeSeries,
+      yaml,
       zoo
 ImportFrom: 
      methods new

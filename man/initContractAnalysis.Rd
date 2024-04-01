@@ -50,7 +50,7 @@ This method is used to start a cashflow analysis of contract holdings of
   risk scenario is defined as a list of projected market interest and 
   possibly stock price movements over time. Contract cashflow behavior is 
   simulated by calling out to an identified ACTUS server.  Input Yield curve
-  data is used to set discounting and risk free groth factors used to 
+  data is used to set discounting and risk free growth factors used to 
   determine a projected contract value at each defined future report time for
   each contract in the enterprise portfolio. 
   
