@@ -56,7 +56,7 @@ tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, reportCount=3,
                periodCount = 6)
 
 # Test 2.4 Now create financialModel 
-fm <- FinancialModel(fmID = fmID,fmDescr = fmDescr, entprID = entprID,
+fm <- initFinancialModel(fmID = fmID,fmDescr = fmDescr, entprID = entprID,
                      accounts = accounts, ptf = ptf, timeline = tl, 
                      curr = currency, serverURL = serverURL )
 class(fm)
@@ -78,7 +78,7 @@ rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 # The 100 parameter is the base level for JSON 
 scenario <-list(rfx)
 
-cfla <- ContractAnalysis( analysisID = fm$financialModelID,
+cfla <- initContractAnalysis( analysisID = fm$financialModelID,
                           analysisDescription = fm$financialModelDescription,
                           enterpriseID = fm$enterpriseID,
                           yieldCurve = YieldCurve(),
@@ -93,7 +93,7 @@ class(cfla)
 
 # Test 3.1:  
 # simulate the portfolio, this scenario; results go into cfla$cashflowEventsLoL
-logMsgs1 <- generateEvents(cntan= cfla)
+logMsgs1 <- generateEvents(scna= cfla)
 logMsgs1
 
 # check whether each contract was successfully simulated 
@@ -128,7 +128,7 @@ logMsgs5
 
 unlist(cfla$incomeReports)
 
-logMsgs6 <- nominalValueReports(cntan=cfla)
+logMsgs6 <- nominalValueReports(scna=cfla)
 logMsgs6
 unlist(cfla$nominalValueReports)
 cfla$nominalValueReports[[1]]

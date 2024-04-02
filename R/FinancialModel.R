@@ -93,7 +93,7 @@ initFinancialModel <- function(
   fm$portfolio                  <- ptf
   fm$currency                   <- curr
   fm$timeline                   <- timeline
-  fm$serverURL             <- serverURL
+  fm$serverURL                  <- serverURL
   return (fm)
   }
   

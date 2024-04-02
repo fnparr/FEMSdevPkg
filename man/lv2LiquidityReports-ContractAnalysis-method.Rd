@@ -53,7 +53,7 @@ This method generates a liquidityReport (vector) for each contract using
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(cntan = cfla2015)
+   logMsgs1  <- generateEvents(scna = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)

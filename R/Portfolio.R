@@ -84,10 +84,10 @@ setMethod(f = "Portfolio",
 #' @param ptf         S4 reference Class=Portfolio
 #' @param serverURL   character string, the URL of ACTUS server to call out to. 
 #' @param riskfactors list of S4 Class=ReferenceIndex
-#' @param cntan       ContractAnalysis S4 object with list of contracts 
+#' @param scna       ContractAnalysis S4 object with list of contracts 
 #' @return      List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL,riskFactors,cntan){
+           def = function(ptf,serverURL,riskFactors,scna){
              standardGeneric("generateEvents")
            })
 

@@ -54,7 +54,7 @@ This method reorganizes the cashflowEventsByPeriod df to show the liquidity
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(cntan = cfla2015)
+   logMsgs1  <- generateEvents(scna = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 } 

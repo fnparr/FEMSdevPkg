@@ -184,24 +184,24 @@ initContractAnalysis <- function (
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = Timeline())
-#'    logMsgs  <- generateEvents(cntan = cfla)
+#'    logMsgs  <- generateEvents(scna = cfla)
 #' }
 #'
 setMethod (f = "generateEvents", 
            signature = c(ptf="missing", serverURL="missing", 
-                         riskFactors="missing", cntan = "ContractAnalysis") ,
-           definition = function(cntan){
+                         riskFactors="missing", scna = "ContractAnalysis") ,
+           definition = function(scna){
              # sends input portfolio contracts and riskFactors to server as JSON
-             simulationRsp <- simulationRequest(cntan$portfolio,
-                                                cntan$actusServerURL,
-                                                cntan$scenario
+             simulationRsp <- simulationRequest(scna$portfolio,
+                                                scna$actusServerURL,
+                                                scna$scenario
                                                  )
              if (simulationRsp$status_code == 200 ){
-                cntan$cashflowEventsLoL <- content(simulationRsp)
+                scna$cashflowEventsLoL <- content(simulationRsp)
                 logmsg <- "Contract simulations were successful"
              }
              else {
-                cntan$cashflowEventsLoL <- list()
+                scna$cashflowEventsLoL <- list()
                 logmsg <- paste0("Contract simulation error. status_code= ",
                                  simulationRsp$status_code)
    #                              "Error info= ", content$error)
@@ -265,7 +265,7 @@ setGeneric("events2dfByPeriod",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(cntan = cfla2015)
+#'    logMsgs1  <- generateEvents(scna = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #' } 
 setMethod (f = "events2dfByPeriod", 
@@ -339,7 +339,7 @@ setGeneric("liquidityByPeriod2vec",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(cntan = cfla2015)
+#'    logMsgs1  <- generateEvents(scna = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #' } 
@@ -415,7 +415,7 @@ setGeneric("lv2LiquidityReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(cntan = cfla2015)
+#'    logMsgs1  <- generateEvents(scna = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
@@ -506,7 +506,7 @@ setGeneric("eventsdf2incomeReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(cntan = cfla2015)
+#'    logMsgs1  <- generateEvents(scna = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 #' } 
@@ -570,15 +570,15 @@ setMethod(f = "eventsdf2incomeReports",
 #  nominalValueReports(<contractAnalysis,cid>) - NV report for one contract cid 
 #  nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
 #. contracts in the contractAnalysis and saves in  
-#  cntan$nominalValueReports. Each NV report is a vector of numeric
+#  scna$nominalValueReports. Each NV report is a vector of numeric
 #  the method returns a log msg - no known causes for error 
 #
-# nominalValueReports(cntan, cid)
+# nominalValueReports(scna, cid)
 #
-# This method instance uses the cntan$cashflowEventsByPeriod dataframe 
+# This method instance uses the scna$cashflowEventsByPeriod dataframe 
 # and returns a vector of nominalValue reports for the contract with
 # contractId == cid 
-# The returned reportVector has length= cntan$timeline$reportCount+1) because a
+# The returned reportVector has length= scna$timeline$reportCount+1) because a
 # valuation at time 0  i.e. statusDate is included 
 # **********
 # Consistency of the reportMethods for liquidity, income, nominal
@@ -591,7 +591,7 @@ setMethod(f = "eventsdf2incomeReports",
 #  **** Generic nominalValueReports(<>) ********
 # A generic method for creating and saving a list of nominalValueReports  
 setGeneric("nominalValueReports",
-           function(cntan, cid) 
+           function(scna, cid) 
            { standardGeneric("nominalValueReports") }
 )
 #  **** Single contract nominalValueReports(<>) ********
@@ -600,22 +600,22 @@ setGeneric("nominalValueReports",
 #  report with nominalValuations at statusDate and each report date
 
 setMethod(f = "nominalValueReports",
-          signature = c(cntan = "ContractAnalysis", cid= "character"),
-          definition = function(cntan, cid) {
-  #  cntan <- cfla2015
+          signature = c(scna = "ContractAnalysis", cid= "character"),
+          definition = function(scna, cid) {
+  #  scna <- cfla2015
   #  cid <- 101
-  df <- cntan$cashflowEventsByPeriod
+  df <- scna$cashflowEventsByPeriod
   # subset df: this cid,  report horizon rows; <periodIndex, nominalValue> cols
-  nreps <- cntan$timeline$reportCount
+  nreps <- scna$timeline$reportCount
   df1 <- df[(df$contractId == cid) & (df$periodIndex <= nreps),]
   df2 <- df1[c("periodIndex","nominalValue")]
   # Keep the last-in-period event rows - discard earlier event rows  
   df3 <- df2[sapply(unique(df2$periodIndex), function(x)
     max(which(x == df2$periodIndex)) 
   ),]
-  # get nominalValue of contract cid at statusDate from cntan$portfolio
+  # get nominalValue of contract cid at statusDate from scna$portfolio
   # (contracts are in portfolio order in df3) 
-  nvsd  <- cntan$portfolio$contracts[[match(cid,unique(df$contractId))
+  nvsd  <- scna$portfolio$contracts[[match(cid,unique(df$contractId))
   ]]$contractTerms["notionalPrincipal"]
   # pass1 report:  has values for any "active period" report 
   rvals <- unlist(sapply(seq(1,nreps), function (i) {
@@ -634,23 +634,23 @@ setMethod(f = "nominalValueReports",
 })
 
 #'  *******************************
-#'   nominalValues(cntan = ContractAnalysis) - exported method instance
+#'   nominalValues(scna = ContractAnalysis) - exported method instance
 #' *******************************
 #' 
 #' nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
-#' contracts in the contractAnalysis and saves this in cntan$nominalValueReports.
+#' contracts in the contractAnalysis and saves this in scna$nominalValueReports.
 #' Each NV report is a vector of numeric values - one for statusDate and a 
-#' value for each reportDate, so cntan$nominalValueReports is a list of 
+#' value for each reportDate, so scna$nominalValueReports is a list of 
 #' list(cid,nominalValueVector) elements. 
 #' The method returns a log msg - no known causes for error 
 #'
-#' Method nominalValueReports(cntan) uses cntan$cashflowEventsByPeriod dataframe
+#' Method nominalValueReports(scna) uses scna$cashflowEventsByPeriod dataframe
 #' for input data except for the statusDate value for each contract which comes 
-#' from cntan$portfolio.
+#' from scna$portfolio.
 #' 
 #' ************
 #' We get nominalValue at each reportDate for a specific contract as follows: 
-#' Step(1): subset the cntan$cashflowEventsByPeriod dataframe to rows with this
+#' Step(1): subset the scna$cashflowEventsByPeriod dataframe to rows with this
 #' cid and periodIndex == a report period i.e. periodIndex <= reportCount. 
 #' Step(2): subset this dataframe to the columns: periodIndex and nominalValue.
 #' Step(3): subset further: for each period make a list of eventrow indexes for
@@ -669,7 +669,7 @@ setMethod(f = "nominalValueReports",
 #' is by reapplying the single contract algorithm to the events dataframe for
 #' each unique cid in the events dataframe
 #'      
-#' @param cntan  ContractsAnalysis S4 object with portfolio, cashflowevents data
+#' @param scna  ContractsAnalysis S4 object with portfolio, cashflowevents data
 #' @return      Log summarizing whether processing was successful
 #' @import zoo
 #' @importFrom zoo na.locf  
@@ -692,17 +692,17 @@ setMethod(f = "nominalValueReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(cntan = cfla2015)
+#'    logMsgs1  <- generateEvents(scna = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
-#'    logMsgs6  <- nominalValueReports(cntan= cfla2015)
+#'    logMsgs6  <- nominalValueReports(scna= cfla2015)
 #' } 
      
 setMethod(f = "nominalValueReports",
-          signature = c(cntan = "ContractAnalysis"),
-          definition = function(cntan) {
-  df <- cntan$cashflowEventsByPeriod
-  cntan$nominalValueReports <- lapply( unique(df$contractId), function(cid) {
-    list(cid= cid, nvreps= nominalValueReports(cntan,cid))
+          signature = c(scna = "ContractAnalysis"),
+          definition = function(scna) {
+  df <- scna$cashflowEventsByPeriod
+  scna$nominalValueReports <- lapply( unique(df$contractId), function(cid) {
+    list(cid= cid, nvreps= nominalValueReports(scna,cid))
   })
   msg <- "NominalValue reports generated"
   return(msg)

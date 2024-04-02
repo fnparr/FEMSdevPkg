@@ -59,7 +59,7 @@ date2PeriodIndex(tl, "2025-04-01")
 date2PeriodIndex(tl,"2027-12-31")
 
 # Test 1.0 create ContractAnalysis - essential fields only - others class()
-cfla <- ContractAnalysis( analysisID = "cfla001",
+cfla <- initContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -80,7 +80,7 @@ mydatadir <- "~/mydata"
 installSampleData(mydatadir)
 cdfn  <- "~/mydata/BondPortfolio.csv"
 ptf <- samplePortfolio(cdfn)
-cfla <- ContractAnalysis( analysisID = "cfla001",
+cfla <- initContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -96,18 +96,6 @@ cntr1<-cfla$portfolio$contracts[[1]]
 typeof(cntr1)
 class(cntr1)
 unlist(cntr1$contractTerms)
-ptf1 <- Portfolio(cntr1)
-length(ptf1$contracts)
-cfla1 <- ContractAnalysis( analysisID = "cfla001",
-                          analysisDescription = "this_analysis_descr",
-                          enterpriseID = "entp001",
-                          yieldCurve = YieldCurve(),
-                          portfolio =  ptf1,
-                          currency = "USD",
-                          scenario = list(),
-                          actusServerURL = "https://dadfir3-app.zhaw.ch/",
-                          timeline = Timeline())
-#                         actusServerURL = "https://demo.actusfrf.org:8080/",
 
 # Test 2.0 we have to modify the definition of generic generateEvents() to 
 #        add a ContractAnalysis (cfla) parameter - so provide retesting 
@@ -147,7 +135,7 @@ pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
                coupon = 0.02, paymentFreq = "1 year", role = "long",
                rateResetFreq = "Fixed rate")
 ptf1 <- Portfolio(pam1)
-cfla1 <- ContractAnalysis( analysisID = "cfla001",
+cfla1 <- initContractAnalysis( analysisID = "cfla001",
                            analysisDescription = "this_analysis_descr",
                            enterpriseID = "entp001",
                            yieldCurve = YieldCurve(),
@@ -157,7 +145,7 @@ cfla1 <- ContractAnalysis( analysisID = "cfla001",
                            actusServerURL = serverURL,
                            timeline = Timeline()
                            )
-msg <- generateEvents(cntan= cfla1)
+msg <- generateEvents(scna= cfla1)
 cfla1$cashflowEventsLoL[[1]]$status
 
 #Test 3.1 generateEvents(<ContractAnalysis>)  sample PAM portfolio
@@ -170,7 +158,7 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 # serverURL<- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-cfla <- ContractAnalysis( analysisID = "cfla001",
+cfla <- initContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -179,7 +167,7 @@ cfla <- ContractAnalysis( analysisID = "cfla001",
                           scenario = list(rfx),
                           actusServerURL = serverURL,
                           timeline = Timeline())
-msg <- generateEvents(cntan= cfla)
+msg <- generateEvents(scna= cfla)
 unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)}))
 
 #Test 3.2 include real Timeline in ContractAnalysis - prelim to events2dfByPeriod
@@ -206,7 +194,7 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 # serverURL<- "http://localhost:8083/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-cfla2015 <- ContractAnalysis( analysisID = "cfla001",
+cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                           analysisDescription = "this_analysis_descr",
                           enterpriseID = "entp001",
                           yieldCurve = YieldCurve(),
@@ -215,7 +203,7 @@ cfla2015 <- ContractAnalysis( analysisID = "cfla001",
                           scenario = list(rfx),
                           actusServerURL = serverURL,
                           timeline = tl1 )
-msg <- generateEvents(cntan= cfla2015)
+msg <- generateEvents(scna= cfla2015)
 unlist(lapply(cfla2015$cashflowEventsLoL,function(x){return(x$status)}))
 
 # Test 3.3 now write and test events2dfByPeriod(cfla) function using timeline
@@ -232,14 +220,14 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,8)
-cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 
                               scenario = list(rfx), 
                               actusServerURL = serverURL, 
                               timeline = tl1)
-logMsgs1  <- generateEvents(cntan = cfla2015)
+logMsgs1  <- generateEvents(scna = cfla2015)
 logMsgs2  <- events2dfByPeriod(cfla = cfla2015)
 logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 cfla2015$contractLiquidityVectors[["102"]]
@@ -258,14 +246,14 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,4,10)
-cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 
                               scenario = list(rfx), 
                               actusServerURL = serverURL, 
                               timeline = tl1)
-logMsgs1  <- generateEvents(cntan = cfla2015)
+logMsgs1  <- generateEvents(scna = cfla2015)
 logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 logMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
@@ -286,15 +274,16 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 tl1 <- Timeline("2015-01-01",3,8,16)
-cfla2015 <- ContractAnalysis( analysisID = "cfla001", 
+cfla2015 <- initContractAnalysis( analysisID = "cfla001", 
                               analysisDescription = "this_analysis_descr",
                               enterpriseID = "entp001", yieldCurve = YieldCurve(),
                               portfolio =  ptf2015, currency = "USD", 
                               scenario = list(rfx), 
                               actusServerURL = serverURL, 
                               timeline = tl1)
-logMsgs1  <- generateEvents(cntan = cfla2015)
+logMsgs1  <- generateEvents(scna = cfla2015)
 logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 
 logMsgs6 <- nominalValueReports(cfla2015)
+logMsgs6

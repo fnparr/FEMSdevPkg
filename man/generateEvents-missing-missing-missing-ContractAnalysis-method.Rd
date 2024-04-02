@@ -4,7 +4,7 @@
 \alias{generateEvents,missing,missing,missing,ContractAnalysis-method}
 \title{generateEvents(<ContractAnalysis>)}
 \usage{
-\S4method{generateEvents}{missing,missing,missing,ContractAnalysis}(cntan)
+\S4method{generateEvents}{missing,missing,missing,ContractAnalysis}(scna)
 }
 \arguments{
 \item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
@@ -38,7 +38,7 @@ The generateEvents(ContractAnalysis) function takes as input a S4
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = Timeline())
-   logMsgs  <- generateEvents(cntan = cfla)
+   logMsgs  <- generateEvents(scna = cfla)
 }
 
 }

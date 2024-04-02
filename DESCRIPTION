@@ -71,6 +71,7 @@ Collate:
     'FinancialModel.R'
     'Option.R'
     'ReferenceIndex.R'
+    'ScenarioAnalysis.R'
     'demoSteps.R'
     'generatePortfolioData.R'
     'runShinyDemo.R'

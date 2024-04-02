@@ -3,33 +3,33 @@
 \name{nominalValueReports,ContractAnalysis,ANY-method}
 \alias{nominalValueReports,ContractAnalysis,ANY-method}
 \title{*******************************
-  nominalValues(cntan = ContractAnalysis) - exported method instance
+  nominalValues(scna = ContractAnalysis) - exported method instance
 *******************************}
 \usage{
-\S4method{nominalValueReports}{ContractAnalysis,ANY}(cntan)
+\S4method{nominalValueReports}{ContractAnalysis,ANY}(scna)
 }
 \arguments{
-\item{cntan}{ContractsAnalysis S4 object with portfolio, cashflowevents data}
+\item{scna}{ContractsAnalysis S4 object with portfolio, cashflowevents data}
 }
 \value{
 Log summarizing whether processing was successful
 }
 \description{
 nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
-contracts in the contractAnalysis and saves this in cntan$nominalValueReports.
+contracts in the contractAnalysis and saves this in scna$nominalValueReports.
 Each NV report is a vector of numeric values - one for statusDate and a 
-value for each reportDate, so cntan$nominalValueReports is a list of 
+value for each reportDate, so scna$nominalValueReports is a list of 
 list(cid,nominalValueVector) elements. 
 The method returns a log msg - no known causes for error
 }
 \details{
-Method nominalValueReports(cntan) uses cntan$cashflowEventsByPeriod dataframe
+Method nominalValueReports(scna) uses scna$cashflowEventsByPeriod dataframe
 for input data except for the statusDate value for each contract which comes 
-from cntan$portfolio.
+from scna$portfolio.
 
 ************
 We get nominalValue at each reportDate for a specific contract as follows: 
-Step(1): subset the cntan$cashflowEventsByPeriod dataframe to rows with this
+Step(1): subset the scna$cashflowEventsByPeriod dataframe to rows with this
 cid and periodIndex == a report period i.e. periodIndex <= reportCount. 
 Step(2): subset this dataframe to the columns: periodIndex and nominalValue.
 Step(3): subset further: for each period make a list of eventrow indexes for
@@ -67,8 +67,8 @@ each unique cid in the events dataframe
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(cntan = cfla2015)
+   logMsgs1  <- generateEvents(scna = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
-   logMsgs6  <- nominalValueReports(cntan= cfla2015)
+   logMsgs6  <- nominalValueReports(scna= cfla2015)
 } 
 }

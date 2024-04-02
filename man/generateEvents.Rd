@@ -4,14 +4,14 @@
 \alias{generateEvents}
 \title{generateEvents < >     Generic method definition}
 \usage{
-generateEvents(ptf, serverURL, riskFactors, cntan)
+generateEvents(ptf, serverURL, riskFactors, scna)
 }
 \arguments{
 \item{ptf}{S4 reference Class=Portfolio}
 
 \item{serverURL}{character string, the URL of ACTUS server to call out to.}
 
-\item{cntan}{ContractAnalysis S4 object with list of contracts}
+\item{scna}{ContractAnalysis S4 object with list of contracts}
 
 \item{riskfactors}{list of S4 Class=ReferenceIndex}
 }
