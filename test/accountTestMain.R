@@ -201,6 +201,32 @@ pairs2keylist <- function(pairs,kf,vf) {
   return(outList)
 }
 knnvrs <-pairs2keylist(nnvrs,"cid","nvreps")
+
+# *********************************
+# ScenarioAnalysis Tests
+# We want a version of ScenarioAnalysis 
+# with unexported functions for each of the ContractAnalysisSteps
+# we will then have a exported versions with (1) financialModel, optio scID 
+# ********************************
+# Test scna01: create an empty ScenarioAnalysis
+scna <- ScenarioAnalysis()
+class(scna)
+
+# ***********
+# Test scna02: create a (ready for work) initialized ScenarioAnalysis
+# For a scenario with UST5Y  marketData
+rm(list=ls())
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+# The 100 parameter is the base level for JSON 
+marketData <-list(rfx)
+scenarioID <- "UST5Y_fallingRates"
+scna <-ScenarioAnalysis(scenarioID,marketData,YieldCurve())
+class(scna)
+scna$scenarioID
+
 # *********************
 # **** INCOMPLETE ( OLDER)  WORK TOWARD THIS FOLLOWS .... 
 # ***********************
