@@ -89,7 +89,13 @@ mydatadir <- "~/mydata"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 # The 100 parameter is the base level for JSON 
-scenario <-list(rfx)
+marketData <-list(rfx)
+addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
+                    yc = YieldCurve())
+
+
+# ********
+# Older ContractAnalysis Tests
 
 cfla <- initContractAnalysis( analysisID = fm$financialModelID,
                           analysisDescription = fm$financialModelDescription,

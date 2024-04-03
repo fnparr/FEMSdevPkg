@@ -65,3 +65,14 @@ fm <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
                          )
 class(fm)
 
+# Step 6 gather scenario data and add a scenarioAnalysis to this financialModel
+# 6.1 Gather reference index projections for MarketObjectCodes in this scenario
+datadir <- "~/mydata"
+# installSampleData(datadir)
+rxdfp <- paste0(datadir,"/UST5Y_fallingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+# The 100 parameter is the base level for JSON 
+marketData <-list(rfx)
+# no YieldCurve because we are not doing NetPresentValue yet 
+addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
+                    yc = YieldCurve())

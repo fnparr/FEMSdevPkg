@@ -35,7 +35,8 @@ setRefClass("FinancialModel",
               currency = "character",   # all analysis reports same currency 
               timeline = "Timeline",    # all analysis reports same timeline 
               serverURL = "character",  # URL contract simulation ACTUS server 
-              scenarioAnalysisList = "list"  # < ScenarioAnalysis> keyed scnID
+              scenarioAnalysisList = "list",  # < ScenarioAnalysis> keyed scnID
+              currentScenarioAnalysis = "ScenarioAnalysis"
                         )
            )
 # **************************************
@@ -94,4 +95,13 @@ initFinancialModel <- function(
   fm$scenarioAnalysisList       <- list()
   return (fm)
   }
+  
+addScenarioAnalysis <- function( fm = FinancialModel(), scnID = " ", 
+                                 rfxs = list(), yc = YieldCurve()
+){ scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, yieldCurve = yc)
+   fm$scenarioAnalysisList[scnID] <- list(scna=scna)
+   fm$currentScenarioAnalysis <- scna
+   msg<- "new scenarioAnalysis added to Financial Model and made current"
+   return(msg)
+}
   
