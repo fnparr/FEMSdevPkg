@@ -14,31 +14,28 @@
 # defines: class FInancialModel, FInancialModel() constructor,
 # defines and exports:
 #    Account ..
-library(data.tree)    
+# library(data.tree)    
 # *********************************************************************
 # class FinancialModel
 # *************************************
 #' @include YieldCurve.R
 #' @include Portfolio.R
 #' @include Timeline.R
-#' @include ContractAnalysis.R
-#' @import data.tree
-setOldClass("Node")   # Allows data.tree::Node to be used in S4 object slots 
+#' @include ScenarioAnalysis.R
+#  #' @import data.tree
+#' 
+# setOldClass("Node")   # Allows data.tree::Node to be used in S4 object slots 
 setRefClass("FinancialModel",
             fields = list(
               financialModelID = "character",
               financialModelDescription = "character",
               enterpriseID = "character",
-              accounts = "Node",         # define Account extends Node 
+              accountsTree = "AccountsTree",       
               portfolio = "Portfolio",
-              directContracts = "list",  # < DirectContract >
               currency = "character",   # all analysis reports same currency 
               timeline = "Timeline",    # all analysis reports same timeline 
               serverURL = "character",  # URL contract simulation ACTUS server 
-              analyses = "list",        # < ContractAnalysis> keyed ScenarioID
-              resultDfs= "list",     # selected results as dataframes
-              resultTrees = "list",  # selected results as trees
-              yieldCurve = "YieldCurve"  # as needed for NPV valuations
+              scenarioAnalysisList = "list"  # < ScenarioAnalysis> keyed scnID
                         )
            )
 # **************************************
@@ -48,7 +45,7 @@ setRefClass("FinancialModel",
 # Defines generic S4 constructor method for class FinancialModel 
 # include parameters for 
 setGeneric("FinancialModel",
-           function(fmID, fmDescr, entprID, accounts, ptf, curr, timeline, 
+           function(fmID, fmDescr, entprID, accntStr, ptf, curr, timeline, 
                     serverURL
                    ) { standardGeneric("FinancialModel") }
           )
@@ -71,7 +68,7 @@ setMethod("FinancialModel", c(),
 #' @param fmID   character: a unique ID for this financial model 
 #' @param fmDescr character: a short text describing the financial model 
 #' @param entprID character: a unique ID for the enterprise being modelled 
-#' @param accounts Node: tree structure, names- account lines in balance sheets
+#' @param accntsTree AccountsTree - enterprise accounts structure and CIDs
 #' @param ptf Portfolio: list of enterprise holdings - ACTUS contracts 
 #' @param curr character: currency for all analysis amounts e.g. CHF, EUR, USD  
 #' @param timeline Timeline - sets timing of projected balance sheet reports
@@ -82,18 +79,19 @@ setMethod("FinancialModel", c(),
 #'
 initFinancialModel <- function( 
     fmID = " ", fmDescr = " ", entprID = " ",
-    accounts = Node(), ptf = Portfolio(), curr = " ",
+    accntsTree = AccountsTree(), ptf = Portfolio(), curr = " ",
     timeline = Timeline(), serverURL = " "
     ) {
   fm <- FinancialModel()
   fm$financialModelID           <- fmID
   fm$financialModelDescription  <- fmDescr
   fm$enterpriseID               <- entprID
-  fm$accounts                   <- accounts
+  fm$accountsTree               <- accntsTree
   fm$portfolio                  <- ptf
   fm$currency                   <- curr
   fm$timeline                   <- timeline
   fm$serverURL                  <- serverURL
+  fm$scenarioAnalysisList       <- list()
   return (fm)
   }
   

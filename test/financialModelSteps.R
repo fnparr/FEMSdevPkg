@@ -30,6 +30,8 @@ Operations:
         - ocf008
 "
 yamlstring
+cat(yamlstring)
+
 # Step 2: Use string above to create an accounts tree 
 accountsTree <- AccountsTree(yamlstring) 
 print(accountsTree$root,"actusCIDs", "nodeID")
@@ -45,5 +47,21 @@ unlist(ptf$contracts[[1]]$contractTerms)
 tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, reportCount=3,
                periodCount = 6)
 
+# Step 5: create FinancialModel instance with this, ptf, accntsTree, tl
+#  5.1  set up identifier, descriptors  and other scalar fields 
+fmID <- "fm001"
+fmDescr <- "test Financial Model logic with example"
+entprID <- "modelBank01"
+currency <- "USD"
 
+serverURL <- "https://demo.actusfrf.org:8080/" 
+# serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://ractus.ch:8080/"
+
+# 5.2 create the financialModel
+fm <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+                         accntsTree = accountsTree, ptf = ptf, curr = currency,
+                         timeline = tl, serverURL = serverURL
+                         )
+class(fm)
 

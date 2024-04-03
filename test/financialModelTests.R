@@ -1,6 +1,6 @@
 # FinancialModel unit test script 
 # ********
-library(yaml)
+# library(yaml)
 # Test 1.0 : clear environment and create financial model instance 
 rm(list=ls())
 fm <- FinancialModel()
@@ -13,7 +13,10 @@ fmID <- "fm001"
 fmDescr <- "test Financial Model logic with example"
 entprID <- "modelBank01"
 currency <- "USD"
-serverURL <- "http://ractus.ch:8080/"
+
+serverURL <- "https://demo.actusfrf.org:8080/" 
+# serverURL <- "https://dadfir3-app.zhaw.ch/"
+# serverURL <- "http://ractus.ch:8080/"
 
 # Test 2.2 create an accounts data tree for hierarchical reports - yaml format
 #          string defining tree and contract assignment 
@@ -42,8 +45,12 @@ Operations:
      functionIDs:
         - ocf008
 "
-accounts <- treeFromYamlString(yamlstring)
-print(accounts,"actusCIDs")
+yamlstring
+cat(yamlstring)
+
+#  Use string above to create an AccountsTree instance 
+accountsTree <- AccountsTree(yamlstring) 
+print(accountsTree$root,"actusCIDs", "nodeID")
 
 # Test 2.3 Need a sample portfolio of Actus contracts with CIDs as above
 #          To view TestPortfolio.csv import into Excel with "," delimiter
@@ -56,22 +63,28 @@ tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, reportCount=3,
                periodCount = 6)
 
 # Test 2.4 Now create financialModel 
-fm <- initFinancialModel(fmID = fmID,fmDescr = fmDescr, entprID = entprID,
-                     accounts = accounts, ptf = ptf, timeline = tl, 
-                     curr = currency, serverURL = serverURL )
-class(fm)
+fm <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+                         accntsTree = accountsTree, ptf = ptf, curr = currency,
+                         timeline = tl, serverURL = serverURL
+)
 
-# Test 3.0
-# next Step is to run a ContractAnalysis as is with the attributes of this fm 
-# Use contents of unitTestMain.R test 3.0 
+class(fm)
 fm$serverURL
 unlist(fm$portfolio$contracts[[1]]$contractTerms)
 fm$financialModelID
 fm$financialModelDescription
 fm$enterpriseID
 fm$currency
+
+# Test 3.0
+# next Step is to add and then run a ScenarioAnalysis with appropriate
+# marketData. These stapes wil match contents of unitTestMain.R test 3.0 
+# BUT use currentScenarioAnalysis as working template 
+
 # OK so far BUT we need a Scenario with YC_EA_AAA and a timeline 
 # so NOT UnitTestMain Test 3.0 ..  this from test 3.1
+
+# What follows is older ContractAnalysis version not ScenarioAnalysis ...
 mydatadir <- "~/mydata"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
