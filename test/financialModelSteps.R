@@ -74,5 +74,10 @@ rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 # The 100 parameter is the base level for JSON 
 marketData <-list(rfx)
 # no YieldCurve because we are not doing NetPresentValue yet 
+# 6.1 addSenarioAnaysis( ) with this scnID and risk factors 
+#     will set fm$currentScenarioAnalysis to be this 
 addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
                     yc = YieldCurve())
+fm$currentScenarioAnalysis$scenarioID
+
+# Step 7: generateEvents( ) to simulate the portfolio using this risk scenario

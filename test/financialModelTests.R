@@ -84,7 +84,6 @@ fm$currency
 # OK so far BUT we need a Scenario with YC_EA_AAA and a timeline 
 # so NOT UnitTestMain Test 3.0 ..  this from test 3.1
 
-# What follows is older ContractAnalysis version not ScenarioAnalysis ...
 mydatadir <- "~/mydata"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
@@ -93,6 +92,23 @@ marketData <-list(rfx)
 addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
                     yc = YieldCurve())
 
+# Test 4.0 
+# Run a FinancialModel Portfolio Simulation using its currentScenarioAnalysis
+# for Risk factor data 
+# 4.1 first create the ScenarioAnalysis and test generateEvents() on it
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+cdfn  <- "~/mydata/TestPortfolio.csv"
+ptf   <-  samplePortfolio(cdfn)
+serverURL <- "https://demo.actusfrf.org:8080/"
+rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+rfxs <-list(rfx)
+scnID= "UST5Y_fallingRates"
+yc<- YieldCurve()
+scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, 
+                         yieldCurve = yc)
+logMsgs  <- generateEvents(ptf=ptf, serverURL = serverURL, scna = scna)
 
 # ********
 # Older ContractAnalysis Tests
