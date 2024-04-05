@@ -11,7 +11,7 @@
 # 7 Feb 2024 - start no YieldCurve Attribute, NominalValues only 
 #            - will create Analysis from contractsAnalysis - refactored 
 # ****************
-# defines: class FInancialModel, FInancialModel() constructor,
+# defines: class FinancialModel, FinancialModel() constructor,
 # defines and exports:
 #    Account ..
 # library(data.tree)    

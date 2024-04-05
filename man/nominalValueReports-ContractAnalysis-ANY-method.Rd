@@ -67,7 +67,7 @@ each unique cid in the events dataframe
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(scna = cfla2015)
+   logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
    logMsgs6  <- nominalValueReports(scna= cfla2015)
 } 

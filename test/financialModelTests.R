@@ -104,11 +104,13 @@ serverURL <- "https://demo.actusfrf.org:8080/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 rfxs <-list(rfx)
-scnID= "UST5Y_fallingRates"
+scnID <- "UST5Y_fallingRates"
 yc<- YieldCurve()
-scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, 
+scna <- ScenarioAnalysis(scenarioID= scnID, marketData= rfxs, 
                          yieldCurve = yc)
-logMsgs  <- generateEvents(ptf=ptf, serverURL = serverURL, scna = scna)
+logMsgs  <- generateEvents(host= scna, ptf= ptf, serverURL = serverURL)
+logMsgs
+
 
 # ********
 # Older ContractAnalysis Tests

@@ -43,9 +43,9 @@ setRefClass("ScenarioAnalysis",
 # constructor ScenarioAnalysis(...) for a scenario analysis object
 # *************************************
 #  **** Generic ScenarioAnalysis(<>) ********
-# Defines generic S4 constructor method for class ContractAnalysis
+# Defines generic S4 constructor method for class ScenarioAnalysis
 setGeneric("ScenarioAnalysis",
-           function(scenarioID, marketData,yieldCurve)
+           function(scenarioID, marketData, yieldCurve)
              { standardGeneric("ScenarioAnalysis") }
 )
 #  ***** No parameters ScenarioAnalysis( )
@@ -85,24 +85,26 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
 # ************************************************************************
 #' generateEvents(ScenarioAnalysis, Portfolio, ServerURL )
 #'
-#'   The generateEvents(ScenarioAnalysis) function takes as input:(1) a 
-#'   Portfolio of ACTUS contracts to be simulated, (2) the URL of an ACTUS
-#'   server to compute the cashflow events and (3) an initialized S4 
-#'   ScenarioAnalysis object with RiskFactor information. The method sends a 
+#'   The generateEvents(ScenarioAnalysis) function takes as input: an 
+#'   initialized S4 ScenarioAnalysis object with RiskFactor information, (2) a 
+#'   Portfolio of ACTUS contracts to be simulated and (3) the URL of an ACTUS
+#'   server to compute the cashflow events. The method sends a 
 #'   JSON simulation request to the designated ACTUS server with portfolio and 
 #'   risk data then saves the results of the simulation in the cashflowEventsLoL
 #'   attribute of the ScenarioAnalysis. A log message is saved in the logMsgs
 #'   list attribute with key "generateEvents" and returned as ouput of the 
 #'   method 
 #'
-#' @param ptf   Portfolio of ACTUS contracts tobe simulated
-#' @param serverURL  character string locating ACTUS server to be used  
 #' @param scna  ScenarioAnalysis S4 object with risk scenario data
+#' @param ptf   Portfolio of ACTUS contracts to be simulated
+#' @param serverURL  character string locating ACTUS server to be used  
 #' @return      Log message listing which contracts were successfully simulated 
 #' @export
 #' @import    jsonlite
 #' @import    httr
 #' @examples {
+#'    scna1 <- ScenarioAnalysis()
+#'    scna2 <- ScenarioAnalysis( "scn001", list(), YieldCurve())
 #'    mydatadir <- "~/mydata"
 #'    installSampleData(mydatadir)
 #'    cdfn  <- "~/mydata/TestPortfolio.csv"
@@ -111,29 +113,30 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    rfxs <-list(rfx)
-#'    scnID= "UST5Y_fallingRates"
-#'    scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, 
+#'    scnID <- "UST5Y_fallingRates"
+#'    yc <- YieldCurve()
+#'    scna <- ScenarioAnalysis(scenarioID= scnID, marketData= rfxs, 
 #'                             yieldCurve = yc)
-#'   logMsgs  <- generateEvents(ptf=ptf, serverURL = serverURL, scna = scna)
+#'   logMsgs  <- generateEvents(host= scna, ptf=ptf, serverURL = serverURL)
 #' }
 #'
 setMethod (f = "generateEvents", 
-           signature = c( ptf="Portfolio", serverURL="character", 
-                          riskFactors="missing", scna = "ScenarioAnalysis") ,
-           definition = function( ptf, serverURL, scna ){
+           signature = c(host = "ScenarioAnalysis", ptf="Portfolio", 
+                         serverURL="character", riskFactors="missing" ) ,
+           definition = function( host, ptf, serverURL){
              # sends input portfolio contracts and riskFactors to server as JSON
-             simulationRsp <- simulationRequest(ptf,serverURL, scna$marketData)
+             simulationRsp <- simulationRequest(ptf, serverURL, host$marketData)
              if (simulationRsp$status_code == 200 ){
-               scna$cashflowEventsLoL <- content(simulationRsp)
+               host$cashflowEventsLoL <- content(simulationRsp)
                logmsg <- "Contract simulations were successful"
              }
              else {
-               scna$cashflowEventsLoL <- list()
+               host$cashflowEventsLoL <- list()
                logmsg <- paste0("Contract simulation error. status_code= ",
                                 simulationRsp$status_code)
                #                              "Error info= ", content$error)
              }
-             scna$logMsgs["generateEvents"]<- logmsg
+             host$logMsgs["generateEvents"]<- logmsg
              return(logmsg) 
            }
 )          

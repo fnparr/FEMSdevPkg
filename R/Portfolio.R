@@ -87,7 +87,7 @@ setMethod(f = "Portfolio",
 #' @param scna       ContractAnalysis S4 object with list of contracts 
 #' @return      List of generated cashflow results - one entry per contract
 setGeneric(name = "generateEvents",
-           def = function(ptf,serverURL,riskFactors,scna){
+           def = function(host, ptf, serverURL, riskFactors){
              standardGeneric("generateEvents")
            })
 
@@ -125,8 +125,8 @@ setGeneric(name = "generateEvents",
 #' }
 #'
 setMethod (f = "generateEvents", 
-           signature = c(ptf="Portfolio", serverURL="character",
-                         riskFactors= "list") ,
+           signature = c(host= "missing", ptf="Portfolio", 
+                         serverURL="character", riskFactors= "list") ,
            definition = function(ptf,serverURL,riskFactors){
              simulationRsp <- simulationRequest(ptf, serverURL, riskFactors)
              response_content <- content(simulationRsp)

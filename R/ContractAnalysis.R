@@ -184,24 +184,24 @@ initContractAnalysis <- function (
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = Timeline())
-#'    logMsgs  <- generateEvents(scna = cfla)
+#'    logMsgs  <- generateEvents(host = cfla)
 #' }
 #'
 setMethod (f = "generateEvents", 
-           signature = c(ptf="missing", serverURL="missing", 
-                         riskFactors="missing", scna = "ContractAnalysis") ,
-           definition = function(scna){
+           signature = c(host = "ContractAnalysis", ptf="missing", 
+                         serverURL="missing", riskFactors="missing") ,
+           definition = function(host){
              # sends input portfolio contracts and riskFactors to server as JSON
-             simulationRsp <- simulationRequest(scna$portfolio,
-                                                scna$actusServerURL,
-                                                scna$scenario
+             simulationRsp <- simulationRequest(host$portfolio,
+                                                host$actusServerURL,
+                                                host$scenario
                                                  )
              if (simulationRsp$status_code == 200 ){
-                scna$cashflowEventsLoL <- content(simulationRsp)
+                host$cashflowEventsLoL <- content(simulationRsp)
                 logmsg <- "Contract simulations were successful"
              }
              else {
-                scna$cashflowEventsLoL <- list()
+                host$cashflowEventsLoL <- list()
                 logmsg <- paste0("Contract simulation error. status_code= ",
                                  simulationRsp$status_code)
    #                              "Error info= ", content$error)
@@ -265,7 +265,7 @@ setGeneric("events2dfByPeriod",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(scna = cfla2015)
+#'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #' } 
 setMethod (f = "events2dfByPeriod", 
@@ -339,7 +339,7 @@ setGeneric("liquidityByPeriod2vec",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(scna = cfla2015)
+#'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #' } 
@@ -415,7 +415,7 @@ setGeneric("lv2LiquidityReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(scna = cfla2015)
+#'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
@@ -506,7 +506,7 @@ setGeneric("eventsdf2incomeReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(scna = cfla2015)
+#'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 #' } 
@@ -692,7 +692,7 @@ setMethod(f = "nominalValueReports",
 #'                              scenario = list(rfx), 
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
-#'    logMsgs1  <- generateEvents(scna = cfla2015)
+#'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
 #'    logMsgs6  <- nominalValueReports(scna= cfla2015)
 #' } 

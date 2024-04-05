@@ -63,7 +63,7 @@ This method generates an incomeReport (vector) for each contract using the
                              scenario = list(rfx), 
                              actusServerURL = serverURL, 
                              timeline = tl1)
-   logMsgs1  <- generateEvents(scna = cfla2015)
+   logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 } 

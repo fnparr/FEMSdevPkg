@@ -81,3 +81,4 @@ addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
 fm$currentScenarioAnalysis$scenarioID
 
 # Step 7: generateEvents( ) to simulate the portfolio using this risk scenario
+

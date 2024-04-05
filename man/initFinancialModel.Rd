@@ -11,7 +11,7 @@ initFinancialModel(
   fmID = " ",
   fmDescr = " ",
   entprID = " ",
-  accounts = Node(),
+  accntsTree = AccountsTree(),
   ptf = Portfolio(),
   curr = " ",
   timeline = Timeline(),
@@ -25,7 +25,7 @@ initFinancialModel(
 
 \item{entprID}{character: a unique ID for the enterprise being modelled}
 
-\item{accounts}{Node: tree structure, names- account lines in balance sheets}
+\item{accntsTree}{AccountsTree - enterprise accounts structure and CIDs}
 
 \item{ptf}{Portfolio: list of enterprise holdings - ACTUS contracts}
 
