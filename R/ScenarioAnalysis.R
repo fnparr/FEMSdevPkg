@@ -58,11 +58,15 @@ setMethod("ScenarioAnalysis", c(),
 )
 
 #  ***** Initial values ScenarioAnalysis( )
-# ScenarioAnalysis (required initialization parameters)   
-# internal use only 
-# Creates and returns S4 ref ScenarioAnalysis instance ready for contract 
-# simulationized. 
-
+#' ScenarioAnalysis (required initialization parameters)   
+#' internal use only 
+#' Creates and returns S4 ref ScenarioAnalysis instance ready for contract 
+#' simulationized.
+#' @param scenarioID  character ID for this risk Scenario
+#' @param marketData  list of risk factor reference indexes
+#' @param yieldCurve  a YieldCurve - related to factors for discounting 
+#' @return   initialized ScenarioAnalysis object 
+#' @export
 setMethod("ScenarioAnalysis", c(scenarioID = "character",
                                 marketData = "list",
                                 yieldCurve = "YieldCurve"),
@@ -103,8 +107,6 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
 #' @import    jsonlite
 #' @import    httr
 #' @examples {
-#'    scna1 <- ScenarioAnalysis()
-#'    scna2 <- ScenarioAnalysis( "scn001", list(), YieldCurve())
 #'    mydatadir <- "~/mydata"
 #'    installSampleData(mydatadir)
 #'    cdfn  <- "~/mydata/TestPortfolio.csv"

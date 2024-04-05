@@ -34,7 +34,7 @@ The generateEvents(Portfolio, character, list) function takes as
    serverURL <- "http://ractus.ch:8080/"
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-   cfls  <- generateEvents(ptf,serverURL,list(rfx))
+   cfls  <- generateEvents(,ptf,serverURL,list(rfx))
 }
 
 }

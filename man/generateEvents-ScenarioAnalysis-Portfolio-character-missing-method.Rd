@@ -29,8 +29,6 @@ The generateEvents(ScenarioAnalysis) function takes as input: an
 }
 \examples{
 {
-   scna1 <- ScenarioAnalysis()
-   scna2 <- ScenarioAnalysis( "scn001", list(), YieldCurve())
    mydatadir <- "~/mydata"
    installSampleData(mydatadir)
    cdfn  <- "~/mydata/TestPortfolio.csv"

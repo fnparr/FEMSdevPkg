@@ -121,7 +121,7 @@ setGeneric(name = "generateEvents",
 #'    serverURL <- "http://ractus.ch:8080/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
-#'    cfls  <- generateEvents(ptf,serverURL,list(rfx))
+#'    cfls  <- generateEvents(,ptf,serverURL,list(rfx))
 #' }
 #'
 setMethod (f = "generateEvents", 
@@ -362,7 +362,7 @@ monthlyAndCumulatedValue <- function(indf){
 #'    plotlist[["monthly income"]]                               
 #' }
 simulatePortfolio <-function(ptf, serverURL, riskFactors, scenarioName){
-  cfls <- generateEvents(ptf=ptf, serverURL=serverURL, riskFactors= riskFactors)
+  cfls <- generateEvents(,ptf=ptf, serverURL=serverURL, riskFactors= riskFactors)
   # merge all cashflow events for the portfolio into one dataframe 
   dfall <- mergecfls(cfls) 
   
