@@ -99,7 +99,7 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
 #'   list attribute with key "generateEvents" and returned as ouput of the 
 #'   method 
 #'
-#' @param scna  ScenarioAnalysis S4 object with risk scenario data
+#' @param host  ScenarioAnalysis S4 object with risk scenario data
 #' @param ptf   Portfolio of ACTUS contracts to be simulated
 #' @param serverURL  character string locating ACTUS server to be used  
 #' @return      Log message listing which contracts were successfully simulated 

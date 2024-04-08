@@ -287,3 +287,4 @@ logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 
 logMsgs6 <- nominalValueReports(cfla2015)
 logMsgs6
+

@@ -111,6 +111,22 @@ scna <- ScenarioAnalysis(scenarioID= scnID, marketData= rfxs,
 logMsgs  <- generateEvents(host= scna, ptf= ptf, serverURL = serverURL)
 logMsgs
 
+# 4.2  run generateEvents(fm) on financial model with a currentScenarioAnalysis
+#      and validate results => looks OK 
+class(fm)
+fm$currentScenarioAnalysis$scenarioID
+logmsg<- generateEvents(fm)
+logmsg
+typeof(fm$scenarioAnalysisList)
+length(fm$scenarioAnalysisList)
+unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
+fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
+fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
+
+
+
+
+
 
 # ********
 # Older ContractAnalysis Tests

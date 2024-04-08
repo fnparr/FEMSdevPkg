@@ -80,5 +80,13 @@ addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
                     yc = YieldCurve())
 fm$currentScenarioAnalysis$scenarioID
 
-# Step 7: generateEvents( ) to simulate the portfolio using this risk scenario
+# Step 7: generateEvents( ) to simulate the fm portfolio using a  risk scenario
+#         set by addScenarioAnaysis()
+logmsg<- generateEvents(fm)
+logmsg
+typeof(fm$scenarioAnalysisList)
+length(fm$scenarioAnalysisList)
+unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
+fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
+fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
 

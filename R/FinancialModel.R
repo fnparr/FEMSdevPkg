@@ -105,3 +105,46 @@ addScenarioAnalysis <- function( fm = FinancialModel(), scnID = " ",
    return(msg)
 }
   
+# ************************************************************************
+# generateEvents(FinancialModel)
+# ************************************************************************
+#' generateEvents(FinancialModel)
+#'
+#'   The generateEvents(Financial) function takes as input an 
+#'   initialized S4 FinancialModel object with at least one ScenarioAnaysis  
+#'   added so that currentScenarioAnalysis is set. The method will simulate all
+#'   contracts in the financialModel portfolio, with the risk environment of the
+#'   currentScenarioAnalysis. The cashflow events generated are saved as data
+#'   in the ScenarioAnalysis 
+#'
+#' @param host  FinancialModel S4 object with a currentScenarioAnalysis defined
+#' @return      Log message listing which contracts were successfully simulated 
+#' @export
+#' @examples {
+#'    mydatadir <- "~/mydata"
+#'    installSampleData(mydatadir)
+#'    cdfn  <- "~/mydata/TestPortfolio.csv"
+#'    ptf   <-  samplePortfolio(cdfn)
+#'    serverURL <- "https://demo.actusfrf.org:8080/"
+#'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'    rfxs <-list(rfx)
+#'    scnID <- "UST5Y_fallingRates"
+#'    yc <- YieldCurve()
+#'    scna <- ScenarioAnalysis(scenarioID= scnID, marketData= rfxs, 
+#'                             yieldCurve = yc)
+#'   logMsgs  <- generateEvents(host= scna, ptf=ptf, serverURL = serverURL)
+#' }
+#'
+setMethod (f = "generateEvents", 
+           signature = c(host = "FinancialModel", ptf="missing", 
+                         serverURL="missing", riskFactors="missing" ) ,
+           definition = function( host ){
+            # invokes generateEvents( ) on currentScenarioAnalysis passing 
+            # fm$portfolio and fm$serverURL as parameters 
+            logmsg <- generateEvents(host = host$currentScenarioAnalysis,
+                                     ptf = host$portfolio,
+                                     serverURL = host$serverURL)
+            return(logmsg) 
+           }
+)          
