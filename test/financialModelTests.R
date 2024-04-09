@@ -75,7 +75,9 @@ fm$financialModelID
 fm$financialModelDescription
 fm$enterpriseID
 fm$currency
+# ******************************
 # Test 2.5  initFinancialModel( ) example ( from empty env) 
+#  could be step1 in FinancialModelSteps 
 rm(list=ls())
    fmID       <- "fm001"
    fmDescr    <- "test Financial Model logic with example"
@@ -114,6 +116,35 @@ marketData <-list(rfx)
 addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
                     yc = YieldCurve())
 
+# Test 3.1 test example running addScenarioAnalysis()
+rm(list=ls())
+   fmID       <- "fm001"
+   fmDescr    <- "test Financial Model logic with example"
+   entprID    <- "modelBank01"
+   currency   <- "USD"
+   serverURL  <- "https://demo.actusfrf.org:8080/" 
+   yamlstring <- paste0("\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n",
+    "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+    "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+    "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+    "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+    "        - ocf008\n")
+   accountsTree <- AccountsTree(yamlstring)
+   mydatadir <- "~/mydata"
+   installSampleData(mydatadir)
+   cdfn  <- "~/mydata/TestPortfolio.csv"
+   ptf   <-  samplePortfolio(cdfn)
+   tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+                  reportCount=3, periodCount = 6)  
+   fm <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+                   accntsTree = accountsTree, ptf = ptf, curr = currency,
+                   timeline = tl, serverURL = serverURL) 
+   
+   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+   rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+   marketData <-list(rfx)
+   msg <- addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", 
+                              rfxs = marketData, yc = YieldCurve()) 
 # Test 4.0 
 # Run a FinancialModel Portfolio Simulation using its currentScenarioAnalysis
 # for Risk factor data 

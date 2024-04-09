@@ -2,6 +2,7 @@
 
 export(Portfolio)
 export(YieldCurve)
+export(addScenarioAnalysis)
 export(bondvr)
 export(createPortfolioFromExcelData)
 export(csvx2ptf)
