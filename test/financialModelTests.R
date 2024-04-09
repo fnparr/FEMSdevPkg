@@ -75,7 +75,29 @@ fm$financialModelID
 fm$financialModelDescription
 fm$enterpriseID
 fm$currency
-
+# Test 2.5  initFinancialModel( ) example ( from empty env) 
+rm(list=ls())
+   fmID       <- "fm001"
+   fmDescr    <- "test Financial Model logic with example"
+   entprID    <- "modelBank01"
+   currency   <- "USD"
+   serverURL  <- "https://demo.actusfrf.org:8080/" 
+   yamlstring <- paste0("\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n",
+    "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+    "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+    "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+    "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+    "        - ocf008\n")
+   accountsTree <- AccountsTree(yamlstring)
+   mydatadir <- "~/mydata"
+   installSampleData(mydatadir)
+   cdfn  <- "~/mydata/TestPortfolio.csv"
+   ptf   <-  samplePortfolio(cdfn)
+   tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+                  reportCount=3, periodCount = 6)  
+   fm <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+                   accntsTree = accountsTree, ptf = ptf, curr = currency,
+                   timeline = tl, serverURL = serverURL) 
 # Test 3.0
 # next Step is to add and then run a ScenarioAnalysis with appropriate
 # marketData. These stapes wil match contents of unitTestMain.R test 3.0 
@@ -123,9 +145,14 @@ unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
 fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
 fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
 
-
-
-
+# Test 5. Bucket the cash flow events in the timeline model 
+# 5.0  create timeline,  scna with cashflows; test events2dfByPeriod(scna, tl)
+# Run all test to (1) create fm with TImeline, (2) scna (3) generateEvents(scna) 
+logMsgs <- events2dfByPeriod(host= scna, tl = fm$timeline)
+logMsgs
+# 5.1 now with exported events2dfByPeriod(fm) 
+logMsgs <- events2dfByPeriod(host = fm)
+logMsgs
 
 
 # ********

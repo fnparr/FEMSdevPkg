@@ -211,7 +211,7 @@ setMethod (f = "generateEvents",
 )
 
 # ************************************************************************
-# events2dfByPeriod(<ContractAnalysis> )
+# events2dfByPeriod(<ContractAnalysis>,  )
 # ************************************************************************
 # ****** generic method first - a ContractAnalysis is the only parameter 
 
@@ -244,8 +244,8 @@ setGeneric("events2dfByPeriod",
 #'   eventsLOL into eventsDF, (2) add periodIndex column,  (3) sort by 
 #'   (contractID, periodIndex), (4) save as cfla$cashFlowEventsByPeriod. 
 #'   
-#' @param host  ContractAnalysis S4 object with portfolio, actusServer and risk data
-#' @return      Log summarizing which contracts were successfully simulated 
+#' @param host  ContractAnalysis S4 obj with portfolio, actusServer and risk data
+#' @return      log msg reporting which contracts were successfully simulated 
 #' @export
 #' @examples {
 #'    mydatadir <- "~/mydata"
