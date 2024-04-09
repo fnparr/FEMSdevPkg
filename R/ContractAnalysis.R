@@ -111,7 +111,7 @@ setMethod("ContractAnalysis", c(),
 #'    installSampleData(mydatadir)
 #'    cdfn  <- "~/mydata/BondPortfolio.csv"
 #'    ptf   <-  samplePortfolio(cdfn)
-#'    serverURL <- "http://ractus.ch:8080/" 
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    cfla <- initContractAnalysis( analysisID = "cfla001",
@@ -174,7 +174,7 @@ initContractAnalysis <- function (
 #'    installSampleData(mydatadir)
 #'    cdfn  <- "~/mydata/BondPortfolio.csv"
 #'    ptf   <-  samplePortfolio(cdfn)
-#'    serverURL <- "http://ractus.ch:8080/"
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    cfla <- initContractAnalysis( analysisID = "cfla001", 
@@ -216,7 +216,7 @@ setMethod (f = "generateEvents",
 # ****** generic method first - a ContractAnalysis is the only parameter 
 
 setGeneric("events2dfByPeriod",
-           function(cfla) 
+           function(host, tl)  
              { standardGeneric("events2dfByPeriod") }
 )
 # ***** method instance   signature = (<ContractAnalysis>)   
@@ -244,7 +244,7 @@ setGeneric("events2dfByPeriod",
 #'   eventsLOL into eventsDF, (2) add periodIndex column,  (3) sort by 
 #'   (contractID, periodIndex), (4) save as cfla$cashFlowEventsByPeriod. 
 #'   
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  ContractAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing which contracts were successfully simulated 
 #' @export
 #' @examples {
@@ -254,7 +254,7 @@ setGeneric("events2dfByPeriod",
 #'    ptf   <-  samplePortfolio(cdfn)
 #'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 #'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-#'    serverURL <- "http://ractus.ch:8080/"
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -266,21 +266,21 @@ setGeneric("events2dfByPeriod",
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
-#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
 #' } 
 setMethod (f = "events2dfByPeriod", 
-           signature = c(cfla = "ContractAnalysis") ,
-           definition = function(cfla){ 
-    if (! is.null(cfla$cashflowEventsLoL) && 
-         all(unlist(lapply(cfla$cashflowEventsLoL,
+           signature = c(host = "ContractAnalysis") ,
+           definition = function(host){ 
+    if (! is.null(host$cashflowEventsLoL) && 
+         all(unlist(lapply(host$cashflowEventsLoL,
                            function(x){return(x$status)})) == "Success" ) )
     { msg <- "OK" 
-      df1 <- mergecfls(cfla$cashflowEventsLoL)
+      df1 <- mergecfls(host$cashflowEventsLoL)
       df1["periodIndex"] <- sapply( df1$time, 
-         function(x){return(date2PeriodIndex(cfla$timeline, substr(x,1,10)))})
+         function(x){return(date2PeriodIndex(host$timeline, substr(x,1,10)))})
       df2 <- df1[c("contractId","periodIndex","time","type", "payoff",
                    "currency", "nominalValue","nominalRate","nominalAccrued")]
-      cfla$cashflowEventsByPeriod <- df2
+      host$cashflowEventsByPeriod <- df2
     }
     else
     {  msg <- "Cannot rearrange by Period - check state of cashflowEventsLoL"}
@@ -328,7 +328,7 @@ setGeneric("liquidityByPeriod2vec",
 #'    ptf   <-  samplePortfolio(cdfn)
 #'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 #'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-#'    serverURL <-   "http://ractus.ch:8080/" 
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -340,7 +340,7 @@ setGeneric("liquidityByPeriod2vec",
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
-#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #' } 
 setMethod(f = "liquidityByPeriod2vec",
@@ -404,7 +404,7 @@ setGeneric("lv2LiquidityReports",
 #'    ptf   <-  samplePortfolio(cdfn)
 #'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 #'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-#'    serverURL <-  "http://ractus.ch:8080/" 
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -416,7 +416,7 @@ setGeneric("lv2LiquidityReports",
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
-#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
 #'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 #'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
 #' }      
@@ -495,7 +495,7 @@ setGeneric("eventsdf2incomeReports",
 #'    ptf   <-  samplePortfolio(cdfn)
 #'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 #'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-#'    serverURL <- "http://ractus.ch:8080/"                                                           
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"                                                          
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -507,7 +507,7 @@ setGeneric("eventsdf2incomeReports",
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
-#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
 #'    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 #' } 
 #'      
@@ -681,7 +681,7 @@ setMethod(f = "nominalValueReports",
 #'    ptf   <-  samplePortfolio(cdfn)
 #'    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
 #'    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-#'    serverURL <-  "http://ractus.ch:8080/" 
+#'    serverURL <- "https://dadfir3-app.zhaw.ch/"
 #'    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 #'    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -693,7 +693,7 @@ setMethod(f = "nominalValueReports",
 #'                              actusServerURL = serverURL, 
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
-#'    logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+#'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
 #'    logMsgs6  <- nominalValueReports(scna= cfla2015)
 #' } 
      

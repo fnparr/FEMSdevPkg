@@ -56,7 +56,7 @@ each unique cid in the events dataframe
    ptf   <-  samplePortfolio(cdfn)
    ptfsd <- unlist(lapply(ptf$contracts,function(x){return(x$contractTerms["statusDate"])}))
    ptf2015 <- Portfolio(contractList = ptf$contracts[which(ptfsd == "2015-01-01")])
-   serverURL <-  "http://ractus.ch:8080/" 
+   serverURL <- "https://dadfir3-app.zhaw.ch/"
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
    tl1 <- Timeline("2015-01-01",3,4,8)
@@ -68,7 +68,7 @@ each unique cid in the events dataframe
                              actusServerURL = serverURL, 
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
-   logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+   logMsgs2  <- events2dfByPeriod(host = cfla2015)
    logMsgs6  <- nominalValueReports(scna= cfla2015)
 } 
 }

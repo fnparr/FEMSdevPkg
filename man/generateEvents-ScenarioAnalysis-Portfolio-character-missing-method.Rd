@@ -7,11 +7,11 @@
 \S4method{generateEvents}{ScenarioAnalysis,Portfolio,character,missing}(host, ptf, serverURL)
 }
 \arguments{
+\item{host}{ScenarioAnalysis S4 object with risk scenario data}
+
 \item{ptf}{Portfolio of ACTUS contracts to be simulated}
 
 \item{serverURL}{character string locating ACTUS server to be used}
-
-\item{scna}{ScenarioAnalysis S4 object with risk scenario data}
 }
 \value{
 Log message listing which contracts were successfully simulated

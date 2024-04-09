@@ -228,7 +228,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               actusServerURL = serverURL, 
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
-logMsgs2  <- events2dfByPeriod(cfla = cfla2015)
+logMsgs2  <- events2dfByPeriod(host = cfla2015)
 logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 cfla2015$contractLiquidityVectors[["102"]]
 
@@ -254,7 +254,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               actusServerURL = serverURL, 
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
-logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+logMsgs2  <- events2dfByPeriod(host = cfla2015)
 logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 logMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
 head (cfla2015$cashflowEventsByPeriod,15)
@@ -282,7 +282,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               actusServerURL = serverURL, 
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
-logMsgs2  <- events2dfByPeriod(cfla= cfla2015)
+logMsgs2  <- events2dfByPeriod(host= cfla2015)
 logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 
 logMsgs6 <- nominalValueReports(cfla2015)
