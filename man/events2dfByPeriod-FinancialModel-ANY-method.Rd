@@ -13,7 +13,7 @@
 log msg reporting success of cashflow event bucketing
 }
 \description{
-This method reorganizes the cashflow events in the currentSecnarioAnalysis 
+This method reorganizes the cashflow events in the currentScenarioAnalysis 
   of the FinancialModel by period using the Timeline of the FInancialModel 
   into a data frame with columns for: contractID, period, and for each 
   ACTUS cashflow event field. The input Financial Model must have: (1)
@@ -25,7 +25,7 @@ This method reorganizes the cashflow events in the currentSecnarioAnalysis
  > unlist(lapply(fm$currentScenarioAnlysis$cashflowEventsLoL,
                  function(x){return(x$status)})) 
   If these conditions are met, events2dfByPeriod() will reorganize the data
-  in cthe scna$cashflowEventsLoL as a dataframe with columns: 
+  in the scna$cashflowEventsLoL as a dataframe with columns: 
   and save that as scna$cashflowEventsByPeriod for use in subsequent analysis
   steps in the currentScenarioAnalysis attribute  
   
