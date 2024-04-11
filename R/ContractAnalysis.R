@@ -591,7 +591,7 @@ setMethod(f = "eventsdf2incomeReports",
 #  **** Generic nominalValueReports(<>) ********
 # A generic method for creating and saving a list of nominalValueReports  
 setGeneric("nominalValueReports",
-           function(scna, cid) 
+           function(host, ptf, tl, cid) 
            { standardGeneric("nominalValueReports") }
 )
 #  **** Single contract nominalValueReports(<>) ********
@@ -600,13 +600,14 @@ setGeneric("nominalValueReports",
 #  report with nominalValuations at statusDate and each report date
 
 setMethod(f = "nominalValueReports",
-          signature = c(scna = "ContractAnalysis", cid= "character"),
-          definition = function(scna, cid) {
-  #  scna <- cfla2015
-  #  cid <- 101
-  df <- scna$cashflowEventsByPeriod
+          signature = c(host = "ContractAnalysis", ptf = "missing", 
+                        tl = "missing", cid= "character"),
+          definition = function(host,cid) {
+ #  host <- cfla2015
+ # cid <- 101
+  df <- host$cashflowEventsByPeriod
   # subset df: this cid,  report horizon rows; <periodIndex, nominalValue> cols
-  nreps <- scna$timeline$reportCount
+  nreps <- host$timeline$reportCount
   df1 <- df[(df$contractId == cid) & (df$periodIndex <= nreps),]
   df2 <- df1[c("periodIndex","nominalValue")]
   # Keep the last-in-period event rows - discard earlier event rows  
@@ -615,7 +616,7 @@ setMethod(f = "nominalValueReports",
   ),]
   # get nominalValue of contract cid at statusDate from scna$portfolio
   # (contracts are in portfolio order in df3) 
-  nvsd  <- scna$portfolio$contracts[[match(cid,unique(df$contractId))
+  nvsd  <- host$portfolio$contracts[[match(cid,unique(df$contractId))
   ]]$contractTerms["notionalPrincipal"]
   # pass1 report:  has values for any "active period" report 
   rvals <- unlist(sapply(seq(1,nreps), function (i) {
@@ -634,19 +635,19 @@ setMethod(f = "nominalValueReports",
 })
 
 #'  *******************************
-#'   nominalValues(scna = ContractAnalysis) - exported method instance
+#'   nominalValues(host = ContractAnalysis) - exported method instance
 #' *******************************
 #' 
-#' nominalValueReports(<contractAnalysis>) creates list of NV reports for all 
-#' contracts in the contractAnalysis and saves this in scna$nominalValueReports.
+#' nominalValueReports(host= <contractAnalysis>) creates list of NV reports for all 
+#' contracts in the contractAnalysis and saves this in host$nominalValueReports.
 #' Each NV report is a vector of numeric values - one for statusDate and a 
-#' value for each reportDate, so scna$nominalValueReports is a list of 
+#' value for each reportDate, so host$nominalValueReports is a list of 
 #' list(cid,nominalValueVector) elements. 
 #' The method returns a log msg - no known causes for error 
 #'
-#' Method nominalValueReports(scna) uses scna$cashflowEventsByPeriod dataframe
+#' Method nominalValueReports(host) uses host$cashflowEventsByPeriod dataframe
 #' for input data except for the statusDate value for each contract which comes 
-#' from scna$portfolio.
+#' from host$portfolio.
 #' 
 #' ************
 #' We get nominalValue at each reportDate for a specific contract as follows: 
@@ -669,7 +670,7 @@ setMethod(f = "nominalValueReports",
 #' is by reapplying the single contract algorithm to the events dataframe for
 #' each unique cid in the events dataframe
 #'      
-#' @param scna  ContractsAnalysis S4 object with portfolio, cashflowevents data
+#' @param host  ContractsAnalysis S4 object with portfolio, cashflowevents data
 #' @return      Log summarizing whether processing was successful
 #' @import zoo
 #' @importFrom zoo na.locf  
@@ -694,15 +695,15 @@ setMethod(f = "nominalValueReports",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs6  <- nominalValueReports(scna= cfla2015)
+#'    logMsgs6  <- nominalValueReports(host = cfla2015)
 #' } 
      
 setMethod(f = "nominalValueReports",
-          signature = c(scna = "ContractAnalysis"),
-          definition = function(scna) {
-  df <- scna$cashflowEventsByPeriod
-  scna$nominalValueReports <- lapply( unique(df$contractId), function(cid) {
-    list(cid= cid, nvreps= nominalValueReports(scna,cid))
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
+  df <- host$cashflowEventsByPeriod
+  host$nominalValueReports <- lapply( unique(df$contractId), function(cid) {
+    list(cid= cid, nvreps= nominalValueReports(host=host,,,cid= cid))
   })
   msg <- "NominalValue reports generated"
   return(msg)

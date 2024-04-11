@@ -285,6 +285,6 @@ logMsgs1  <- generateEvents(host = cfla2015)
 logMsgs2  <- events2dfByPeriod(host= cfla2015)
 logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 
-logMsgs6 <- nominalValueReports(cfla2015)
+logMsgs6 <- nominalValueReports(host=cfla2015)
 logMsgs6
 

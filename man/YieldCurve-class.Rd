@@ -8,7 +8,7 @@
 A YieldCurve object holds data for an (interest rate) yield curve for 
 some risk class (most likely riskfree) at a particular reference date. 
 This data is organized as a set of spot rates for user selected tenors 
-at the time of the reference data.
+at the time of the reference date.
 }
 \section{Fields}{
 

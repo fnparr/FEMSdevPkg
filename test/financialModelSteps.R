@@ -90,3 +90,8 @@ unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
 fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
 fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
 
+# Step 8 events2dfByPeriod() - organize the cashflow events into period buckets 
+msg1 <- events2dfByPeriod(host=fm)
+
+# step 9 nominalValueReports(host = fm) 
+msg2 <- nominalValueReports(host = fm)
