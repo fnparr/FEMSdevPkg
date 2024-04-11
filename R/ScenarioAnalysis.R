@@ -224,7 +224,8 @@ setMethod(f = "nominalValueReports",
             # add statusDate nominalValue as "0th" report
             rvals <- unlist(append(rvals,nvsd,0))
             # pass2 report: forward fill inactive period NAs from preceding report value
-            rvalsF <- as.numeric(na.locf(rvals)) 
+            rvalsF <- as.numeric(na.locf(rvals))
+            names(rvalsF)<- tl$periodDateVector[1:(tl$reportCount+1)]
             return(rvalsF)  
           })
 
