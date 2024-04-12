@@ -289,11 +289,12 @@ setMethod(f = "nominalValueReports",
                         tl = "Timeline"),
           definition = function(host,ptf,tl) {
             df <- host$cashflowEventsByPeriod
-            host$nominalValueReports <- lapply( unique(df$contractId), 
-                                                function(cid) {
-              list(cid= cid, 
-                   nvreps= nominalValueReports(host=host,ptf,tl,cid= cid))
-            })
+            # iterate through cids, build keyed list of NVreport vectors 
+            nvrklist <- list()
+            for ( cid  in unique(df$contractId) ) {
+              nvrklist[[cid]] <- nominalValueReports(host=host,ptf,tl,cid= cid)
+            }
+            host$nominalValueReports <- nvrklist
             msg <- "NominalValue reports generated"
             return(msg)
           })

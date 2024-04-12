@@ -247,7 +247,7 @@ rm(list=ls())
 
 # *************
 # Test 6.  Generate nominal value report generation 
-# 6.1  test first the  nominalValueReports(host=ScnearioAnalysis, ...)   
+# 6.1  test first the  nominalValueReports(host=ScenarioAnalysis, ...)   
   rm(list=ls())
    fmID       <- "fm001"
    fmDescr    <- "test Financial Model logic with example"
@@ -283,7 +283,8 @@ rm(list=ls())
    msg4 <-  nominalValueReports(host = fm1)
    msg4
    fm1$currentScenarioAnalysis$nominalValueReports[[1]]
-   
+   names(fm1$currentScenarioAnalysis$nominalValueReports )
+   fm1$currentScenarioAnalysis$nominalValueReports[["ann003"]]
    
 # ********
 # Older ContractAnalysis Tests
