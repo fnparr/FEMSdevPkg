@@ -201,7 +201,8 @@ setMethod(f = "nominalValueReports",
             # host <- cfla2015
             # cid <- 101
             df <- host$cashflowEventsByPeriod
-            # subset df: this cid, report horizon rows; <periodIndex, nominalValue> cols
+            # subset df: this cid, report horizon rows; 
+            #            <periodIndex, nominalValue> cols
             nreps <- tl$reportCount
             df1 <- df[(df$contractId == cid) & (df$periodIndex <= nreps),]
             df2 <- df1[c("periodIndex","nominalValue")]
@@ -211,8 +212,17 @@ setMethod(f = "nominalValueReports",
             ),]
             # get nominalValue of contract cid at statusDate from input ptf
             # (contracts are in portfolio order in df3) 
-            nvsd  <- ptf$contracts[[match(cid,unique(df$contractId))
-            ]]$contractTerms["notionalPrincipal"]
+            cntr <- ptf$contracts[[ match(cid,unique(df$contractId)) ]]
+            
+            if (cntr$contractTerms["contractRole"] == "RPA" ) { 
+               sign <- +1 
+            } else {
+               sign <- -1 
+            }
+            
+            # **** add check for RPL and errors if other contractRole value
+            nvsd  <- sign * as.numeric(cntr$contractTerms["notionalPrincipal"])
+            
             # pass1 report:  has values for any "active period" report 
             rvals <- unlist(sapply(seq(1,nreps), function (i) {
               if ((i) %in% df3$periodIndex )  
@@ -223,7 +233,8 @@ setMethod(f = "nominalValueReports",
             }))
             # add statusDate nominalValue as "0th" report
             rvals <- unlist(append(rvals,nvsd,0))
-            # pass2 report: forward fill inactive period NAs from preceding report value
+            # pass2 report: forward fill inactive period NAs from preceding
+            #               report value; also convert numeric, add report date
             rvalsF <- as.numeric(na.locf(rvals))
             names(rvalsF)<- tl$periodDateVector[1:(tl$reportCount+1)]
             return(rvalsF)  
