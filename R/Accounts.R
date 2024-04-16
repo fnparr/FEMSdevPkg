@@ -123,24 +123,39 @@ setMethod("clone", c(accounts= "AccountsTree"),
 #         of the correct length ( for this report type) with 0's for no values
 #         allowing zeros simplifies vectorSum - keeps numeric vectors 
 # ********
-aggregateNMVreports <- function(account,cidNMVReportsList,vlen, vnames){
-  if (isNotLeaf(account))
-    account$nmv <- 
-      fxVectorSum(lapply(
-        account$children,
-        function(child) unlist(aggregateNMVreports(child,cidNMVReportsList,
-                                                   vlen, vnames))),
-        vlen,vnames
-      )
-  else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
-  else {
-    account$nmv <-
-      fxVectorSum(lapply(account$actusCIDs, function(cid) 
-                    unlist(cidNMVReportsList[cid])),
-                  vlen,vnames)
-  }  
-  return(account$nmv) # return specific report parents need 
-}
+setGeneric("accountNMVreports",
+           function(host, vlen, vnames, cidNMVlist) 
+           { standardGeneric("accountNMVreports") }
+)
+
+
+setMethod("accountNMVreports",
+          c(host = "Node", vlen = "numeric", vnames = "character",
+            cidNMVlist = "list"), 
+          function(host, vlen, vnames, cidNMVlist ){ 
+            if (isNotLeaf(host)) 
+              host$nmv <- 
+                fxVectorSum(lapply( 
+                  host$children, 
+                  function(child) unlist(accountNMVreports(child, vlen, 
+                                                             vnames,
+                                                             cidNMVlist))
+                  ),
+                  vlen,vnames
+                  )
+            else if ( is.null(host$actusCIDs) )  host$nmv <- rep(0,vlen)
+            else {
+                   host$nmv <- 
+                     fxVectorSum(lapply(host$actusCIDs, 
+                                        function(cid) 
+                                          unlist(cidNMVlist[cid])),
+                                 vlen,vnames
+                                 )
+                  }  
+           return(host$nmv) # return specific report parents need 
+          }
+)
+
 
 # fxVectorSum(vlist,vlen) 
 #           does element wise aggregation of a list of numeric vectors
@@ -225,23 +240,23 @@ cid2NodeId <- function(cid, accounts) {
 #         of the correct length ( for this report type) with 0's for no values
 #         allowing zeros simplifies vectorSum - keeps numeric vectors 
 # ********
-aggregateNMVreports <- function(account,nmvReports,vlen, vnames){
-  if (isNotLeaf(account))
-    account$nmv <- 
-      fxVectorSum(lapply(
-        account$children,
-        function(child) unlist(aggregateNMVreports(child,nmvReports,
-                                                   vlen, vnames))),
-        vlen,vnames
-      )
-  else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
-  else {
-    account$nmv <-
-      fxVectorSum(lapply(account$actusCIDs, function(cid) unlist(nmvReports[cid])),
-                  vlen,vnames)
-  }  
-  return(account$nmv) # return specific report parents need 
-}
+#aggregateNMVreports <- function(account,nmvReports,vlen, vnames){
+#  if (isNotLeaf(account))
+#    account$nmv <- 
+#      fxVectorSum(lapply(
+#        account$children,
+#        function(child) unlist(aggregateNMVreports(child,nmvReports,
+#                                                   vlen, vnames))),
+#        vlen,vnames
+#      )
+#  else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
+#  else {
+#    account$nmv <-
+#      fxVectorSum(lapply(account$actusCIDs, function(cid) unlist(nmvReports[cid])),
+#                  vlen,vnames)
+#  }  
+#  return(account$nmv) # return specific report parents need 
+# }
 
 
 # VectorSum(vlist) does element wise aggregation of a list of numeric vectors

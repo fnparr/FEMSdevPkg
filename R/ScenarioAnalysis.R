@@ -305,3 +305,14 @@ setMethod(f = "nominalValueReports",
             msg <- "NominalValue reports generated"
             return(msg)
           })
+
+
+setMethod("accountNMVreports",
+          c(host = "ScenarioAnalysis", vlen = "numeric", vnames = "character"), 
+          function(host, vlen, vnames ){ 
+            return(accountNMVreports( host = host$scenarioAccounts$root,
+                                        vlen = vlen, vnames = vnames, 
+                                        cidNMVlist = host$nominalValueReports
+                                        ))
+          }
+)
