@@ -22,6 +22,7 @@
 #' @include Portfolio.R
 #' @include Timeline.R
 #' @include ScenarioAnalysis.R
+#' @include Accounts.R
 #  #' @import data.tree
 #' 
 # setOldClass("Node")   # Allows data.tree::Node to be used in S4 object slots 
@@ -311,13 +312,13 @@ setMethod (f = "events2dfByPeriod",
 #'   nominalValues(host = FinancialModel) - exported method instance
 #' *******************************
 #' 
-#' nominalValueReports(host= FInancial) 
+#' nominalValueReports(host= Financial Model) 
 #' creates a list of NV reports using data in currentScenarioAnalysis of
 #' the FinancialModel and passing in portfolio information ( needed to find
 #' NominalValue of contracts at their status date) and timeline (needed to 
-#' underunderstand the dates and number of nominalValue reports for each 
+#' understand the dates and number of nominalValue reports for each 
 #' contract.) Nominal Values following the statusDate are retrieved frome the
-#' cashflowEventByPeriod data already savein in the ScenarioAnalysis
+#' cashflowEventByPeriod data already saved in the ScenarioAnalysis
 #'      
 #' @param host  FinancialModel S4 object with portfolio, cashflowevents data
 #' @return      Log summarizing whether processing was successful
@@ -364,4 +365,70 @@ setMethod(f = "nominalValueReports",
                                        tl =   host$timeline)
             return(msg)
           })
-             
+
+#'  *******************************
+#'   accountNMVreports(host = FinancialModel) - exported method instance
+#' *******************************
+#' 
+#' accountNMVreports(host= Financial Model) 
+#' This method computed aggregated Nominal Value report vectors for each 
+#' account in the accountsTree of the input Financial model using the 
+#' currentScenarioAnalysis ( i.e. risk factor environment ) of the financial
+#' model. The results are saved in  $nmv fields in each node of the 
+#' scenarioAccounts tree.  This method requires that nominalValueReports( ) has
+#' already been run on the financial model to generate nominalValue report data 
+#' for each contract in the portfolio of the financial model. The work of this 
+#' method is to aggregate for each node in the accounts tree, the nominal value
+#' reports of all conracts under that node   
+#'      
+#' @param host  FinancialModel S4 object with portfolio, cashflowevents data
+#' @return      Log summarizing whether processing was successful
+#' @export
+#' @import data.tree
+#' @examples {
+#'   fmID       <- "fm001"
+#'   fmDescr    <- "test Financial Model logic with example"
+#'   entprID    <- "modelBank01"
+#'   currency   <- "USD"
+#'   serverURL  <- "https://demo.actusfrf.org:8080/" 
+#'   yamlstring <- paste0("\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n",
+#'   "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+#'   "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+#'   "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+#'   "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+#'   "        - ocf008\n") 
+#'   accountsTree <- AccountsTree(yamlstring)
+#'   mydatadir <- "~/mydata"
+#'   installSampleData(mydatadir) 
+#'   cdfn  <- "~/mydata/TestPortfolio.csv"
+#'   ptf   <-  samplePortfolio(cdfn) 
+#'   tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+#'                  reportCount=3, periodCount = 6)  
+#'   fm1 <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+#'                             accntsTree = accountsTree, ptf = ptf, curr = currency,
+#'                             timeline = tl, serverURL = serverURL) 
+#'   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'   rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100) 
+#'   marketData <-list(rfx) 
+#'   scnID <- "UST5Y_fallingRates"
+#'   yc<- YieldCurve() 
+#'   msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
+#'                               rfxs = marketData, yc = YieldCurve())
+#'   msg2 <- generateEvents(host= fm1)
+#'   msg3 <- events2dfByPeriod(host= fm1) 
+#'   msg4 <-  nominalValueReports(host = fm1)
+#'   msg5 <- accountNMVreports(host = fm1)
+#' }
+setMethod("accountNMVreports",
+          c(host = "FinancialModel"), 
+          function(host){ 
+            nreps <- host$timeline$reportCount + 1
+            accountNMVreports(
+              host = host$currentScenarioAnalysis,
+              vlen = nreps, 
+              vnames = as.character(host$timeline$periodDateVector[1:nreps]), 
+            )
+            logMsg <- "Account NominalValue reports generated"
+            return(logMsg)
+          }
+)

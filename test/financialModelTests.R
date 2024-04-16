@@ -366,6 +366,12 @@ rm(list=ls())
   fm1$currentScenarioAnalysis$nominalValueReports[[1]]
   names(fm1$currentScenarioAnalysis$nominalValueReports )
   fm1$currentScenarioAnalysis$nominalValueReports[["ann003"]]
+  
+  msg5 <- accountNMVreports(host = fm1)
+  msg5
+  table <- t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  table
+  
   fm1$timeline$periodDateVector[1:4]
   scna <- fm1$currentScenarioAnalysis
   accountNMVreports(host=scna, 4, 
@@ -377,6 +383,7 @@ rm(list=ls())
                        cidNMVlist = scna$nominalValueReports)
   table <- t(scna$scenarioAccounts$root$Get("nmv"))
 table
+fm1$timeline$reportCount + 1
 
 
    

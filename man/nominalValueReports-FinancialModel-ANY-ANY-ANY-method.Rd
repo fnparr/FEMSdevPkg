@@ -15,13 +15,13 @@
 Log summarizing whether processing was successful
 }
 \description{
-nominalValueReports(host= FInancial) 
+nominalValueReports(host= Financial Model) 
 creates a list of NV reports using data in currentScenarioAnalysis of
 the FinancialModel and passing in portfolio information ( needed to find
 NominalValue of contracts at their status date) and timeline (needed to 
-underunderstand the dates and number of nominalValue reports for each 
+understand the dates and number of nominalValue reports for each 
 contract.) Nominal Values following the statusDate are retrieved frome the
-cashflowEventByPeriod data already savein in the ScenarioAnalysis
+cashflowEventByPeriod data already saved in the ScenarioAnalysis
 }
 \examples{
 {
