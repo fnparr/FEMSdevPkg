@@ -363,10 +363,15 @@ rm(list=ls())
   msg3 <- events2dfByPeriod(host= fm1)
   msg4 <-  nominalValueReports(host = fm1)
   msg4
-
   fm1$currentScenarioAnalysis$nominalValueReports[[1]]
   names(fm1$currentScenarioAnalysis$nominalValueReports )
   fm1$currentScenarioAnalysis$nominalValueReports[["ann003"]]
+  scna <- fm1$currentScenarioAnalysis
+  aggregateNMVreports (scna$scenarioAccounts$root,scna$nominalValueReports,
+                       4, fm1$tl$periodDateVector)
+  msg5 <- accountNominalValues(host = fm1) 
+
+
    
    
    

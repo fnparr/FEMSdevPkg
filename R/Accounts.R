@@ -123,19 +123,20 @@ setMethod("clone", c(accounts= "AccountsTree"),
 #         of the correct length ( for this report type) with 0's for no values
 #         allowing zeros simplifies vectorSum - keeps numeric vectors 
 # ********
-aggregateNMVreports <- function(account,nmvReports,vlen, vnames){
+aggregateNMVreports <- function(account,cidNMVReportsList,vlen, vnames){
   if (isNotLeaf(account))
     account$nmv <- 
       fxVectorSum(lapply(
         account$children,
-        function(child) unlist(aggregateNMVreports(child,nmvReports,
+        function(child) unlist(aggregateNMVreports(child,cidNMVReportsList,
                                                    vlen, vnames))),
         vlen,vnames
       )
   else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
   else {
     account$nmv <-
-      fxVectorSum(lapply(account$actusCIDs, function(cid) unlist(nmvReports[cid])),
+      fxVectorSum(lapply(account$actusCIDs, function(cid) 
+                    unlist(cidNMVReportsList[cid])),
                   vlen,vnames)
   }  
   return(account$nmv) # return specific report parents need 
