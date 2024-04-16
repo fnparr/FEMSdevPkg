@@ -91,6 +91,70 @@ setUniqueNodeIDs <- function(root) {
   return(root)
 }
 
+# *********
+# Clone an AccountsTree - deep copy - assumed initialized and nodeIDs set  
+# *****************
+setGeneric("clone",
+           function(accounts) { standardGeneric("clone") }
+)
+setMethod("clone", c(accounts= "AccountsTree"), 
+          function(accounts){ 
+            accountsTree <- AccountsTree()
+            accountsTree$root <- Clone(accounts$root)
+            accountsTree$root <- setUniqueNodeIDs(accountsTree$root)
+            return(accountsTree)
+          }
+)
+
+#  Function to create aggregated hierarchical NMV reports from contract NMVs 
+# *****************
+#  addAggregateReport(account,cidReports,reportName)
+#     This function adds a new aggregated report reportName into the list of 
+#     of reports at each node of the accounts tree. Input parameter cidReports 
+#     is a list keyed by CID of report values for each contract. Each report 
+#     is a numeric vector computed by contract cashflow analysis. All report 
+#     vectors have the same length - determined by timeline of the analysis. 
+#     Flow reports have one less element than status/value reports. Function 
+#     addAggregateReport() computes account node report values recursively:
+#     (1) nonleaf accounts do a vector sum of their child node reports
+#     (2) leaf nodes owning at least one actusCID, do a vector sum of the
+#         cidReports for their assigned contracts 
+#     (3) leaf nodes with no assigned actusContracts generate a report vector 
+#         of the correct length ( for this report type) with 0's for no values
+#         allowing zeros simplifies vectorSum - keeps numeric vectors 
+# ********
+aggregateNMVreports <- function(account,nmvReports,vlen, vnames){
+  if (isNotLeaf(account))
+    account$nmv <- 
+      fxVectorSum(lapply(
+        account$children,
+        function(child) unlist(aggregateNMVreports(child,nmvReports,
+                                                   vlen, vnames))),
+        vlen,vnames
+      )
+  else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
+  else {
+    account$nmv <-
+      fxVectorSum(lapply(account$actusCIDs, function(cid) unlist(nmvReports[cid])),
+                  vlen,vnames)
+  }  
+  return(account$nmv) # return specific report parents need 
+}
+
+# fxVectorSum(vlist,vlen) 
+#           does element wise aggregation of a list of numeric vectors
+#           of equal length vlen and returns the vector of sums. We 
+#           expect to use this in aggregating report values to higher level 
+#           nodes in the tree. 
+fxVectorSum <- function(vlist, vlen, vnames= NULL) {
+  vsum <- rep(0,vlen)
+  for (i in 1:vlen)
+    vsum[i] <-  sum( sapply(vlist, function(v) v[i]))
+  if ((! is.null(vnames)) & (length(vnames)==vlen) )
+    names(vsum) <- vnames
+  return(vsum)
+}
+
 # ******** AccountsTree.R file organized up to here 
 
 # **********
@@ -141,9 +205,44 @@ cid2NodeId <- function(cid, accounts) {
   return(mp$nodes[which(mp$cids==cid)])
 }
 
-# ************
-# Functions for aggregating report vectors in the accounts tree  
-# ***********
+# *****************
+#  Function to create aggregated hierarchical NominalValue Report vectors 
+#  from contract reports using fixed all numeric vectors simple fxVectorSum()
+# *****************
+#  addAggregateReport(account,cidReports,reportName)
+#     This function adds a new aggregated report reportName into the list of 
+#     of reports at each node of the accounts tree. Input parameter cidReports 
+#     is a list keyed by CID of report values for each contract. Each report 
+#     is a numeric vector computed by contract cashflow analysis. All report 
+#     vectors have the same length - determined by timeline of the analysis. 
+#     Flow reports have one less element than status/value reports. Function 
+#     addAggregateReport() computes account node report values recursively:
+#     (1) nonleaf accounts do a vector sum of their child node reports
+#     (2) leaf nodes owning at least one actusCID, do a vector sum of the
+#         cidReports for their assigned contracts 
+#     (3) leaf nodes with no assigned actusContracts generate a report vector 
+#         of the correct length ( for this report type) with 0's for no values
+#         allowing zeros simplifies vectorSum - keeps numeric vectors 
+# ********
+aggregateNMVreports <- function(account,nmvReports,vlen, vnames){
+  if (isNotLeaf(account))
+    account$nmv <- 
+      fxVectorSum(lapply(
+        account$children,
+        function(child) unlist(aggregateNMVreports(child,nmvReports,
+                                                   vlen, vnames))),
+        vlen,vnames
+      )
+  else if ( is.null(account$actusCIDs) )  account$nmv <- rep(0,vlen)
+  else {
+    account$nmv <-
+      fxVectorSum(lapply(account$actusCIDs, function(cid) unlist(nmvReports[cid])),
+                  vlen,vnames)
+  }  
+  return(account$nmv) # return specific report parents need 
+}
+
+
 # VectorSum(vlist) does element wise aggregation of a list of numeric vectors
 #                  of equal length and returns the vector of sums. We expect to
 #                  this in aggregating report values to higher level nodes in 

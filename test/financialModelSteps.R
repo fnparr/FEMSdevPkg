@@ -95,3 +95,10 @@ msg1 <- events2dfByPeriod(host=fm)
 
 # step 9 nominalValueReports(host = fm) 
 msg2 <- nominalValueReports(host = fm)
+msg2
+fm1$currentScenarioAnalysis$nominalValueReports[[1]]
+names(fm1$currentScenarioAnalysis$nominalValueReports )
+fm1$currentScenarioAnalysis$nominalValueReports[["ann003"]]
+
+# Step 10  accountsTree aggregation of NominalValue reports 
+

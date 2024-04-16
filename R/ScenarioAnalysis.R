@@ -6,7 +6,9 @@
 # passed in a parameters and typically coming from a financialModel.
 # It creates and saves lists of cashflow events, a dataframe with bucketized
 # liquidity events, and vectors of liquidity, valuations and income reports,
-# for the report dates in the input Timeline
+# for the report dates in the input Timeline. It has a scenario specific clone
+# of the parent FinancialModel AccountsTree to organize NominalValue, Liquidity
+# and NetPresentValue reporting (for the parent Financial Model ) 
 # **************************************************
 # defines: class ScenarioAnalysis, ScenarioAnalysis() constructor,
 # defines ( But does not export) :
@@ -37,6 +39,7 @@ setRefClass("ScenarioAnalysis",
               liquidityReports = "list",
               incomeReports = "list",
               nominalValueReports = "list",
+              scenarioAccounts = "AccountsTree",
               logMsgs = "list"
             ))
 # **************************************
@@ -45,7 +48,7 @@ setRefClass("ScenarioAnalysis",
 #  **** Generic ScenarioAnalysis(<>) ********
 # Defines generic S4 constructor method for class ScenarioAnalysis
 setGeneric("ScenarioAnalysis",
-           function(scenarioID, marketData, yieldCurve)
+           function(scenarioID, marketData, yieldCurve, accounts)
              { standardGeneric("ScenarioAnalysis") }
 )
 #  ***** No parameters ScenarioAnalysis( )
@@ -65,12 +68,15 @@ setMethod("ScenarioAnalysis", c(),
 #' @param scenarioID  character ID for this risk Scenario
 #' @param marketData  list of risk factor reference indexes
 #' @param yieldCurve  a YieldCurve - related to factors for discounting 
+#' @param accountsTree an accountsTree (from owning financial Model)
 #' @return   initialized ScenarioAnalysis object 
+#' @include Accounts.R
 #' @export
 setMethod("ScenarioAnalysis", c(scenarioID = "character",
                                 marketData = "list",
-                                yieldCurve = "YieldCurve"),
-          function(scenarioID,marketData,yieldCurve) {
+                                yieldCurve = "YieldCurve",
+                                accounts   = "AccountsTree"),
+          function(scenarioID,marketData,yieldCurve, accounts) {
             scna <- ScenarioAnalysis()
             scna$scenarioID <- scenarioID
             scna$marketData <- marketData
@@ -80,6 +86,7 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
             scna$liquidityReports <- list()
             scna$incomeReports <- list()
             scna$nominalValueReports <-list()
+            scna$scenarioAccounts <- clone(accounts)
             scna$logMsgs <- list() 
             return(scna)
           })

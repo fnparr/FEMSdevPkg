@@ -169,8 +169,9 @@ initFinancialModel <- function(
 #'                              rfxs = marketData, yc = YieldCurve())                
 #' }
 addScenarioAnalysis <- function( fm = FinancialModel(), scnID = " ", 
-                                 rfxs = list(), yc = YieldCurve()
-){ scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, yieldCurve = yc)
+                                 rfxs = list(), yc = YieldCurve()){ 
+   scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, yieldCurve = yc,
+                            accounts = accountsTree)
    fm$scenarioAnalysisList[scnID] <- list(scna=scna)
    fm$currentScenarioAnalysis <- scna
    msg<- "new scenarioAnalysis added to Financial Model and made current"
