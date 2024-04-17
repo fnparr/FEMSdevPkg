@@ -432,3 +432,37 @@ setMethod("accountNMVreports",
             return(logMsg)
           }
 )
+# ******* getNMVreports() 
+#' getNMVreports("FinancialModel")
+#' 
+#' This function returns a matrix of doubles showing expected nominal value 
+#' reports at different dates for the accounts in the financial model with 
+#' cashflows generated using the risk environment of the currentScenarioAnalysis
+#' in the financial model. There is a row in the data frame for each account in
+#' the financial model Accounts tree. 
+#' @param  Financial Model with accountNominalValues() available 
+#' @returns matrix with account Nominal Value reports   
+#' @import data.tree
+#' @export
+getNMVreports <- function(fm) {
+  return(t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv")))
+}
+
+# ******* showNMVreports() 
+#' showNMVreports("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected nominal value reports at 
+#' different dates for the accounts in the financial model with cashflows 
+#' generated using the risk environment of the currentScenarioAnalysis in the 
+#' financial model. There is a row in the data frame for #' each account in the 
+#' financial model Accounts tree. The structure of the accounts tree is 
+#' displayed in the first column of the data frame 
+#' @param  Financial Model with accountNominalValues() available 
+#' @returns data frame suitable for displaying results  
+#' @import data.tree
+#' @export
+showNMVreports <- function(fm ) {
+  adf<- as.data.frame(fm$accountsTree$root)
+  table <- t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  return( data.frame(adf["levelName"], table ))
+}

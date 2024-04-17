@@ -164,18 +164,7 @@ scna <- ScenarioAnalysis(scenarioID= scnID, marketData= rfxs,
 logMsgs  <- generateEvents(host= scna, ptf= ptf, serverURL = serverURL)
 logMsgs
 
-# 4.2  run generateEvents(fm) on financial model with a currentScenarioAnalysis
-#      and validate results => looks OK 
-class(fm)
-fm$currentScenarioAnalysis$scenarioID
-logmsg<- generateEvents(fm)
-logmsg
-typeof(fm$scenarioAnalysisList)
-length(fm$scenarioAnalysisList)
-unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
-fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
-fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
-# Test 4.3 example test for generateEvents(FinancialModel)
+# Test 4.2 example test for generateEvents(FinancialModel)
 rm(list=ls())   
    fmID       <- "fm001"
    fmDescr    <- "test Financial Model logic with example"
@@ -369,6 +358,11 @@ rm(list=ls())
   
   msg5 <- accountNMVreports(host = fm1)
   msg5
+  getNMVreports(fm1)
+  showNMVreports(fm1) 
+  
+  # ************ additional testing 
+  
   table <- t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
   table
   
@@ -387,77 +381,3 @@ fm1$timeline$reportCount + 1
 
 
    
-   
-   
-# ********
-# Older ContractAnalysis Tests
-
-cfla <- initContractAnalysis( analysisID = fm$financialModelID,
-                          analysisDescription = fm$financialModelDescription,
-                          enterpriseID = fm$enterpriseID,
-                          yieldCurve = YieldCurve(),
-                          portfolio =  fm$portfolio,
-                          currency =   fm$currency,
-                          scenario =   scenario,
-                          actusServerURL = fm$serverURL,
-                          timeline = fm$timeline)
-
-# check valid ContractAnalysis object created
-class(cfla)
-
-# Test 3.1:  
-# simulate the portfolio, this scenario; results go into cfla$cashflowEventsLoL
-logMsgs1 <- generateEvents(scna= cfla)
-logMsgs1
-
-# check whether each contract was successfully simulated 
-unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)}))
-
-# Test 3.1 Group events by (Timeline) periods 
-logMsgs2  <- events2dfByPeriod(cfla = cfla)
-logMsgs2
-
-# check on dataframe contents 
-cfla$cashflowEventsByPeriod[1:10,]
-rows <-nrow(cfla$cashflowEventsByPeriod)
-cfla$cashflowEventsByPeriod[(rows-10):rows,]
-
-# Test 3.2 Generate liquidity vectors But undo cumsum if there 
-logMsgs3  <- liquidityByPeriod2vec(cfla= cfla)
-logMsgs3
-
-# check
-typeof(cfla$contractLiquidityVectors)
-length(cfla$contractLiquidityVectors)
-cfla$contractLiquidityVectors$pam001
-unlist(cfla$contractLiquidityVectors)
-# Some of the liquidity vectors are missing elements 
-# Why are there6 periods - because 3 reports and 6 periods !
-cfla$timeline$periodCount
-# Contract liquidity vectors is ALL periods , not rfixed length, periodID
-
-# Test 3.3 generate income reports
-logMsgs5  <- eventsdf2incomeReports(cfla= cfla)
-logMsgs5
-
-unlist(cfla$incomeReports)
-
-logMsgs6 <- nominalValueReports(scna=cfla)
-logMsgs6
-unlist(cfla$nominalValueReports)
-cfla$nominalValueReports[[1]]
-cfla$nominalValueReports[[3]]
-typeof(cfla$nominalValueReports[[1]]$nvreps)
-# somehow the values have been converted to character 
-# == need to fix this 
-as.numeric(cfla$nominalValueReports[[1]]$nvreps)
-fixNvrs <- function(cnvrsList){
-   nnvrs <- lapply(cnvrsList, function(nvr){
-     return(list(cid=nvr$cid,nvreps = as.numeric(nvr$nvreps)))
-   })
-}
-nnvrs <- fixNvrs(cfla$nominalValueReports)
-nnvrs
-
-# Test 5:  can we display aggregated nominal Values in the accounts tree 
-

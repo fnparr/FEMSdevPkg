@@ -1,6 +1,7 @@
 # FinancialModelSteps - step through financial model analysis 
 #                     - targeting exported functions from FEMSdevPkg
 # ********
+library(FEMSdevPkg)
 rm(list=ls())
 # Step 1: create a string with structural information for model bank accounts
 #         and ACTUS contract ids ( also function IDs) assigned to each account
@@ -84,21 +85,15 @@ fm$currentScenarioAnalysis$scenarioID
 #         set by addScenarioAnaysis()
 logmsg<- generateEvents(fm)
 logmsg
-typeof(fm$scenarioAnalysisList)
-length(fm$scenarioAnalysisList)
-unlist(fm$scenarioAnalysisList["UST5Y_fallingRates"])
-fm$scenarioAnalysisList["UST5Y_fallingRates"]$UST5Y_fallingRates$cashflowEventsLoL[[1]]
-fm$currentScenarioAnalysis$cashflowEventsLoL[[1]]$contractId
 
 # Step 8 events2dfByPeriod() - organize the cashflow events into period buckets 
 msg1 <- events2dfByPeriod(host=fm)
 
 # step 9 nominalValueReports(host = fm) 
 msg2 <- nominalValueReports(host = fm)
-msg2
-fm1$currentScenarioAnalysis$nominalValueReports[[1]]
-names(fm1$currentScenarioAnalysis$nominalValueReports )
-fm1$currentScenarioAnalysis$nominalValueReports[["ann003"]]
 
 # Step 10  accountsTree aggregation of NominalValue reports 
+msg5 <- accountNMVreports(host = fm1)
+getNMVreports(fm1)
+showNMVreports(fm1) 
 
