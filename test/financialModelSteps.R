@@ -93,7 +93,7 @@ msg1 <- events2dfByPeriod(host=fm)
 msg2 <- nominalValueReports(host = fm)
 
 # Step 10  accountsTree aggregation of NominalValue reports 
-msg5 <- accountNMVreports(host = fm1)
-getNMVreports(fm1)
-showNMVreports(fm1) 
+msg5 <- accountNMVreports(host = fm)
+getNMVreports(fm)
+showNMVreports(fm) 
 

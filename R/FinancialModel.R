@@ -445,7 +445,7 @@ setMethod("accountNMVreports",
 #' @import data.tree
 #' @export
 getNMVreports <- function(fm) {
-  return(t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv")))
+  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv")))
 }
 
 # ******* showNMVreports() 
@@ -463,6 +463,6 @@ getNMVreports <- function(fm) {
 #' @export
 showNMVreports <- function(fm ) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
   return( data.frame(adf["levelName"], table ))
 }
