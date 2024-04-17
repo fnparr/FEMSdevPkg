@@ -1,7 +1,7 @@
 Package: FEMSdevPkg
 Type: Package
 Title: Provides an API to ACTUS cashflow Generation, liquidity and income plots
-Version: 0.0.10
+Version: 0.1.10
 Author: Francis Parr, Donat Maier, Nils Bundi, Henriette Breymann, Gian-Andrin
         Tommasini
 Maintainer: Francis Parr <fnparr@gmail.com>
@@ -27,7 +27,13 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     for how to add data to be processed by these functions. Exported function
     runDadFiR3demo() starts a browser controlled shiny application showing plots 
     of some additional risk factor data. The underlying riskFactorindex data is 
-    aslo available in the installSampledata directory. 
+    aslo available in the installSampledata directory.
+    Version 1.0.1 includes capability to generate NominalValue reports for a 
+    FInancialModel with a hierarchical tree of accounts, leaf accounts holding 
+    ACTUS contracts. A Financial Model can generate expected cashvlows and 
+    Value reports for multiple risk scenarios - each captured in a separate 
+    ScenarioAnalysis. The Financial Model holds a set of ScenarioAnalyses  
+    enabling comparison of results in different risk scenarios 
 License: GPL ( >=2)
 Imports:
       data.tree,

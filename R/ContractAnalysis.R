@@ -5,6 +5,9 @@
 # for specified timeline, risk scenario and yield curve 
 # creates and saves a dataframe with (liquidityD,income, NPV) for each report
 # date in the defined timeline 
+# *********************
+# as of 16 APril 2024, FEMSdevPKG V 1.0 ContractAnalysis is DEPRECATED
+# ScenarioAnalysis and FnancialModel should used instead 
 # **************************************************
 # defines: class ContractAnalysis, ContractAnalysis() constructor,
 # defines and exports:

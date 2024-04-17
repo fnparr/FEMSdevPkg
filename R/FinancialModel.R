@@ -464,5 +464,9 @@ getNMVreports <- function(fm) {
 showNMVreports <- function(fm ) {
   adf<- as.data.frame(fm$accountsTree$root)
   table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
-  return( data.frame(adf["levelName"], table ))
+  df <- data.frame(adf["levelName"])
+  for ( datestr in colnames(table)) {
+       df[datestr] <- table[,datestr]
+  }
+  return( df)
 }
