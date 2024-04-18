@@ -262,7 +262,7 @@ rm(list=ls())
    rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
    rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
    
-   
+   marketData <- list(rfx)
    msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
                                rfxs = marketData, yc = YieldCurve())                
    msg2 <- generateEvents(host= fm1)

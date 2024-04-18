@@ -96,4 +96,3 @@ msg2 <- nominalValueReports(host = fm)
 msg5 <- accountNMVreports(host = fm)
 getNMVreports(fm)
 showNMVreports(fm) 
-
