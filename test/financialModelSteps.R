@@ -1,6 +1,9 @@
 # FinancialModelSteps - step through financial model analysis 
 #                     - targeting exported functions from FEMSdevPkg
 # ********
+library(devtools)
+install_github("fnparr/FEMSdevPkg")
+# *********
 library(FEMSdevPkg)
 rm(list=ls())
 # Step 1: create a string with structural information for model bank accounts

@@ -91,6 +91,25 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
             return(scna)
           })
 
+# ********* GENERIC METHODS with ScenarioAnalysis as lowest level host
+# ************************************************************************
+# events2dfByPeriod(<ContractAnalysis>,  )
+# ************************************************************************
+# ****** generic method first - a ContractAnalysis is the only parameter 
+
+setGeneric("events2dfByPeriod",
+           function(host, tl)  
+           { standardGeneric("events2dfByPeriod") }
+)
+
+# **************************************
+# Method:  nominalValueReports(...) 
+# *************************************
+# A generic method for creating and saving a list of nominalValueReports  
+setGeneric("nominalValueReports",
+           function(host, ptf, tl, cid) 
+           { standardGeneric("nominalValueReports") }
+)
 # ************************************************************************
 # generateEvents(ScenarioAnalysis, Portfolio, ServerURL )
 # ************************************************************************

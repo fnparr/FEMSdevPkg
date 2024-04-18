@@ -216,12 +216,8 @@ setMethod (f = "generateEvents",
 # ************************************************************************
 # events2dfByPeriod(<ContractAnalysis>,  )
 # ************************************************************************
-# ****** generic method first - a ContractAnalysis is the only parameter 
+# ****** generic method defined in ScenarioAnalysis.R  
 
-setGeneric("events2dfByPeriod",
-           function(host, tl)  
-             { standardGeneric("events2dfByPeriod") }
-)
 # ***** method instance   signature = (<ContractAnalysis>)   
 #' events2dfByPeriod(<ContractAnalysis>)
 #'
@@ -249,6 +245,7 @@ setGeneric("events2dfByPeriod",
 #'   
 #' @param host  ContractAnalysis S4 obj with portfolio, actusServer and risk data
 #' @return      log msg reporting which contracts were successfully simulated 
+#' @include   ScenarioAnalysis.R
 #' @export
 #' @examples {
 #'    mydatadir <- "~/mydata"
@@ -591,12 +588,8 @@ setMethod(f = "eventsdf2incomeReports",
 # **************************************
 # Method:  nominalValueReports(...) 
 # *************************************
-#  **** Generic nominalValueReports(<>) ********
-# A generic method for creating and saving a list of nominalValueReports  
-setGeneric("nominalValueReports",
-           function(host, ptf, tl, cid) 
-           { standardGeneric("nominalValueReports") }
-)
+#  generic method is defined in scenarioAnalysis.R 
+
 #  **** Single contract nominalValueReports(<>) ********
 #  Uses ContractsAnalysis data to build nominalValue report vector for a 
 #  specific contract (cid) in the ContractsAnalysis$portfolio. Returns the
