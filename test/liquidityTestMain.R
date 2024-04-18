@@ -55,26 +55,52 @@ df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y))
 # missing period ( in which there was no liquidity activity ) 
 cids <- unique(scna$cashflowEventsByPeriod$contractId)
 ncids <- length(cids)
+cids
+df2rows[[1]]
+tl$reportCount
+rptdates <- as.character(
+  tl$periodDateVector[2:(tl$reportCount+1)]
+)
+rptdates
+
+# convert a list of values indexed by position to report vector
+list2report <- function(posnv, valsv, nrpts, rptdatev){
+  rptv <- rep(0,nrpts)
+  for (i in seq(1: length(posnv))) {
+    rptv[posnv[i]]<- valsv[i]
+  }
+  names(rptv) <- rptdatev
+  return(rptv)
+}
+
+# use list2report() and df2rows to build liquidity vector list 
 
 lqlist1 <- list()
 for ( cx in 1:ncids) {
-  lqlist1[[cids[cx]]] <-  list(period = df2rows[[cx]]$period, x = df2rows[[cx]]$x)
+  lqlist1[[cids[cx]]] <- list2report(df2rows[[cx]]$period,
+                                      df2rows[[cx]]$x,
+                                      tl$reportCount,
+                                      as.character( 
+                                       tl$periodDateVector[2:(tl$reportCount+1)]
+                                      ))  
 }
-lqlist1[[1]]
-cids[cx]  
-df2rows[[cx]]$period
-df2rows[[cx]]$x
-l1 <- list(period = df2rows[[cx]]$period, x = df2rows[[cx]]$x)
-# building a report vector for a contract
-nreps <- 6
-y<- rep(0,nreps)
-period <- c(3,6)
-x <- c( 250.0, 102239.2)
-for (i in seq(1: length(period))) {
-  y[period[i]]<- x[i]
-}
-y
 
-    
-    
-    
+
+lqlist1[[1]]
+cids
+lqlist1[["ann003"]]
+lqlist1[["pam007"]]
+lqlist1[["pam004"]]
+lqlist1[["pam001"]]
+
+# *******
+# function to create liquidity reports from cashflowEventsByPeriod 
+# host = scna, timeline as parameter 
+# write function in ScenarioAnalysis.R generic to allow version host=fm
+
+nreps <- 4    
+period <- c(3,4)   
+x    <- c ( 250.0, 102239.2)
+rptdates <- c("2023-01-01", "2023-07-01", "2024-01-01", "2024-07-01")
+list2report(period,x,nreps, rptdates)
+list2report(c(1,2),x,nreps, rptdates)

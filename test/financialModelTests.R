@@ -197,6 +197,7 @@ rm(list=ls())
 # Test 5. Bucket the cash flow events in the timeline model 
 # 5.0  create timeline,  scna with cashflows; test events2dfByPeriod(scna, tl)
 # Run all test to (1) create fm with TImeline, (2) scna (3) generateEvents(scna) 
+scna <- fm$currentScenarioAnalysis
 logMsgs <- events2dfByPeriod(host= scna, tl = fm$timeline)
 logMsgs
 # 5.1 now with exported events2dfByPeriod(fm) 
@@ -361,23 +362,6 @@ rm(list=ls())
   getNMVreports(fm1)
   showNMVreports(fm1) 
   
-  # ************ additional testing 
-  
-  table <- t(fm1$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
-  table
-  
-  fm1$timeline$periodDateVector[1:4]
-  scna <- fm1$currentScenarioAnalysis
-  accountNMVreports(host=scna, 4, 
-                      as.character(fm1$timeline$periodDateVector[1:4])) 
-  
-  
-  accountNMVreports( host=scna$scenarioAccounts$root,
-                       4, as.character(fm1$timeline$periodDateVector[1:4]),
-                       cidNMVlist = scna$nominalValueReports)
-  table <- t(scna$scenarioAccounts$root$Get("nmv"))
-table
-fm1$timeline$reportCount + 1
 
 
    
