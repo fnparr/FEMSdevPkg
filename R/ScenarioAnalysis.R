@@ -110,6 +110,19 @@ setGeneric("nominalValueReports",
            function(host, ptf, tl, cid) 
            { standardGeneric("nominalValueReports") }
 )
+
+# **************************************
+# Method:  liquidityReports(...) 
+# *************************************
+# A generic method for creating and saving a list of liquidityReports
+# replaces liquidityByPeriod2Vec() and lv2liquidityReports() in 
+# in ContractAnalysis.R (now deprecated)
+
+setGeneric("liquidityReports",
+           function(host, tl) 
+           { standardGeneric("liquidityReports") }
+)
+
 # ************************************************************************
 # generateEvents(ScenarioAnalysis, Portfolio, ServerURL )
 # ************************************************************************
@@ -335,3 +348,74 @@ setMethod("accountNMVreports",
                                         ))
           }
 )
+# *****************
+# liquidityReports(host = ScenarioAnalysis, tl = Timeline )
+# *****************
+#  this method computes the liquidity reports for a ScenarioAnalysis using 
+#  Previously computed cashflowEventsByPeriod and timeline passed in as input 
+#  parameter from the parent FinancialModel. The list of liquidityReport vectors
+# is saved in the Scenario Analysis liquidtyReports attribute. It is keyed by
+# contractID. Each report vector has exactly timeline$reportCount values
+#  Algorithm: (1) subset the cashflowevents dataframe by period to be reported
+#    (2) aggregate cashflow amounts for each contract x period combination
+#    (3) split the dataframe into a list of rows: each row has
+#       (a) cid - repeated
+#       (b)  vector of periods in which at least one cashflow occured, 
+#       (c) sum of cashflow amounts ofr that contract x period 
+#    (4)  step through the cids, same order in aggregate list and in the 
+#         cashflowEventsByPeriod df: function list2report creates a report
+#         vector of the correct length all zeros - using timeline, then slots
+#         values from active periods with cashflows into that slot in vector.
+#    (5) Resulting list of liquidity vectors is saved in the scenarioAnalysis
+#        and a log message is returned 
+ 
+
+setMethod(f = "liquidityReports",
+          signature = c(host = "ScenarioAnalysis", tl = "Timeline"),
+          definition = function(host, tl) {
+            # subset cashflowEventsByPeriod periodIndex in 1:tl$reportCount 
+            df1 <- subset(host$cashflowEventsByPeriod, 
+                          periodIndex %in% 1:tl$reportCount)
+            df2 <- aggregate(df1$payoff, 
+                             by=c(cid= list(df1$contractId), 
+                                  period= list(df1$periodIndex)), FUN=sum)
+            df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y)) 
+            cids <- unique(host$cashflowEventsByPeriod$contractId)
+            # the first date in tl$periodDateVector is statusDate which is 
+            # NOT a liquidity reporting date - but the next reportCount are.
+            rptdates <- as.character(
+              tl$periodDateVector[2:(tl$reportCount+1)]
+            )
+              
+            lqlist1 <- list()
+            for ( cx in 1:length(cids)) {
+              lqlist1[[cids[cx]]] <- 
+                list2report(df2rows[[cx]]$period,
+                            df2rows[[cx]]$x,
+                            tl$reportCount,
+                            as.character( 
+                                tl$periodDateVector[2:(tl$reportCount+1)]
+                                  )
+                              )  
+            } 
+            host$liquidityReports <- lqlist1
+            logMsg <- paste0 ("Liquidity reports for scenario ", host$scenarioID, 
+                      " generated - OK")
+            return(logMsg)
+          }
+)
+
+# ******** list2report() *******
+# convert a list of values indexed by position to a report vector
+# posnv - vector of positions ( periods) having a value
+# valsv - vector of values - same pength as posnv
+# number of reports - length of output vector 
+# rptdatev - report date strings 
+list2report <- function(posnv, valsv, nrpts, rptdatev){
+  rptv <- rep(0,nrpts)
+  for (i in seq(1: length(posnv))) {
+    rptv[posnv[i]]<- valsv[i]
+  }
+  names(rptv) <- rptdatev
+  return(rptv)
+}
