@@ -165,7 +165,7 @@ setMethod(f = "simulationRequest",
             request_body <- toJSON(fin_list, pretty = TRUE, auto_unbox = FALSE)
             
             # issue POST command to have server generate cashflows
-            simulationRsp  <- POST(paste0(serverURL, "eventsBatch"),
+            simulationRsp  <- POST(paste0(url, "eventsBatch"),
                                    body = request_body,
                                    content_type_json())
             return(simulationRsp)

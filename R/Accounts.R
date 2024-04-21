@@ -73,7 +73,11 @@ setMethod("AccountsTree", c(),
 
 setMethod(f = "AccountsTree", signature = c(yamlstring="character"),
           definition= function(yamlstring) {
-            accountsTree <- AccountsTree() 
+            accountsTree <- AccountsTree()
+            #check whether it is a path that was entered (are the last 5 characters ".yaml"?)
+            if(endsWith(yamlstring, ".yaml")){
+              yamlstring <- yaml.load_file(yamlstring)
+            }
             accountsTree$root <- treeFromYamlString(yamlstring)
             accountsTree$root <- setUniqueNodeIDs (accountsTree$root)
             return(accountsTree)
