@@ -441,11 +441,13 @@ setMethod("accountNMVreports",
 #' in the financial model. There is a row in the data frame for each account in
 #' the financial model Accounts tree. 
 #' @param  Financial Model with accountNominalValues() available 
+#' @param  scale  numeric: factor to scale nominal values by
+#' @param  rounding numeric: number of decimal places to round to
 #' @returns matrix with account Nominal Value reports   
 #' @import data.tree
 #' @export
-getNMVreports <- function(fm) {
-  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv")))
+getNMVreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))/scale, rounding))
 }
 
 # ******* showNMVreports() 
@@ -458,12 +460,14 @@ getNMVreports <- function(fm) {
 #' financial model Accounts tree. The structure of the accounts tree is 
 #' displayed in the first column of the data frame 
 #' @param  Financial Model with accountNominalValues() available 
+#' @param  scale  numeric: factor to scale nominal values by
+#' @param  rounding numeric: number of decimal places to round to
 #' @returns data frame suitable for displaying results  
 #' @import data.tree
 #' @export
-showNMVreports <- function(fm ) {
+showNMVreports <- function(fm, scale = 1, rounding = 0) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  table <- getNMVreports(fm, scale, rounding)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
        df[datestr] <- table[,datestr]
