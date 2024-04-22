@@ -351,21 +351,22 @@ setMethod("accountNMVreports",
 # *****************
 # liquidityReports(host = ScenarioAnalysis, tl = Timeline )
 # *****************
-#  this method computes the liquidity reports for a ScenarioAnalysis using 
-#  Previously computed cashflowEventsByPeriod and timeline passed in as input 
+#  This method computes the liquidity reports for a ScenarioAnalysis using 
+#  previously computed cashflowEventsByPeriod and timeline passed in as input 
 #  parameter from the parent FinancialModel. The list of liquidityReport vectors
 # is saved in the Scenario Analysis liquidtyReports attribute. It is keyed by
-# contractID. Each report vector has exactly timeline$reportCount values
-#  Algorithm: (1) subset the cashflowevents dataframe by period to be reported
+# contractID. Each report vector has exactly timeline$reportCount values.
+#
+#  Algorithm: (1) filter the cashflowevents df: event rows in reported periods
 #    (2) aggregate cashflow amounts for each contract x period combination
-#    (3) split the dataframe into a list of rows: each row has
+#    (3) split the dataframe into a list of rows by cid : each row has
 #       (a) cid - repeated
-#       (b)  vector of periods in which at least one cashflow occured, 
-#       (c) sum of cashflow amounts ofr that contract x period 
+#       (b)  vector of periods in which at least one cashflow occurred, 
+#       (c) sum of cashflow amounts of that <contract x period> 
 #    (4)  step through the cids, same order in aggregate list and in the 
 #         cashflowEventsByPeriod df: function list2report creates a report
-#         vector of the correct length all zeros - using timeline, then slots
-#         values from active periods with cashflows into that slot in vector.
+#         vector of the correct length all zeros - using timeline, then puts
+#         values from active periods (with cashflows0 into correct slot in vector.
 #    (5) Resulting list of liquidity vectors is saved in the scenarioAnalysis
 #        and a log message is returned 
  

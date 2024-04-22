@@ -362,7 +362,7 @@ rm(list=ls())
   getNMVreports(fm1)
   showNMVreports(fm1) 
   
-# Test 8 - Compute liquidt reports 
+# Test 8 - Compute liquidity reports 
 # Test 8.1  - non exported method on ScenarioAnalysis 
   # Test File to develop Financial Model Liquidity Reporting 
   # April 2024 
@@ -399,8 +399,11 @@ rm(list=ls())
   msg4 <-  nominalValueReports(host = fm1)
   msg4
   #  ***** liquidity report testing from here
-  msg5 <- liquidityReports(host = fm1$currentScenarioAnalysis,
-                           tl   = fm1$timeline)
+  msg5 <- liquidityReports(host = fm1) 
+  
+  
+  
+  msg5a <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
   msg5
   scna<- fm1$currentScenarioAnalysis
   typeof(scna$liquidityReports)
