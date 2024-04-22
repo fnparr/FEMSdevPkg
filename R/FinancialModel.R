@@ -507,7 +507,7 @@ showNMVreports <- function(fm ) {
 #'                    fmID=fmID, fmDescr= fmDescr, entprID = entprID,
 #'                    accntsTree = accountsTree, ptf = ptf, curr = currency,
 #'                    timeline = tl, serverURL = serverURL)
-#'   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv" 
+#'   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv") 
 #'   rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 #'   marketData <- list(rfx)
 #'   msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
