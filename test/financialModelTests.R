@@ -450,6 +450,9 @@ rm(list=ls())
   msg5 <- accountLQreports(host = fm1)
   msg5
 
+  getLQreports(fm1)
+  showLQreports(fm1)
+  
   scna<- fm1$currentScenarioAnalysis
   print(scna$scenarioAccounts$root, "lq")
   scna$scenarioAccounts$root$lq

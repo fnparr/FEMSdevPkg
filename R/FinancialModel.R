@@ -594,6 +594,43 @@ setMethod("accountLQreports",
           }
 )            
 
+# ******* getLQreports() 
+#' getLQreports("FinancialModel")
+#' 
+#' This function returns a matrix of doubles showing expected nominal value 
+#' reports on liquidity at different dates for the accounts in the financial 
+#' model with #' cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis #' in the financial model. There is a row in the data
+#' frame for each account in the financial model Accounts tree. 
+#' @param  Financial Model with accountLQreports() available 
+#' @returns matrix with account Liquidity reports   
+#' @import data.tree
+#' @export
+#' 
+getLQreports <- function(fm) {
+  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq")))
+}
 
-
-            
+# ******* showLQreports() 
+#' showLQreports("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected liquidity change per 
+#' period with reports at each period end date for the accounts in the financial
+#' model with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis in the financial model. There is a row in the data 
+#' frame for each account in the financial model Accounts tree. The structure of
+#' the accounts tree is displayed in the first column of the data frame. 
+#' @param  Financial Model with accountLiquidityreports() available 
+#' @returns data frame suitable for displaying results  
+#' @import data.tree
+#' @export
+#' 
+showLQreports <- function(fm ) {
+  adf<- as.data.frame(fm$accountsTree$root)
+  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))
+  df <- data.frame(adf["levelName"])
+  for ( datestr in colnames(table)) {
+    df[datestr] <- table[,datestr]
+  }
+  return( df)
+}            
