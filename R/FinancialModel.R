@@ -470,3 +470,167 @@ showNMVreports <- function(fm ) {
   }
   return( df)
 }
+
+# *****************
+# liquidityReports(host = FinancialModel )
+# *****************
+#' liquidityReports(host = FinancialModel)
+#' 
+#' This method computes liquidityReports for the currentScenarioAnalysis of the
+#' host FinancialModel and causes these liquidity reports to be saved in the
+#' liquidityReports attribute of that ScenarioAnlysis. It does this by calling 
+#' liquidityReports() on the currentScenarioAnalysis and passing in the
+#' timeline of the Financial model as a parameter 
+#' @param host FinancialModel with nominalValueReports in currentScenarioAnalysis  
+#' @include ScenarioAnalysis.R
+#' @export
+#' @examples {
+#'   fmID       <- "fm001"
+#'   fmDescr    <- "test Financial Model logic with example"
+#'   entprID    <- "modelBank01"
+#'   currency   <- "USD"
+#'   serverURL  <- "https://demo.actusfrf.org:8080/"
+#'   yamlstring <- paste0("\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n",
+#'   "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+#'   "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+#'   "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+#'   "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+#'   "        - ocf008\n")
+#'   accountsTree <- AccountsTree(yamlstring)
+#'   mydatadir <- "~/mydata"
+#'   installSampleData(mydatadir)
+#'   cdfn  <- "~/mydata/TestPortfolio.csv"
+#'   ptf   <-  samplePortfolio(cdfn)
+#'   tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+#'                  reportCount=3, periodCount = 6)  
+#'                  fm1 <- initFinancialModel(
+#'                    fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+#'                    accntsTree = accountsTree, ptf = ptf, curr = currency,
+#'                    timeline = tl, serverURL = serverURL)
+#'   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv") 
+#'   rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
+#'   marketData <- list(rfx)
+#'   msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
+#'                               rfxs = marketData, yc = YieldCurve()) 
+#'   msg2 <- generateEvents(host= fm1)
+#'   msg3 <- events2dfByPeriod(host= fm1)
+#'   msg4 <-  nominalValueReports(host = fm1)
+#'   msg5 <- liquidityReports(host = fm1) 
+#' }
+setMethod(f = "liquidityReports",
+          signature = c(host = "FinancialModel"),
+          definition = function(host) {
+            logMsg <-  liquidityReports(host= host$currentScenarioAnalysis,
+                                        tl = host$timeline)
+            return(logMsg)
+          }
+)
+
+#'  *******************************
+#'   accountLQreports(host = FinancialModel) - exported method instance
+#' *******************************
+#' 
+#' accountLQreports(host= Financial Model) 
+#' This method computed aggregated Liquidity report vectors for each 
+#' account in the accountsTree of the input Financial model using the 
+#' currentScenarioAnalysis ( i.e. risk factor environment ) of the financial
+#' model. The results are saved in  $lq fields in each node of the 
+#' scenarioAccounts tree.  This method requires that liquidityReports( ) has
+#' already been run on the financial model to generate liquidity report data 
+#' for each contract in the portfolio of the financial model. The work of this 
+#' method is to aggregate for each node in the accounts tree, the nominal value
+#' reports of all conracts under that node  
+#' 
+#' @param host  FinancialModel S4 object with portfolio, cashflowevents data
+#' @return      Log summarizing whether processing was successful
+#' @export
+#' @import data.tree
+#' @examples {
+#'   fmID       <- "fm001"
+#'   fmDescr    <- "test Financial Model logic with example"
+#'   entprID    <- "modelBank01"
+#'   currency   <- "USD"
+#'   serverURL  <- "https://demo.actusfrf.org:8080/" 
+#'   yamlstring <- paste0("\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n",
+#'   "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+#'   "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+#'   "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+#'   "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+#'   "        - ocf008\n") 
+#'   accountsTree <- AccountsTree(yamlstring)
+#'   mydatadir <- "~/mydata"
+#'   installSampleData(mydatadir) 
+#'   cdfn  <- "~/mydata/TestPortfolio.csv"
+#'   ptf   <-  samplePortfolio(cdfn) 
+#'   tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+#'                  reportCount=3, periodCount = 6)  
+#'   fm1 <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID,
+#'                             accntsTree = accountsTree, ptf = ptf, curr = currency,
+#'                             timeline = tl, serverURL = serverURL) 
+#'   rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#'   rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100) 
+#'   marketData <-list(rfx) 
+#'   scnID <- "UST5Y_fallingRates"
+#'   yc<- YieldCurve() 
+#'   msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
+#'                               rfxs = marketData, yc = YieldCurve())
+#'   msg2 <- generateEvents(host= fm1)
+#'   msg3 <- events2dfByPeriod(host= fm1) 
+#'   msg4 <-  liquidityReports(host = fm1)
+#'   msg5 <- accountLQreports(host = fm1)
+#' }
+
+setMethod("accountLQreports",
+          c(host = "FinancialModel"), 
+          function(host){ 
+            nreps <- host$timeline$reportCount 
+            accountLQreports(
+              host = host$currentScenarioAnalysis,
+              vlen = nreps, 
+              vnames = as.character(host$timeline$periodDateVector[1:nreps]), 
+            )
+            logMsg <- "Account Liquidity reports generated"
+            return(logMsg)
+          }
+)            
+
+# ******* getLQreports() 
+#' getLQreports("FinancialModel")
+#' 
+#' This function returns a matrix of doubles showing expected nominal value 
+#' reports on liquidity at different dates for the accounts in the financial 
+#' model with #' cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis #' in the financial model. There is a row in the data
+#' frame for each account in the financial model Accounts tree. 
+#' @param  Financial Model with accountLQreports() available 
+#' @returns matrix with account Liquidity reports   
+#' @import data.tree
+#' @export
+#' 
+getLQreports <- function(fm) {
+  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq")))
+}
+
+# ******* showLQreports() 
+#' showLQreports("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected liquidity change per 
+#' period with reports at each period end date for the accounts in the financial
+#' model with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis in the financial model. There is a row in the data 
+#' frame for each account in the financial model Accounts tree. The structure of
+#' the accounts tree is displayed in the first column of the data frame. 
+#' @param  Financial Model with accountLiquidityreports() available 
+#' @returns data frame suitable for displaying results  
+#' @import data.tree
+#' @export
+#' 
+showLQreports <- function(fm ) {
+  adf<- as.data.frame(fm$accountsTree$root)
+  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))
+  df <- data.frame(adf["levelName"])
+  for ( datestr in colnames(table)) {
+    df[datestr] <- table[,datestr]
+  }
+  return( df)
+}            

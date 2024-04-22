@@ -33,6 +33,19 @@ msg3 <- events2dfByPeriod(host= fm1)
 msg4 <-  nominalValueReports(host = fm1)
 msg4
 #  ***** liquidity report testing from here
+msg5 <- liquidityReports(host = fm1$currentScenarioAnalysis,
+                         tl   = fm1$timeline)
+msg5
+scna<- fm1$currentScenarioAnalysis
+typeof(scna$liquidityReports)
+length(scna$liquidityReports)
+scna$liquidityReports[["ann003"]]
+scna$liquidityReports[["pam007"]]
+scna$liquidityReports[["pam004"]]
+scna$liquidityReports[["pam001"]]
+
+# **********
+# Development of the liquidityReport(host=ScenarioAnalysis, tl = Timeline) fn
 scna <- fm1$currentScenarioAnalysis
 eventsdf <- scna$cashflowEventsByPeriod
 head(eventsdf)
@@ -63,15 +76,6 @@ rptdates <- as.character(
 )
 rptdates
 
-# convert a list of values indexed by position to report vector
-list2report <- function(posnv, valsv, nrpts, rptdatev){
-  rptv <- rep(0,nrpts)
-  for (i in seq(1: length(posnv))) {
-    rptv[posnv[i]]<- valsv[i]
-  }
-  names(rptv) <- rptdatev
-  return(rptv)
-}
 
 # use list2report() and df2rows to build liquidity vector list 
 

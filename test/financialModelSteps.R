@@ -86,16 +86,23 @@ fm$currentScenarioAnalysis$scenarioID
 
 # Step 7: generateEvents( ) to simulate the fm portfolio using a  risk scenario
 #         set by addScenarioAnaysis()
-logmsg<- generateEvents(fm)
-logmsg
+msg1 <- generateEvents(fm)
 
 # Step 8 events2dfByPeriod() - organize the cashflow events into period buckets 
-msg1 <- events2dfByPeriod(host=fm)
+msg2 <- events2dfByPeriod(host=fm)
 
 # step 9 nominalValueReports(host = fm) 
-msg2 <- nominalValueReports(host = fm)
+msg3 <- nominalValueReports(host = fm)
 
 # Step 10  accountsTree aggregation of NominalValue reports 
-msg5 <- accountNMVreports(host = fm)
+msg4 <- accountNMVreports(host = fm)
 getNMVreports(fm)
 showNMVreports(fm) 
+
+#step 11
+msg5 <- liquidityReports(host = fm )
+
+#step 12
+msg6 <- accountLQreports(host = fm)
+getLQreports(fm)
+showLQreports(fm) 

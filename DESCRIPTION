@@ -1,7 +1,7 @@
 Package: FEMSdevPkg
 Type: Package
 Title: Provides an API to ACTUS cashflow Generation, liquidity and income plots
-Version: 0.1.1
+Version: 0.1.2
 Author: Francis Parr, Donat Maier, Nils Bundi, Henriette Breymann, Gian-Andrin
         Tommasini
 Maintainer: Francis Parr <fnparr@gmail.com>
@@ -33,7 +33,8 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     ACTUS contracts. A Financial Model can generate expected cashvlows and 
     Value reports for multiple risk scenarios - each captured in a separate 
     ScenarioAnalysis. The Financial Model holds a set of ScenarioAnalyses  
-    enabling comparison of results in different risk scenarios 
+    enabling comparison of results in different risk scenarios.
+    Version 0.1.1 support NominalValue and Liquidity change reporting. 
 License: GPL ( >=2)
 Imports:
       data.tree,
