@@ -108,11 +108,12 @@ setMethod("clone", c(accounts= "AccountsTree"),
 
 #  Function to create aggregated hierarchical NMV reports from contract NMVs 
 # *****************
-#  addAggregateReport(account,cidReports,reportName)
-#     This function adds a new aggregated report reportName into the list of 
-#     of reports at each node of the accounts tree. Input parameter cidReports 
-#     is a list keyed by CID of report values for each contract. Each report 
-#     is a numeric vector computed by contract cashflow analysis. All report 
+#  accountNMVreports(host=Node,vlen, vnames,cidNMVreports)
+#     This function saves an aggregated NMV report of length vlen with report 
+#     dates as specified in vnames to every subnode in the accounts tree
+#     Input parameter cidReports is a list keyed by CID of NMV report values 
+#     for each contract. Each report is a numeric vector computed by scenario -
+#     ScenarioAnalysis method nominalValueReports( ). All report 
 #     vectors have the same length - determined by timeline of the analysis. 
 #     Flow reports have one less element than status/value reports. Function 
 #     addAggregateReport() computes account node report values recursively:
@@ -170,6 +171,52 @@ fxVectorSum <- function(vlist, vlen, vnames= NULL) {
     names(vsum) <- vnames
   return(vsum)
 }
+
+#  Function to create aggregated hierarchical LQ reports from contract LQs 
+# *****************
+#  accountLQreports(host=Node,vlen, vnames,cidLQreports)
+#     This function saves an aggregated LQ report of length vlen with report 
+#     dates as specified in vnames to every subnode in the accounts tree
+#     Input parameter cidLQReports is a list keyed by CID of LQ report values 
+#     for each contract. Each report is a numeric vector computed by 
+#     ScenarioAnalysis method liquidityReports( ). The function is identical to 
+#     account NMVreports except that results are saved in $lq attribute of each 
+#     nodeAll and input is from cidLQreports  
+# Instances of this generic method in: FinancialModel.R, ScenarioAnalysis.R
+
+setGeneric("accountLQreports",
+           function(host, vlen, vnames, cidLQlist) 
+           { standardGeneric("accountLQreports") }
+)
+
+
+setMethod("accountLQreports",
+          c(host = "Node", vlen = "numeric", vnames = "character",
+            cidLQlist = "list"), 
+          function(host, vlen, vnames, cidLQlist ){ 
+            if (isNotLeaf(host)) 
+              host$lq <- 
+                fxVectorSum(lapply( 
+                  host$children, 
+                  function(child) unlist(accountLQreports(child, vlen, 
+                                                           vnames,
+                                                           cidLQlist))
+                ),
+                vlen,vnames
+                )
+            else if ( is.null(host$actusCIDs) )  host$lq <- rep(0,vlen)
+            else {
+              host$lq <- 
+                fxVectorSum(lapply(host$actusCIDs, 
+                                   function(cid) 
+                                     unlist(cidLQlist[cid])),
+                            vlen,vnames
+                )
+            }  
+            return(host$lq) # return specific report parent node needs 
+          }
+)
+
 
 # ******** AccountsTree.R file organized up to here 
 

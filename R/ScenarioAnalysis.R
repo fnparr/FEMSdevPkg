@@ -420,3 +420,18 @@ list2report <- function(posnv, valsv, nrpts, rptdatev){
   names(rptv) <- rptdatev
   return(rptv)
 }
+
+# ****************
+# accountLQreports(host=ScenarioAnalysis, .....)
+#  method instance to compute  aggregatedLiquidity reports for  each account node
+#  in the scenarioAccounts tree. Generic definition is in: Accounts.R
+
+setMethod("accountLQreports",
+          c(host = "ScenarioAnalysis", vlen = "numeric", vnames = "character"), 
+          function(host, vlen, vnames ){ 
+            return(accountLQreports( host = host$scenarioAccounts$root,
+                                      vlen = vlen, vnames = vnames, 
+                                      cidLQlist = host$liquidityReports
+            ))
+          }
+)
