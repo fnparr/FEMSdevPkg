@@ -611,8 +611,8 @@ setMethod("accountLQreports",
 #' @import data.tree
 #' @export
 #' 
-getLQreports <- function(fm) {
-  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq")))
+getLQreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))/scale, rounding))
 }
 
 # ******* showLQreports() 
@@ -629,9 +629,9 @@ getLQreports <- function(fm) {
 #' @import data.tree
 #' @export
 #' 
-showLQreports <- function(fm ) {
+showLQreports <- function(fm, scale = 1, rounding = 0) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))
+  table <- getLQreports(fm, scale, rounding)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
     df[datestr] <- table[,datestr]

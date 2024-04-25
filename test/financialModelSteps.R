@@ -96,13 +96,13 @@ msg3 <- nominalValueReports(host = fm)
 
 # Step 10  accountsTree aggregation of NominalValue reports 
 msg4 <- accountNMVreports(host = fm)
-getNMVreports(fm)
-showNMVreports(fm) 
+getNMVreports(fm, 1, 0)
+showNMVreports(fm, 1, 0) 
 
 #step 11
 msg5 <- liquidityReports(host = fm )
 
 #step 12
 msg6 <- accountLQreports(host = fm)
-getLQreports(fm)
-showLQreports(fm) 
+getLQreports(fm, 1, 0)
+showLQreports(fm, 1, 0) 
