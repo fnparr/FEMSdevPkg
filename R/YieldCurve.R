@@ -7,27 +7,14 @@
 # *********************************************************************
 # class YieldCurve 
 # *************************************
-#' class YieldCurve
-#'
-#' A YieldCurve object holds data for an (interest rate) yield curve for 
-#' some risk class (most likely riskfree) at a particular reference date. 
-#' This data is organized as a set of spot rates for user selected tenors 
-#' at the time of the reference date.  
-#' 
-#' @import methods
-#' @importFrom methods new
-#' @export YieldCurve
-#' @exportClass YieldCurve 
-#' @field yieldCurveID  character label identifying this yieldcurve object
-#' @field referenceDate character yyyy-mm-dd date for when YC valid 
-#' @field tenorRates numeric vector spot rates on refdate; rates are per annum 
-#'              i.e. 2% pa = 0.02    Each rated labelled with tenor 
-#'              rates$names = "1D" "1W" "1M" "3M" "6M" "1Y" "2Y" "5Y" 
-#' @field tenorYfs numeric vector of tenor names converted to year fractions  
-#' @field dayCountConvention character ACTUS string eg "30E360"
-#' @field yfdcc character  mapped dayCountConvention used in fmdates:year_frac
-#' @field compoundingFrequency character "NONE", "YEARLY", "CONTINUOUS"
-#'                                       
+# class YieldCurve
+#
+# A YieldCurve object holds data for an (interest rate) yield curve for 
+# some risk class (most likely riskfree) at a particular reference date. 
+# This data is organized as a set of spot rates for user selected tenors 
+# at the time of the reference date.  
+# 
+                                       
 setRefClass("YieldCurve",
             fields = list(
               yieldCurveID         = "character",
@@ -70,10 +57,11 @@ setGeneric(name = "YieldCurve",
            def = function(yieldCurveID, referenceDate, tenorRates,
                           dayCountConvention, compoundingFrequency){  
                   standardGeneric("YieldCurve")})
-#' YiedCurve ( )  - no parameters instance of YieldCurve 
-#' 
-#' Creates an empty YieldCurve with no attributes initialized. 
-#' @return  S4 reference with class=YieldCurve and no attributes initialized.
+
+# YieldCurve ( )  - no parameters instance of YieldCurve 
+#  
+# Creates an empty YieldCurve with no attributes initialized.
+#   S4 reference with class=YieldCurve and no attributes initialized.
 setMethod(f = "YieldCurve", signature = c(),
           definition = function( ){
             return(new("YieldCurve"))
@@ -169,14 +157,12 @@ setGeneric(name = "getForwardRates",
 #'   
 #'   The initial implementation of getForwardrates() restricts Tfrom and Tto to
 #'   single date strings rather than vectors and compoundingFrequency == "NONE"  
-#' @export
 #' @param yc    class=YieldCurve S4 object with tenorRates, 
 #' @param Tfrom character  yyyy-mm-dd date for start of forward rate interval
 #' @param Tto   character yyyy-mm-dd date for end of forward rate interval  
 #' @return Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
 #' @export
 #' @include yearFraction.R  
-#' year fractions with specified dayCountConvention
 #' @examples {
 #'    ycID <- "yc001"
 #'    rd <- "2023-10-31"
@@ -247,23 +233,54 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  #    discounting factor to be applied to the amount of the future Tto cashflow
  #    Compounding with yc$compoundingFrequency should be added 
  # ***********************************************************
- getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
+ oldDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
     frwdRate <- getForwardRates(yc,Tfrom,Tto)
+#   if (Tfrom == Tto) {
+#      factor <-  1.0
+#      return(factor)
+#    }
+#    else 
     if(yc$compoundingFrequency == "CONTINUOUS") {
       factor <- exp(-(frwdRate + riskSpread)*yearFraction(Tfrom,Tto,yc$yfdcc))
-      return (factor)
     } else if(yc$compoundingFrequency == "YEARLY") {
       factor <- 1/(1 + (frwdRate + riskSpread ))^yearFraction(Tfrom,Tto,yc$yfdcc)
-      return (factor)
     } else if(yc$compoundingFrequency == "NONE") {
-      factor <- 1/(1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
-      return (factor)
     } else {  
       stop(paste("ErrorIn::YieldCurve::getDiscountFactor: compoundingFrequency ", 
                  yc$compoundingFrequency , " not supported !!!"))
     }
-    # factor <- 1/( 1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
+    factor <- sapply(factor,function(x) {ifelse(is.nan(x),1,x)})
     return (factor)
+ }
+ scalarDiscF <- function(yc,Tfrom,Tto,riskSpread){
+   if (Tfrom == Tto) {
+     factor <-  1.0
+   } else {
+     frwdRate <- getForwardRates(yc,Tfrom,Tto)
+     if(yc$compoundingFrequency == "CONTINUOUS") {
+       factor <- exp(-(frwdRate + riskSpread)*yearFraction(Tfrom,Tto,yc$yfdcc))
+     } else if(yc$compoundingFrequency == "YEARLY") {
+       factor <- 1/(1 + (frwdRate + riskSpread ))^yearFraction(Tfrom,Tto,yc$yfdcc)
+     } else if(yc$compoundingFrequency == "NONE") {
+       factor <- 1/(1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
+     } else {  
+       stop(paste("ErrorIn::YieldCurve::getDiscountFactor: compoundingFrequency ", 
+                  yc$compoundingFrequency , " not supported !!!"))
+     }
+   }
+   return (factor)
+ }
+
+ getDiscountFactor <- function(yc,Tfrom,Tto, riskSpread){
+   if  ((length(Tto) > 1 ) && length(Tfrom == 1) ){
+     factorv <- 
+       sapply(Tto, function(to) { return(scalarDiscF(yc,Tfrom,to,riskSpread))})
+   } else if (( length(Tfrom ) > 1) && (length(Tto) == 1) ) {
+     factorv <- 
+       sapply(Tfrom,function(from){return(scalarDiscF(yc,from,Tto,riskSpread))})
+   } else  { factorv <- scalarDiscF(yc,Tfrom,Tto,riskSpread)
+   }  
+   return(factorv)
  }
  # ***********************************************************
  # getGrowthFactor(yc, Tfrom, Tto)
@@ -290,7 +307,4 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
    # factor <-  1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
    return (factor)
  }
- 
- 
- 
  
