@@ -47,20 +47,20 @@ frwdRate
 riskSpread <- 0.02
 discountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 discountF
-ndiscountF <- newDiscountFactor(yc,Tfrom,Tto,riskSpread)
+ndiscountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 ndiscountF
 # does it return discount = 1.0 if Tfrom==Tto ?,
-ndiscountF <- newDiscountFactor(yc,Tfrom,Tfrom,riskSpread)
+ndiscountF <- getDiscountFactor(yc,Tfrom,Tfrom,riskSpread)
 ndiscountF 
 Tto <- c("2025-07-01","2025-08-01")
-ndiscountF <- newDiscountFactor(yc,Tfrom,Tto,riskSpread)
+ndiscountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 ndiscountF
 Tto <- c(Tfrom,"2025-07-01","2025-08-01")
-ndiscountF <- newDiscountFactor(yc,Tfrom,Tto,riskSpread)
+ndiscountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 ndiscountF
 Tto <- "2025-07-01"
 Tfrom <- c("2024-01-01","2024-02-01", Tto)
-ndiscountF <- newDiscountFactor(yc,Tfrom,Tto,riskSpread)
+ndiscountF <- getDiscountFactor(yc,Tfrom,Tto,riskSpread)
 ndiscountF
 # no it returns NaN  => fix this 
 growthF <- getGrowthFactor(yc,Tfrom,Tto)
@@ -112,11 +112,12 @@ msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates",
                             rfxs = marketData, yc = ycsample )                
 msg2 <- generateEvents(host= fm1)
 msg3 <- events2dfByPeriod(host= fm1)
+msg4 <- netPresentValueReports(host = fm1) 
 
 # ********** Now explore inline computation of Net Present Values 
 
 scna <- fm1$currentScenarioAnalysis
-netPresentValueReports(host = scna, tl = fm1$timeline)
+# netPresentValueReports(host = scna, tl = fm1$timeline)
 
 scna$netPresentValueReports[[1]]
 scna$netPresentValueReports[["ann005"]]

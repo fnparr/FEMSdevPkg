@@ -634,3 +634,13 @@ showLQreports <- function(fm ) {
   }
   return( df)
 }            
+
+
+setMethod(f = "netPresentValueReports",
+          signature = c(host = "FinancialModel"),
+          definition = function(host) {
+            logMsg <-  netPresentValueReports(host= host$currentScenarioAnalysis,
+                                        tl = host$timeline)
+            return(logMsg)
+          }
+)

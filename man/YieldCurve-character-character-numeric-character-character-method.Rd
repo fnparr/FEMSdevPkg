@@ -18,7 +18,7 @@
 
 \item{referenceDate}{character date yyyy-mm-dd tenorRates observed this day}
 
-\item{tenorRates}{numeric  pa rates (0.02=2%) vector, names "1M", "2Y" etc}
+\item{tenorRates}{numeric  pa rates (0.02=2pc) vector, names "1M", "2Y" etc}
 
 \item{dayCountConvention}{character: "30E360","30E360ISDA","A360","A365","AA"}
 

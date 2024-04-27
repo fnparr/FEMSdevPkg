@@ -488,7 +488,7 @@ setMethod(f = "netPresentValueReports",
   for ( repx in seq(1,nreps+1) ) {
     dfrx <- df[df$periodIndex > (repx-1),] #  repx==1 case (statusDate) no filtering
     dfrx["discountedCashflows"] <- 
-      dfrx$payoff * oldDiscountFactor(scna$yieldCurve, repdates[repx],
+      dfrx$payoff * getDiscountFactor(host$yieldCurve, repdates[repx],
                                       substr(dfrx$time,1,10),0)
     rxnpvs<- aggregate(dfrx$discountedCashflows, 
                  by= list(dfrx$contractId), FUN=sum)$x  

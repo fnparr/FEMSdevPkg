@@ -86,7 +86,7 @@ setMethod(f = "YieldCurve", signature = c(),
 #'
 #' @param yieldCurveID  character  label uniquely identifying this yieldCurve
 #' @param referenceDate character date yyyy-mm-dd tenorRates observed this day 
-#' @param tenorRates numeric  pa rates (0.02=2%) vector, names "1M", "2Y" etc 
+#' @param tenorRates numeric  pa rates (0.02=2pc) vector, names "1M", "2Y" etc 
 #' @param dayCountConvention character: "30E360","30E360ISDA","A360","A365","AA"
 #' @param compoundingFrequency character: "NONE", "YEARLY", "CONTINUOUS"
 #' @return               fully initialized S4 class YieldCurve object
@@ -226,14 +226,8 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  # ***********************************************************
  # getDiscountFactor(yc, Tfrom, Tto, riskSpread )
  #    This yield curve method takes as input (1) yc a yieldCurve object, (2)
- #    a date Tfrom  in yyyy-mm-dd format for which valuation is being done (3)
- #    a date Tto in yyyy-mm-dd format at which a future cashflow occurs and 
- #    a numeric pa riskSpread 0.02 = 2% pa capturing the risk category of the 
- #    contract generating this future cash flow. The function return a numeric
- #    discounting factor to be applied to the amount of the future Tto cashflow
- #    Compounding with yc$compoundingFrequency should be added 
- # ***********************************************************
- oldDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
+ #    a date Tfrom  in yy *************************************
+ getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
     frwdRate <- getForwardRates(yc,Tfrom,Tto)
 #   if (Tfrom == Tto) {
 #      factor <-  1.0
@@ -271,7 +265,7 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
    return (factor)
  }
 
- getDiscountFactor <- function(yc,Tfrom,Tto, riskSpread){
+ newDiscountFactor <- function(yc,Tfrom,Tto, riskSpread){
    if  ((length(Tto) > 1 ) && length(Tfrom == 1) ){
      factorv <- 
        sapply(Tto, function(to) { return(scalarDiscF(yc,Tfrom,to,riskSpread))})
