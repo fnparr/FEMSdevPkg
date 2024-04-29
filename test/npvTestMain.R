@@ -128,10 +128,7 @@ scna$netPresentValueReports[["pam004"]]
 scna$netPresentValueReports[["pam007"]]
 
 
-out <- sapply(vec, function(x) { return (2*x) })
 
-snpvdf <- npvs2df(scna,tl)
-npvdf
 df2rows <- lapply(split(npvdf,npvdf$cids), function(y) as.list(y)) 
 npvrVec <- unlist(df2rows[[1]][seq(2, tl$reportCount +2)])
 
