@@ -105,6 +105,7 @@ msg3 <- nominalValueReports(host = fm)
 msg4 <- accountNMVreports(host = fm)
 getNMVreports(fm)
 showNMVreports(fm) 
+showContractNMVs(fm)
 
 #step 11
 msg5 <- liquidityReports(host = fm )
@@ -112,7 +113,8 @@ msg5 <- liquidityReports(host = fm )
 #step 12
 msg6 <- accountLQreports(host = fm)
 getLQreports(fm)
-showLQreports(fm) 
+showLQreports(fm)
+showContractLQs(fm)
 
 #step 13
 msg7 <- netPresentValueReports(host = fm)
@@ -120,4 +122,6 @@ msg7 <- netPresentValueReports(host = fm)
 #step 14
 msg6 <- accountNPVreports(host = fm)
 getNPVreports(fm)
-showNPVreports(fm) 
+showNPVreports(fm)
+showContractNPVs(fm)
+

@@ -471,6 +471,29 @@ showNMVreports <- function(fm ) {
   return( df)
 }
 
+# ******* showContractNMVs() 
+#' showContractNMVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected nominal value reports at 
+#' different dates for the contracts in the contracts in the financial model
+#' portfolio with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis. There is a row in the data frame for each contract
+#' and coluns for each report date 
+#' displayed in the first column of the data frame 
+#' @param  Financial Model with nominalValueReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractNMVs <- function (fm) {
+  scna <- fm$currentScenarioAnalysis
+  nmvdf<- data.frame(actusCIDs=names(scna$nominalValueReports))
+  for( date in names(scna$nominalValueReports[[1]])) {
+    nmvdf[date] <- 
+      unlist(lapply(scna$nominalValueReports, 
+                    function(rep){return(rep[[date]])}))
+  }
+  return(nmvdf)
+}
+
 # *****************
 # liquidityReports(host = FinancialModel )
 # *****************
@@ -634,7 +657,27 @@ showLQreports <- function(fm ) {
   }
   return( df)
 }            
-
+# ******* showContractLQs() 
+#' showContractNPVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected liquidity change
+#' for each report period for each contract in the portfolio of  
+#' in the financial model using cashflows of the currentScenarioAnalysis. 
+#' There is a row in the data frame for each contract and columns for each
+#' report date. ContractIDs are displayed in the first column of the data frame 
+#' @param  Financial Model with liquidityReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractLQs <- function (fm) {
+  scna <- fm$currentScenarioAnalysis
+  lqdf<- data.frame(actusCIDs=names(scna$liquidityReports))
+  for( date in names(scna$liquidityReports[[1]])) {
+    lqdf[date] <- 
+      unlist(lapply(scna$liquidityReports, 
+                    function(rep){return(rep[[date]])}))
+  }
+  return(lqdf)
+}
 # *****************
 # netPresentValueReports(host = FinancialModel )
 # *****************
@@ -811,3 +854,24 @@ showNPVreports <- function(fm ) {
   }
   return( df)
 }            
+# ******* showContractNMVs() 
+#' showContractNPVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected net present value reports
+#' for status date and each report date foreach contract in the portfolio of  
+#' in the financial model using cashflows of the currentScenarioAnalysis. 
+#' There is a row in the data frame for each contract and columns for each
+#' report date. ContractIDs are displayed in the first column of the data frame 
+#' @param  Financial Model with netPresentValueReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractNPVs <- function (fm) {
+  scna <- fm$currentScenarioAnalysis
+  npvdf<- data.frame(actusCIDs=names(scna$netPresentValueReports))
+  for( date in names(scna$netPresentValueReports[[1]])) {
+    npvdf[date] <- 
+      unlist(lapply(scna$netPresentValueReports, 
+                    function(rep){return(rep[[date]])}))
+  }
+  return(npvdf)
+}

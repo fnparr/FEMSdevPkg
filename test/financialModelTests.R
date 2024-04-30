@@ -361,16 +361,9 @@ rm(list=ls())
   msg5
   getNMVreports(fm1)
   showNMVreports(fm1) 
+  
 # display the contract level results 
-# show contract level NMVs
-  scna<-fm1$currentScenarioAnalysis
-  names(scna$nominalValueReports)
-  scna$nominalValueReports[["ann003"]]  
-  scna$nominalValueReports[["ann005"]]
-  scna$nominalValueReports[["pam001"]]
-  scna$nominalValueReports[["pam002"]]
-  scna$nominalValueReports[["pam004"]]
-  scna$nominalValueReports[["pam007"]]
+  showContractNMVs(fm1)
   
 # Test 8 - Compute liquidity reports 
 # Test 8.1  - non exported method on ScenarioAnalysis 
@@ -462,6 +455,7 @@ rm(list=ls())
 
   getLQreports(fm1)
   showLQreports(fm1)
+  showContractLQs(fm1)
   
   scna<- fm1$currentScenarioAnalysis
   print(scna$scenarioAccounts$root, "lq")
@@ -514,14 +508,5 @@ rm(list=ls())
   msg5
   getNPVreports(fm1)
   showNPVreports(fm1) 
-  
-  # show contract level NPVs
-  scna<-fm1$currentScenarioAnalysis
-  names(scna$netPresentValueReports)
-  scna$netPresentValueReports[["ann003"]]  
-  scna$netPresentValueReports[["ann005"]]
-  scna$netPresentValueReports[["pam001"]]
-  scna$netPresentValueReports[["pam002"]]
-  scna$netPresentValueReports[["pam004"]]
-  scna$netPresentValueReports[["pam007"]]
+  showContractNPVs(fm1)
   
