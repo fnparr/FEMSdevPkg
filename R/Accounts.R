@@ -217,8 +217,56 @@ setMethod("accountLQreports",
           }
 )
 
+#  Function to create aggregated hierarchical NPV reports from contract NPVs 
+# *****************
+#  accountNPVreports(host=Node,vlen, vnames,cidNPVreports)
+#     This function saves an aggregated NPV report of length vlen with report 
+#     dates as specified in vnames to every subnode in the accounts tree
+#     Input parameter cidNPVReports is a list keyed by CID of NPV report values 
+#     for each contract. Each report is a numeric vector computed by 
+#     ScenarioAnalysis method netPresentValueReports( ). The function is 
+#.    identical to accountNMVreports and accountLQreports except that results 
+#     are saved in $npv attribute of each node and input is from cidNPVreports  
+#  Instances of this generic method in: FinancialModel.R, ScenarioAnalysis.R
 
+setGeneric("accountNPVreports",
+           function(host, vlen, vnames, cidNPVlist) 
+           { standardGeneric("accountNPVreports") }
+)
+
+setMethod("accountNPVreports",
+          c(host = "Node", vlen = "numeric", vnames = "character",
+            cidNPVlist = "list"), 
+          function(host, vlen, vnames, cidNPVlist ){ 
+            if (isNotLeaf(host)) 
+              host$npv <- 
+                fxVectorSum(lapply( 
+                  host$children, 
+                  function(child) unlist(accountNPVreports(child, vlen, 
+                                                          vnames,
+                                                          cidNPVlist))
+                ),
+                vlen,vnames
+                )
+            else if ( is.null(host$actusCIDs) )  host$npv <- rep(0,vlen)
+            else {
+              host$npv <- 
+                fxVectorSum(lapply(host$actusCIDs, 
+                                   function(cid) 
+                                     unlist(cidNPVlist[cid])),
+                            vlen,vnames
+                )
+            }  
+            return(host$npv) # return specific report parent node needs 
+          }
+)
+
+
+
+
+# **********************************************
 # ******** AccountsTree.R file organized up to here 
+# ********  material below this not yet used/tested 
 
 # **********
 # Function to set empty reports attribute at each account
@@ -249,10 +297,7 @@ maplistc <- function(maplist){
 # function cid2NodeIdMap(account) builds mapPair lists for the accounts tree
 # recursive on children , maplist on leaf nodes with assigned cids
 cid2NodeIdMap <- function(account) {
-  if (isNotLeaf(account)){
-    return( maplistc(lapply(account$children,
-                            function(child){ return(cid2NodeIdMap(child))})))
-  }
+  if (isNotLeaf(account)){  }
   else if ( !is.null(account$actusCIDs) ) {
     return( list(cids = account$actusCIDs,
                  nodes= rep(account$nodeID,length(account$actusCIDs))))
@@ -361,3 +406,5 @@ addAggregatedLiquidity <- function(account,cidReports){
   }  
   return(account$liquidity) # return specific report parents need 
 }
+
+                       

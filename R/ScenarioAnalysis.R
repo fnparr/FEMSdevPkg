@@ -510,3 +510,12 @@ setMethod(f = "netPresentValueReports",
   return(msg)
 })
 
+setMethod("accountNPVreports",
+          c(host = "ScenarioAnalysis", vlen = "numeric", vnames = "character"), 
+          function(host, vlen, vnames ){ 
+            return(accountNPVreports( host = host$scenarioAccounts$root,
+                                      vlen = vlen, vnames = vnames, 
+                                      cidNPVlist = host$netPresentValueReports
+            ))
+          }
+)

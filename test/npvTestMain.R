@@ -71,7 +71,7 @@ growthF
 # ********************************
 # test context - run financialModelTests.R Test 9.0 through events2dfByPeriod
 # Test 9.0  Aggregated Account Liquidity Reports 
-# Test File to develop Financial Model Liquidity Reporting 
+# Test File to develop Financial Model Liquidity  and NPV reporting 
 # April 2024 
 rm(list=ls())
 fmID       <- "fm001"
@@ -112,10 +112,10 @@ msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates",
                             rfxs = marketData, yc = ycsample )                
 msg2 <- generateEvents(host= fm1)
 msg3 <- events2dfByPeriod(host= fm1)
-msg4 <- netPresentValueReports(host = fm1) 
+msg4 <- netPresentValueReports(host = fm1)
+msg5 <- accountNPVreports(host = fm1)
 
-# ********** Now explore inline computation of Net Present Values 
-
+# ********** Now explore results from netPresentValueReports()  
 scna <- fm1$currentScenarioAnalysis
 # netPresentValueReports(host = scna, tl = fm1$timeline)
 
@@ -127,6 +127,11 @@ scna$netPresentValueReports[["pam002"]]
 scna$netPresentValueReports[["pam004"]]
 scna$netPresentValueReports[["pam007"]]
 
+print(scna$scenarioAccounts$root,"actusCIDs", "npv", "nodeID" )
+scna$scenarioAccounts$root$npv
+
+nreps <- fm1$timeline$reportCount + 1
+as.character(fm1$timeline$periodDateVector[1:nreps])
 
 
 df2rows <- lapply(split(npvdf,npvdf$cids), function(y) as.list(y)) 
