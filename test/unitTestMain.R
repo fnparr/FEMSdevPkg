@@ -15,7 +15,7 @@ rd <- "2023-10-31"
 tr <-  c(1.1, 2.0, 3.5 )/100
 names(tr) <- c("1M", "1Y", "5Y")
 dcc <- "30E360"
-cf <- "NONE"
+cf <- "CONTINUOUS"
 yc <- YieldCurve(ycID,rd,tr,dcc,cf)
 # valid case 
 dcc_e <- "30/360"

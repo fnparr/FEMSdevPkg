@@ -77,11 +77,18 @@ rxdfp <- paste0(datadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 # The 100 parameter is the base level for JSON 
 marketData <-list(rfx)
-# no YieldCurve because we are not doing NetPresentValue yet 
+# create a sample Yieldcurve 
+ycID <- "yc001"
+rd <- "2023-10-31"
+tr <-  c(1.1, 2.0, 3.5 )/100
+names(tr) <- c("1M", "1Y", "5Y")
+dcc <- "30E360"
+cf <- "CONTINUOUS"
+ycsample <- YieldCurve(ycID,rd,tr,dcc,cf)
 # 6.1 addSenarioAnaysis( ) with this scnID and risk factors 
 #     will set fm$currentScenarioAnalysis to be this 
 addScenarioAnalysis(fm = fm, scnID= "UST5Y_fallingRates", rfxs = marketData,
-                    yc = YieldCurve())
+                    yc = ycsample)
 fm$currentScenarioAnalysis$scenarioID
 
 # Step 7: generateEvents( ) to simulate the fm portfolio using a  risk scenario
@@ -98,6 +105,7 @@ msg3 <- nominalValueReports(host = fm)
 msg4 <- accountNMVreports(host = fm)
 getNMVreports(fm)
 showNMVreports(fm) 
+showContractNMVs(fm)
 
 #step 11
 msg5 <- liquidityReports(host = fm )
@@ -105,4 +113,15 @@ msg5 <- liquidityReports(host = fm )
 #step 12
 msg6 <- accountLQreports(host = fm)
 getLQreports(fm)
-showLQreports(fm) 
+showLQreports(fm)
+showContractLQs(fm)
+
+#step 13
+msg7 <- netPresentValueReports(host = fm)
+
+#step 14
+msg6 <- accountNPVreports(host = fm)
+getNPVreports(fm)
+showNPVreports(fm)
+showContractNPVs(fm)
+

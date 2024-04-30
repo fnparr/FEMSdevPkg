@@ -39,6 +39,7 @@ setRefClass("ScenarioAnalysis",
               liquidityReports = "list",
               incomeReports = "list",
               nominalValueReports = "list",
+              netPresentValueReports = "list",
               scenarioAccounts = "AccountsTree",
               logMsgs = "list"
             ))
@@ -86,6 +87,7 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
             scna$liquidityReports <- list()
             scna$incomeReports <- list()
             scna$nominalValueReports <-list()
+            scna$netPresentValueReports <- list()
             scna$scenarioAccounts <- clone(accounts)
             scna$logMsgs <- list() 
             return(scna)
@@ -121,6 +123,19 @@ setGeneric("nominalValueReports",
 setGeneric("liquidityReports",
            function(host, tl) 
            { standardGeneric("liquidityReports") }
+)
+
+# **************************************
+# Method:  netPresentValueReports(...) 
+# *************************************
+# A generic method for creating and saving a list of NetPresentValue(NPV) 
+# reports indexed by contractID with each report a value vector. Instances
+# in ScenarioAnalysis.R and FinancialModel.R  Parameter host is required, 
+# timeline is only in ScenarioAnalysis case 
+
+setGeneric("netPresentValueReports",
+           function(host, tl) 
+           { standardGeneric("netPresentValueReports") }
 )
 
 # ************************************************************************
@@ -355,9 +370,11 @@ setMethod("accountNMVreports",
 #  previously computed cashflowEventsByPeriod and timeline passed in as input 
 #  parameter from the parent FinancialModel. The list of liquidityReport vectors
 # is saved in the Scenario Analysis liquidtyReports attribute. It is keyed by
-# contractID. Each report vector has exactly timeline$reportCount values.
+# contractID. Each report vector has timeline$reportCount +1  values because
+# there is a value report for statusDate and repots for each period 
 #
-#  Algorithm: (1) filter the cashflowevents df: event rows in reported periods
+#  Algorithm: 
+#.   (1) filter cashflowevents df: event rows in reported periods only
 #    (2) aggregate cashflow amounts for each contract x period combination
 #    (3) split the dataframe into a list of rows by cid : each row has
 #       (a) cid - repeated
@@ -365,10 +382,10 @@ setMethod("accountNMVreports",
 #       (c) sum of cashflow amounts of that <contract x period> 
 #    (4)  step through the cids, same order in aggregate list and in the 
 #         cashflowEventsByPeriod df: function list2report creates a report
-#         vector of the correct length all zeros - using timeline, then puts
-#         values from active periods (with cashflows0 into correct slot in vector.
-#    (5) Resulting list of liquidity vectors is saved in the scenarioAnalysis
-#        and a log message is returned 
+#         vector of the correct length all zeros - using timeline, then insert
+#         values from periods with cashflows into correct slot in vector.
+#    (5) Resulting list of liquidity vectors is saved in the host 
+#        scenarioAnalysis and a log message is returned 
  
 
 setMethod(f = "liquidityReports",
@@ -432,6 +449,72 @@ setMethod("accountLQreports",
             return(accountLQreports( host = host$scenarioAccounts$root,
                                       vlen = vlen, vnames = vnames, 
                                       cidLQlist = host$liquidityReports
+            ))
+          }
+)
+
+# *****************
+# netPresentValueReports(host = ScenarioAnalysis, tl = Timeline )
+# *****************
+#  This method computes the NPV reports for a ScenarioAnalysis using previously
+#  computed cashflowEventsByPeriod and timeline passed in as an input parameter
+#  from the parent FinancialModel. The list of NPVReport vectors, keyed by cid
+#  is saved in the Scenario Analysis netPresentValueReports attribute. Each 
+#  report vector has timeline$reportCount +1 values: there is a value report for
+#  statusDate and reports for the end of each report period in the timeline. 
+#
+#  Algorithm: 
+#   (1) loop:  for each report 
+#    (2) filter cashflowevents df: for report rx FUTURE cashflows only.
+#    (3) add a column with discounted (future) cashflows
+#        (a) (column of discountFactors ReportDate -> cashflow date) * payoffs
+#    (4) aggregate cashflow amounts for each contract 
+#    (5) put back npv = 0 for mature / terminated contracts with no FUTURE cfs
+#  (6) insert npv report columns into npvsdf - row per cid, npv col each report
+#  (7) split npvsdf into list of rows; convert to indexed list of report vectors
+#  (8) save in host scna$netPresentValueReports; return message to caller 
+
+
+setMethod(f = "netPresentValueReports",
+          signature = c(host = "ScenarioAnalysis", tl = "Timeline"),
+          definition = function(host, tl) {
+  df <- host$cashflowEventsByPeriod
+  nreps <- tl$reportCount
+  cids <- unique(df$contractId)
+  npvsdf <- data.frame(cids = cids)
+  ncids <- length(cids)
+  repdates <- as.character(tl$periodDateVector[0:nreps+1])
+  # print(paste0(" *** repdates has length", length(repdates)))
+  for ( repx in seq(1,nreps+1) ) {
+    dfrx <- df[df$periodIndex > (repx-1),] #  repx==1 case (statusDate) no filtering
+    dfrx["discountedCashflows"] <- 
+      dfrx$payoff * getDiscountFactor(host$yieldCurve, repdates[repx],
+                                      substr(dfrx$time,1,10),0)
+    dfaggr <- aggregate(dfrx$discountedCashflows, 
+                          by= list(dfrx$contractId), FUN=sum)
+# the aggregation above does NOT preserve contractId order     
+# so do a match on the contractid to sort into cashflowslist order 
+    allnpvs <- rep(0,ncids)
+    allnpvs[match(dfaggr$Group.1,cids)] <- dfaggr$x
+    npvsdf[repdates[[repx]]] <- allnpvs  
+  }
+  npvrows <- lapply(split(npvsdf,npvsdf$cids), function(y) as.list(y)) 
+  host$netPresentValueReports <- list()
+  for (lx in npvrows) {
+    host$netPresentValueReports[[lx$cid]] <- 
+          unlist(lx[seq(2, tl$reportCount +2)])
+  }
+  msg <- paste0("netPresentValueReports generated for scenario ", 
+                host$scenarioID)
+  return(msg)
+})
+
+setMethod("accountNPVreports",
+          c(host = "ScenarioAnalysis", vlen = "numeric", vnames = "character"), 
+          function(host, vlen, vnames ){ 
+            return(accountNPVreports( host = host$scenarioAccounts$root,
+                                      vlen = vlen, vnames = vnames, 
+                                      cidNPVlist = host$netPresentValueReports
             ))
           }
 )
