@@ -106,3 +106,11 @@ msg5 <- liquidityReports(host = fm )
 msg6 <- accountLQreports(host = fm)
 getLQreports(fm)
 showLQreports(fm) 
+
+#step 13
+msg7 <- netPresentValueReports(host = fm)
+
+#step 14
+msg6 <- accountNPVreports(host = fm)
+getNPVreports(fm)
+showNPVreports(fm) 

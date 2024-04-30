@@ -35,6 +35,7 @@ Description: Exports a samplePortfolio( ) which reads designated csv files
     ScenarioAnalysis. The Financial Model holds a set of ScenarioAnalyses  
     enabling comparison of results in different risk scenarios.
     Version 0.1.1 support NominalValue and Liquidity change reporting. 
+    Version 0.1.2 adds account and contract Net Present Value Reporting 
 License: GPL ( >=2)
 Imports:
       data.tree,

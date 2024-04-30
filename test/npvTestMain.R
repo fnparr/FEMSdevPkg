@@ -113,7 +113,10 @@ msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates",
 msg2 <- generateEvents(host= fm1)
 msg3 <- events2dfByPeriod(host= fm1)
 msg4 <- netPresentValueReports(host = fm1)
-msg5 <- accountNPVreports(host = fm1)
+msg5 <- accountNPVreports(fm1)
+msg5
+getNPVreports(fm1)
+showNPVreports(fm1)
 
 # ********** Now explore results from netPresentValueReports()  
 scna <- fm1$currentScenarioAnalysis

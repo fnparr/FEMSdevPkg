@@ -718,7 +718,7 @@ setMethod(f = "netPresentValueReports",
 #' @export
 #' @import data.tree
 #' @examples {
-#' #' fmID       <- "fm001"
+#' fmID       <- "fm001"
 #' fmDescr    <- "test Financial Model logic with example"
 #' entprID    <- "modelBank01"
 #' currency   <- "USD"
@@ -770,3 +770,44 @@ setMethod("accountNPVreports",
             return(logMsg)
           }
 )
+
+# ******* getNPVreports() 
+#' getNPVreports("FinancialModel")
+#' 
+#' This function returns a matrix of doubles showing expected net Present value 
+#' reports at different dates for the accounts in the financial 
+#' model with #' cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis #' in the financial model. There is a row in the data
+#' frame for each account in the financial model Accounts tree. 
+#' @param  Financial Model with accountNPVreports() available 
+#' @returns matrix with account Net Present Value reports   
+#' @import data.tree
+#' @export
+#' 
+getNPVreports <- function(fm) {
+  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv")))
+}
+
+# ******* showNPVreports() 
+#' showNPVreports("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected Net Present Value reports
+#' for status date and each period end date for the accounts in the financial
+#' model with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis in the financial model. There is a row in the data 
+#' frame for each account in the financial model Accounts tree. The structure of
+#' the accounts tree is displayed in the first column of the data frame. 
+#' @param  Financial Model with accountNPVreports data  available 
+#' @returns data frame suitable for displaying resultsas a table
+#' @import data.tree
+#' @export
+#' 
+showNPVreports <- function(fm ) {
+  adf<- as.data.frame(fm$accountsTree$root)
+  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv"))
+  df <- data.frame(adf["levelName"])
+  for ( datestr in colnames(table)) {
+    df[datestr] <- table[,datestr]
+  }
+  return( df)
+}            
