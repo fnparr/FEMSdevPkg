@@ -118,8 +118,11 @@ msg5
 getNPVreports(fm1)
 showNPVreports(fm1)
 
+
+
 # ********** Now explore results from netPresentValueReports()  
 scna <- fm1$currentScenarioAnalysis
+msg6 <- netPresentValueReports(host=scna,tl=fm1$timeline)
 # netPresentValueReports(host = scna, tl = fm1$timeline)
 
 scna$netPresentValueReports[[1]]
@@ -133,6 +136,31 @@ scna$netPresentValueReports[["pam007"]]
 print(scna$scenarioAccounts$root,"actusCIDs", "npv", "nodeID" )
 scna$scenarioAccounts$root$npv
 
+# Why is NPV for pam007 debt node7 showing + 321,000 should be approx -500,000?
+scna<- fm$currentScenarioAnalysis
+df <- scna$cashflowEventsByPeriod
+df1<-df[df$contractId == "pam007",]
+head(df1)
+tail(df1)
+length(df1)
+npvs <- scna$netPresentValueReports
+names(npvs)
+npvs[["pam007"]]
+# => the flows in df1 are all negative BUT we see + 320,000 NPV reports !!
+# debug the netPresentValueCall() step 1 financialModel looks OK 
+#  netPresentValue(host=scna)
+host <- scna
+dfall <- host$cashflowEventsByPeriod
+df <- dfall[dfall$contractId == "pam007",]
+nrow(df)
+head(df)
+tail(df)
+tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+               reportCount=3, periodCount = 6)  
+# -- commands into loop 
+repx <- 1
+
+# ********
 nreps <- fm1$timeline$reportCount + 1
 as.character(fm1$timeline$periodDateVector[1:nreps])
 

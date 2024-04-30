@@ -31,12 +31,3 @@ Function yearFraction(character, character, character ) takes as
    (2) fmdates::year_frac(Dfrom, Dto, yfdcc) which requires Dfrom and Dto 
    to be Date values and yfdcc a year_frac dayCountConvention string
 }
-\examples{
-{
-   Tfrom <- "2024-01-01"
-   Tto <- "2024-07-01"
-   yfdcc <- "30e/360"
-   frac <- yearFraction(Tfrom, Tto, yfdcc)
-}
-
-}

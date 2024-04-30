@@ -490,13 +490,12 @@ setMethod(f = "netPresentValueReports",
     dfrx["discountedCashflows"] <- 
       dfrx$payoff * getDiscountFactor(host$yieldCurve, repdates[repx],
                                       substr(dfrx$time,1,10),0)
-    rxnpvs<- aggregate(dfrx$discountedCashflows, 
-                 by= list(dfrx$contractId), FUN=sum)$x  
-    allnpvs <- rep(0, ncids)
-    for (rxcid in 1: length(rxnpvs) ) {
-        allnpvs[ match(unique(dfrx$contractId)[rxcid],cids)] <- rxnpvs[rxcid]
-    }
-    # print(paste0( " **** repx= ", repx))
+    dfaggr <- aggregate(dfrx$discountedCashflows, 
+                          by= list(dfrx$contractId), FUN=sum)
+# the aggregation above does NOT preserve contractId order     
+# so do a match on the contractid to sort into cashflowslist order 
+    allnpvs <- rep(0,ncids)
+    allnpvs[match(dfaggr$Group.1,cids)] <- dfaggr$x
     npvsdf[repdates[[repx]]] <- allnpvs  
   }
   npvrows <- lapply(split(npvsdf,npvsdf$cids), function(y) as.list(y)) 

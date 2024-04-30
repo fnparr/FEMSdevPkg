@@ -34,14 +34,7 @@ setGeneric(name = "yearFraction",
 #' @return       Length of time interval in fractional number of years 
 #' @importFrom lubridate ymd
 #' @importFrom fmdates year_frac
-#' @examples {
-#'    Tfrom <- "2024-01-01"
-#'    Tto <- "2024-07-01"
-#'    yfdcc <- "30e/360"
-#'    frac <- yearFraction(Tfrom, Tto, yfdcc)
-#' }
-#' 
-#' @export
+
 setMethod(f = "yearFraction", signature = c("character", "character", "character"),
           definition = function(Tfrom, Tto, yfdcc){
             
