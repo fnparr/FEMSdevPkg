@@ -4,9 +4,13 @@
 \alias{getNMVreports}
 \title{getNMVreports("FinancialModel")}
 \usage{
-getNMVreports(fm)
+getNMVreports(fm, scale = 1, rounding = 0)
 }
 \arguments{
+\item{scale}{numeric: factor to scale nominal values by}
+
+\item{rounding}{numeric: number of decimal places to round to}
+
 \item{Financial}{Model with accountNominalValues() available}
 }
 \value{

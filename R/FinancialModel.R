@@ -475,6 +475,29 @@ showNMVreports <- function(fm, scale = 1, rounding = 0) {
   return( df)
 }
 
+# ******* showContractNMVs() 
+#' showContractNMVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected nominal value reports at 
+#' different dates for the contracts in the contracts in the financial model
+#' portfolio with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis. There is a row in the data frame for each contract
+#' and coluns for each report date 
+#' displayed in the first column of the data frame 
+#' @param  Financial Model with nominalValueReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractNMVs <- function (fm, scale = 1, rounding = 0) {
+  scna <- fm$currentScenarioAnalysis
+  nmvdf<- data.frame(actusCIDs=names(scna$nominalValueReports))
+  for( date in names(scna$nominalValueReports[[1]])) {
+    nmvdf[date] <- 
+      round(unlist(lapply(scna$nominalValueReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
+  }
+  return(nmvdf)
+}
+
 # *****************
 # liquidityReports(host = FinancialModel )
 # *****************
@@ -637,4 +660,223 @@ showLQreports <- function(fm, scale = 1, rounding = 0) {
     df[datestr] <- table[,datestr]
   }
   return( df)
+}    
+
+# ******* showContractLQs() 
+#' showContractNPVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected liquidity change
+#' for each report period for each contract in the portfolio of  
+#' in the financial model using cashflows of the currentScenarioAnalysis. 
+#' There is a row in the data frame for each contract and columns for each
+#' report date. ContractIDs are displayed in the first column of the data frame 
+#' @param  Financial Model with liquidityReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractLQs <- function (fm, scale = 1, rounding = 0) {
+  scna <- fm$currentScenarioAnalysis
+  lqdf<- data.frame(actusCIDs=names(scna$liquidityReports))
+  for( date in names(scna$liquidityReports[[1]])) {
+    lqdf[date] <- 
+      round(unlist(lapply(scna$liquidityReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
+  }
+  return(lqdf)
+}
+# *****************
+# netPresentValueReports(host = FinancialModel )
+# *****************
+#' netPresentValueReports(host = FinancialModel)
+#' 
+#' This method computes netPresentValueReports for the currentScenarioAnalysis 
+#' of the host FinancialModel and causes these netPresentValue reports to be 
+#' saved in the liquidityReports attribute of that ScenarioAnlysis. It does this
+#' by calling netPResentValueReports() on the currentScenarioAnalysis of the 
+#' host Financial Modeland and passing the timeline of the Financial model as a
+#' parameter 
+#' @param host FinancialModel NPVReports to be set in currentScenarioAnalysis  
+#' @include ScenarioAnalysis.R
+#' @export
+#' @examples {
+#' fmID       <- "fm001"
+#' fmDescr    <- "test Financial Model logic with example"
+#' entprID    <- "modelBank01"
+#' currency   <- "USD"
+#' serverURL  <- "https://demo.actusfrf.org:8080/" 
+#' yamlstring <- paste0(
+#'  "\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n", 
+#'  "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+#'  "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+#'  "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+#'  "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+#'  "        - ocf008\n")
+#' accountsTree <- AccountsTree(yamlstring)
+#' mydatadir <- "~/mydata"
+#' installSampleData(mydatadir)
+#' cdfn  <- "~/mydata/TestPortfolio.csv"
+#' ptf   <-  samplePortfolio(cdfn) 
+#' tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+#'                 reportCount=3, periodCount = 6)  
+#'  fm1 <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID, 
+#'                       accntsTree = accountsTree, ptf = ptf, curr = currency,
+#'                       timeline = tl, serverURL = serverURL) 
+#' rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#' rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100) 
+#' marketData <- list(rfx) 
+#' ycID <- "yc001"
+#' rd <- "2023-10-31" 
+#' tr <-  c(1.1, 2.0, 3.5 )/100 
+#' names(tr) <- c("1M", "1Y", "5Y")
+#' dcc <- "30E360"
+#' cf <- "CONTINUOUS"
+#' ycsample <- YieldCurve(ycID,rd,tr,dcc,cf)
+#' msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
+#'                             rfxs = marketData, yc = ycsample )  
+#' msg2 <- generateEvents(host= fm1) 
+#' msg3 <- events2dfByPeriod(host= fm1) 
+#' msg4 <- netPresentValueReports(host = fm1) 
+#' }
+
+setMethod(f = "netPresentValueReports",
+          signature = c(host = "FinancialModel"),
+          definition = function(host) {
+            logMsg <-  netPresentValueReports(host= host$currentScenarioAnalysis,
+                                              tl = host$timeline)
+            return(logMsg)
+          }
+)
+
+#'  *******************************
+#'   accountNPVreports(host = FinancialModel) - exported method instance
+#' *******************************
+#' 
+#' accountNPVreports(host= Financial Model) 
+#' This method computed aggregated Net Present Value report vectors for each 
+#' account in the accountsTree of the input Financial model using the 
+#' currentScenarioAnalysis ( i.e. risk factor environment ) of the financial
+#' model. The results are saved in  $nmv fields in each node of the 
+#' scenarioAccounts tree.  This method requires that netPresentValueReports( ) 
+#' has previously been run on the financial model to generate NPV report data 
+#' for each contract in its portfolio. The work of accountNPVreports() method is
+#' to aggregate for each node in the accounts tree, the NPV reports of all 
+#' contracts under that node   
+#'      
+#' @param host  FinancialModel S4 object with portfolio, NPV reports data 
+#' @return      Log summarizing whether processing was successful
+#' @export
+#' @import data.tree
+#' @examples {
+#' fmID       <- "fm001"
+#' fmDescr    <- "test Financial Model logic with example"
+#' entprID    <- "modelBank01"
+#' currency   <- "USD"
+#' serverURL  <- "https://demo.actusfrf.org:8080/" 
+#' yamlstring <- paste0(
+#'  "\nname:  a Model Bank\nAssets:\n  Current:\n     actusCIDs:\n", 
+#'  "        - pam001\n        - pam002\n        - ann003\n  ShortTerm:\n",
+#'  "     actusCIDs:\n        - pam004\n        - ann005\n  LongTerm:\n",
+#'  "     functionIDs:\n        - edf006\nLiabilities:\n  Debt:\n     actusCIDs:\n",
+#'  "        - pam007\n  Equity:\nOperations:\n  Cashflows:\n     functionIDs:\n",
+#'  "        - ocf008\n")
+#' accountsTree <- AccountsTree(yamlstring)
+#' mydatadir <- "~/mydata"
+#' installSampleData(mydatadir)
+#' cdfn  <- "~/mydata/TestPortfolio.csv"
+#' ptf   <-  samplePortfolio(cdfn) 
+#' tl <- Timeline(statusDate = "2023-01-01", monthsPerPeriod = 6, 
+#'                 reportCount=3, periodCount = 6)  
+#'  fm1 <- initFinancialModel(fmID=fmID, fmDescr= fmDescr, entprID = entprID, 
+#'                       accntsTree = accountsTree, ptf = ptf, curr = currency,
+#'                       timeline = tl, serverURL = serverURL) 
+#' rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
+#' rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100) 
+#' marketData <- list(rfx) 
+#' ycID <- "yc001"
+#' rd <- "2023-10-31" 
+#' tr <-  c(1.1, 2.0, 3.5 )/100 
+#' names(tr) <- c("1M", "1Y", "5Y")
+#' dcc <- "30E360"
+#' cf <- "CONTINUOUS"
+#' ycsample <- YieldCurve(ycID,rd,tr,dcc,cf)
+#' msg1 <- addScenarioAnalysis(fm = fm1, scnID= "UST5Y_fallingRates", 
+#'                             rfxs = marketData, yc = ycsample )  
+#' msg2 <- generateEvents(host= fm1) 
+#' msg3 <- events2dfByPeriod(host= fm1) 
+#' msg4 <- netPresentValueReports(host = fm1) 
+#' msg5 <- accountNPVreports(host= fm1)
+#' }
+setMethod("accountNPVreports",
+          c(host = "FinancialModel"), 
+          function(host){ 
+            nreps <- host$timeline$reportCount + 1
+            accountNPVreports(
+              host = host$currentScenarioAnalysis,
+              vlen = nreps, 
+              vnames = as.character(host$timeline$periodDateVector[1:nreps]), 
+            )
+            logMsg <- "Account NPV reports generated"
+            return(logMsg)
+          }
+)
+
+# ******* getNPVreports() 
+#' getNPVreports("FinancialModel")
+#' 
+#' This function returns a matrix of doubles showing expected net Present value 
+#' reports at different dates for the accounts in the financial 
+#' model with #' cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis #' in the financial model. There is a row in the data
+#' frame for each account in the financial model Accounts tree. 
+#' @param  Financial Model with accountNPVreports() available 
+#' @returns matrix with account Net Present Value reports   
+#' @import data.tree
+#' @export
+#' 
+getNPVreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv"))/scale, rounding))
+}
+
+# ******* showNPVreports() 
+#' showNPVreports("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected Net Present Value reports
+#' for status date and each period end date for the accounts in the financial
+#' model with cashflows generated using the risk environment of the 
+#' currentScenarioAnalysis in the financial model. There is a row in the data 
+#' frame for each account in the financial model Accounts tree. The structure of
+#' the accounts tree is displayed in the first column of the data frame. 
+#' @param  Financial Model with accountNPVreports data  available 
+#' @returns data frame suitable for displaying resultsas a table
+#' @import data.tree
+#' @export
+#' 
+showNPVreports <- function(fm, scale = 1, rounding = 0) {
+  adf<- as.data.frame(fm$accountsTree$root)
+  table <- getNPVreports(fm, scale, rounding)
+  df <- data.frame(adf["levelName"])
+  for ( datestr in colnames(table)) {
+    df[datestr] <- table[,datestr]
+  }
+  return( df)
 }            
+# ******* showContractNMVs() 
+#' showContractNPVs("FinancialModel")
+#' 
+#' This function returns a dataframe showing expected net present value reports
+#' for status date and each report date foreach contract in the portfolio of  
+#' in the financial model using cashflows of the currentScenarioAnalysis. 
+#' There is a row in the data frame for each contract and columns for each
+#' report date. ContractIDs are displayed in the first column of the data frame 
+#' @param  Financial Model with netPresentValueReports available 
+#' @returns data frame suitable for displaying results  
+#' @export
+showContractNPVs <- function (fm, scale = 1, rounding = 0) {
+  scna <- fm$currentScenarioAnalysis
+  npvdf<- data.frame(actusCIDs=names(scna$netPresentValueReports))
+  for( date in names(scna$netPresentValueReports[[1]])) {
+    npvdf[date] <- 
+      round(unlist(lapply(scna$netPresentValueReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
+  }
+  return(npvdf)
+}
