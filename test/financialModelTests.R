@@ -399,15 +399,13 @@ rm(list=ls())
                               rfxs = marketData, yc = YieldCurve())                
   msg2 <- generateEvents(host= fm1)
   msg3 <- events2dfByPeriod(host= fm1)
-  msg4 <-  nominalValueReports(host = fm1)
-  msg4
+  msg4 <- liquidityReports(host = fm1) 
+  
   #  ***** liquidity report testing from here
-  msg5 <- liquidityReports(host = fm1) 
-  
-  
   
   msg5a <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
   msg5
+  
   scna<- fm1$currentScenarioAnalysis
   typeof(scna$liquidityReports)
   length(scna$liquidityReports)

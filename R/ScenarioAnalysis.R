@@ -407,7 +407,7 @@ setMethod(f = "liquidityReports",
               
             lqlist1 <- list()
             for ( cx in 1:length(cids)) {
-              lqlist1[[cids[cx]]] <- 
+              lqlist1[[df2rows[[cx]]$cid[1]]] <- 
                 list2report(df2rows[[cx]]$period,
                             df2rows[[cx]]$x,
                             tl$reportCount,
