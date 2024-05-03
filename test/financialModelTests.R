@@ -407,7 +407,7 @@ rm(list=ls())
   
   #  ***** liquidity report testing from here
   
-  msg5a <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
+  msg5 <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
   msg5
   
   scna<- fm1$currentScenarioAnalysis
@@ -512,3 +512,4 @@ rm(list=ls())
   getNPVreports(fm1, 1, 0)
   showNPVreports(fm1, 1, 0) 
   showContractNPVs(fm1, 1, 0)
+  
