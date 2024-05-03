@@ -288,3 +288,105 @@ logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 logMsgs6 <- nominalValueReports(host=cfla2015)
 logMsgs6
 
+# Test 3.6: using tests from above but with LAM contracts
+## Test LAM, fixed rate
+rm(list=ls())
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+lam1 <- lam("2015-12-31", maturity = "5 years", nominal = 1000,
+            coupon = 0.02, paymentFreq = "1 year", role = "long",
+            rateResetFreq = "Fixed rate")
+ptf1 <- Portfolio(lam1)
+tl1 <- Timeline("2015-01-01",3,8,16)
+cfla1 <- initContractAnalysis( analysisID = "cfla001",
+                               analysisDescription = "this_analysis_descr",
+                               enterpriseID = "entp001",
+                               yieldCurve = YieldCurve(),
+                               portfolio =  ptf1,
+                               currency = "USD",
+                               scenario = list(),
+                               actusServerURL = serverURL,
+                               timeline = tl1
+)
+
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
+
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
+head(cfla1$cashflowEventsByPeriod,15)
+
+## Test LAM, variable rate and with loan function
+rm(list=ls())
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+lam1 <- loan("LAM", "2020-12-31", maturity = "8 years", nominal = 1000,
+             coupon = 0.04, paymentFreq = "6 months", role = "long",
+             rateResetFreq = "1 year", rateResetSpread = 0.01)
+ptf1 <- Portfolio(lam1)
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+rxdfp <- paste0(mydatadir,"/UST5Y_risingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_risingRates", "YC_EA_AAA",100)
+tl1 <- Timeline("2020-01-01",3,8,16)
+cfla1 <- initContractAnalysis( analysisID = "cfla001",
+                               analysisDescription = "this_analysis_descr",
+                               enterpriseID = "entp001",
+                               yieldCurve = YieldCurve(),
+                               portfolio =  ptf1,
+                               currency = "USD",
+                               scenario = list(rfx),
+                               actusServerURL = serverURL,
+                               timeline = tl1
+)
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
+
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
+head(cfla1$cashflowEventsByPeriod,30)
+rep <- nominalValueReports(cfla1)
+cfla1$nominalValueReports
+cfla1$incomeReports
+cfla1$liquidityReports
+
+
+# Compare with ANN, variable rate and with loan function
+rm(list=ls())
+serverURL <- "https://dadfir3-app.zhaw.ch/"
+ann1 <- loan("ANN", "2020-12-31", maturity = "8 years", nominal = 1000,
+             coupon = 0.04, paymentFreq = "6 months", role = "long",
+             rateResetFreq = "1 year", rateResetSpread = 0.01)
+ptf1 <- Portfolio(ann1)
+mydatadir <- "~/mydata"
+installSampleData(mydatadir)
+rxdfp <- paste0(mydatadir,"/UST5Y_risingRates.csv")
+rfx <- sampleReferenceIndex(rxdfp,"UST5Y_risingRates", "YC_EA_AAA",100)
+tl1 <- Timeline("2020-01-01",3,8,16)
+cfla1 <- initContractAnalysis( analysisID = "cfla001",
+                               analysisDescription = "this_analysis_descr",
+                               enterpriseID = "entp001",
+                               yieldCurve = YieldCurve(),
+                               portfolio =  ptf1,
+                               currency = "USD",
+                               scenario = list(rfx),
+                               actusServerURL = serverURL,
+                               timeline = tl1
+)
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
+
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
+head(cfla1$cashflowEventsByPeriod,30)
+rep <- nominalValueReports(cfla1)
+cfla1$nominalValueReports
+cfla1$incomeReports
+cfla1$liquidityReports

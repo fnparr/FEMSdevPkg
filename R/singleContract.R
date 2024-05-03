@@ -31,7 +31,7 @@
 #' @export
 loan <- function(ctype, start, maturity, nominal, coupon,
                  paymentFreq,role,
-                 rateResetFreq,rateResetSpread){
+                 rateResetFreq = NULL,rateResetSpread = NULL){
   if (ctype== "PAM") {
     cntr1 <- bondvr(start, maturity, nominal, coupon, paymentFreq,role,
                     rateResetFreq=rateResetFreq,

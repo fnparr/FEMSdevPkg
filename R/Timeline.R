@@ -102,7 +102,8 @@ setMethod(f = "Timeline",
             tl$periodDateVector <- 
                add_with_rollback(as_date(tl$statusDate),
                   months(seq(from=0, to=tl$periodCount)* tl$monthsPerPeriod)) 
-            tl$periodHorizon <- tail(tl$periodDateVector, n=1) 
+            tl$periodHorizon <- tail(tl$periodDateVector, n=1)
+            tl$reportDates <- as.character(tl$periodDateVector[1:(tl$reportCount+1)])
             return(tl)
           }
 ) 

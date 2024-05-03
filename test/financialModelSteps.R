@@ -103,25 +103,25 @@ msg3 <- nominalValueReports(host = fm)
 
 # Step 10  accountsTree aggregation of NominalValue reports 
 msg4 <- accountNMVreports(host = fm)
-getNMVreports(fm)
-showNMVreports(fm) 
-showContractNMVs(fm)
+getNMVreports(fm, 1, 0)
+showNMVreports(fm, 1, 0) 
+showContractNMVs(fm, 1, 0)
 
 #step 11
 msg5 <- liquidityReports(host = fm )
 
 #step 12
 msg6 <- accountLQreports(host = fm)
-getLQreports(fm)
-showLQreports(fm)
-showContractLQs(fm)
+getLQreports(fm, 1, 0)
+showLQreports(fm, 1, 0) 
+showContractLQs(fm, 1, 0)
 
 #step 13
 msg7 <- netPresentValueReports(host = fm)
 
 #step 14
 msg6 <- accountNPVreports(host = fm)
-getNPVreports(fm)
-showNPVreports(fm)
-showContractNPVs(fm)
 
+getNPVreports(fm, 1, 0)
+showNPVreports(fm, 1, 0)
+showContractNPVs(fm, 1, 0)
