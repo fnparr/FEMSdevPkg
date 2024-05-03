@@ -4,7 +4,7 @@
 \alias{getLQreports}
 \title{getLQreports("FinancialModel")}
 \usage{
-getLQreports(fm)
+getLQreports(fm, scale = 1, rounding = 0)
 }
 \arguments{
 \item{Financial}{Model with accountLQreports() available}

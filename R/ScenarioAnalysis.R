@@ -371,7 +371,7 @@ setMethod("accountNMVreports",
 #  parameter from the parent FinancialModel. The list of liquidityReport vectors
 # is saved in the Scenario Analysis liquidtyReports attribute. It is keyed by
 # contractID. Each report vector has timeline$reportCount +1  values because
-# there is a value report for statusDate and repots for each period 
+# there is a value report for statusDate and reports for each period. 
 #
 #  Algorithm: 
 #.   (1) filter cashflowevents df: event rows in reported periods only
@@ -387,7 +387,6 @@ setMethod("accountNMVreports",
 #    (5) Resulting list of liquidity vectors is saved in the host 
 #        scenarioAnalysis and a log message is returned 
  
-
 setMethod(f = "liquidityReports",
           signature = c(host = "ScenarioAnalysis", tl = "Timeline"),
           definition = function(host, tl) {
@@ -478,36 +477,36 @@ setMethod("accountLQreports",
 setMethod(f = "netPresentValueReports",
           signature = c(host = "ScenarioAnalysis", tl = "Timeline"),
           definition = function(host, tl) {
-  df <- host$cashflowEventsByPeriod
-  nreps <- tl$reportCount
-  cids <- unique(df$contractId)
-  npvsdf <- data.frame(cids = cids)
-  ncids <- length(cids)
-  repdates <- as.character(tl$periodDateVector[0:nreps+1])
-  # print(paste0(" *** repdates has length", length(repdates)))
-  for ( repx in seq(1,nreps+1) ) {
-    dfrx <- df[df$periodIndex > (repx-1),] #  repx==1 case (statusDate) no filtering
-    dfrx["discountedCashflows"] <- 
-      dfrx$payoff * getDiscountFactor(host$yieldCurve, repdates[repx],
-                                      substr(dfrx$time,1,10),0)
-    dfaggr <- aggregate(dfrx$discountedCashflows, 
-                          by= list(dfrx$contractId), FUN=sum)
-# the aggregation above does NOT preserve contractId order     
-# so do a match on the contractid to sort into cashflowslist order 
-    allnpvs <- rep(0,ncids)
-    allnpvs[match(dfaggr$Group.1,cids)] <- dfaggr$x
-    npvsdf[repdates[[repx]]] <- allnpvs  
-  }
-  npvrows <- lapply(split(npvsdf,npvsdf$cids), function(y) as.list(y)) 
-  host$netPresentValueReports <- list()
-  for (lx in npvrows) {
-    host$netPresentValueReports[[lx$cid]] <- 
-          unlist(lx[seq(2, tl$reportCount +2)])
-  }
-  msg <- paste0("netPresentValueReports generated for scenario ", 
-                host$scenarioID)
-  return(msg)
-})
+            df <- host$cashflowEventsByPeriod
+            nreps <- tl$reportCount
+            cids <- unique(df$contractId)
+            npvsdf <- data.frame(cids = cids)
+            ncids <- length(cids)
+            repdates <- as.character(tl$periodDateVector[0:nreps+1])
+            # print(paste0(" *** repdates has length", length(repdates)))
+            for ( repx in seq(1,nreps+1) ) {
+              dfrx <- df[df$periodIndex > (repx-1),] #  repx==1 case (statusDate) no filtering
+              dfrx["discountedCashflows"] <- 
+                dfrx$payoff * getDiscountFactor(host$yieldCurve, repdates[repx],
+                                                substr(dfrx$time,1,10),0)
+              dfaggr <- aggregate(dfrx$discountedCashflows, 
+                                  by= list(dfrx$contractId), FUN=sum)
+              # the aggregation above does NOT preserve contractId order     
+              # so do a match on the contractid to sort into cashflowslist order 
+              allnpvs <- rep(0,ncids)
+              allnpvs[match(dfaggr$Group.1,cids)] <- dfaggr$x
+              npvsdf[repdates[[repx]]] <- allnpvs  
+            }
+            npvrows <- lapply(split(npvsdf,npvsdf$cids), function(y) as.list(y)) 
+            host$netPresentValueReports <- list()
+            for (lx in npvrows) {
+              host$netPresentValueReports[[lx$cid]] <- 
+                unlist(lx[seq(2, tl$reportCount +2)])
+            }
+            msg <- paste0("netPresentValueReports generated for scenario ", 
+                          host$scenarioID)
+            return(msg)
+          })
 
 setMethod("accountNPVreports",
           c(host = "ScenarioAnalysis", vlen = "numeric", vnames = "character"), 

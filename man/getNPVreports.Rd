@@ -4,7 +4,7 @@
 \alias{getNPVreports}
 \title{getNPVreports("FinancialModel")}
 \usage{
-getNPVreports(fm)
+getNPVreports(fm, scale = 1, rounding = 0)
 }
 \arguments{
 \item{Financial}{Model with accountNPVreports() available}

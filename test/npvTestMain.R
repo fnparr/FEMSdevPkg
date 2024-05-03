@@ -99,6 +99,7 @@ rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 
 marketData <- list(rfx)
+<<<<<<< HEAD
 # create a sample Yieldcurve 
 ycID <- "yc001"
 rd <- "2023-10-31"

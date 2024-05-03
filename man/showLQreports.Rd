@@ -4,7 +4,7 @@
 \alias{showLQreports}
 \title{showLQreports("FinancialModel")}
 \usage{
-showLQreports(fm)
+showLQreports(fm, scale = 1, rounding = 0)
 }
 \arguments{
 \item{Financial}{Model with accountLiquidityreports() available}
