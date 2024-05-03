@@ -4,7 +4,7 @@
 \alias{showContractNPVs}
 \title{showContractNPVs("FinancialModel")}
 \usage{
-showContractNPVs(fm)
+showContractNPVs(fm, scale = 1, rounding = 0)
 }
 \arguments{
 \item{Financial}{Model with netPresentValueReports available}

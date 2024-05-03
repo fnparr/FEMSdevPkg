@@ -172,7 +172,7 @@ initFinancialModel <- function(
 addScenarioAnalysis <- function( fm = FinancialModel(), scnID = " ", 
                                  rfxs = list(), yc = YieldCurve()){ 
    scna <- ScenarioAnalysis(scenarioID=scnID, marketData= rfxs, yieldCurve = yc,
-                            accounts = accountsTree)
+                            accounts = fm$accountsTree)
    fm$scenarioAnalysisList[scnID] <- list(scna=scna)
    fm$currentScenarioAnalysis <- scna
    msg<- "new scenarioAnalysis added to Financial Model and made current"
@@ -441,11 +441,13 @@ setMethod("accountNMVreports",
 #' in the financial model. There is a row in the data frame for each account in
 #' the financial model Accounts tree. 
 #' @param  Financial Model with accountNominalValues() available 
+#' @param  scale  numeric: factor to scale nominal values by
+#' @param  rounding numeric: number of decimal places to round to
 #' @returns matrix with account Nominal Value reports   
 #' @import data.tree
 #' @export
-getNMVreports <- function(fm) {
-  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv")))
+getNMVreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))/scale, rounding))
 }
 
 # ******* showNMVreports() 
@@ -458,12 +460,14 @@ getNMVreports <- function(fm) {
 #' financial model Accounts tree. The structure of the accounts tree is 
 #' displayed in the first column of the data frame 
 #' @param  Financial Model with accountNominalValues() available 
+#' @param  scale  numeric: factor to scale nominal values by
+#' @param  rounding numeric: number of decimal places to round to
 #' @returns data frame suitable for displaying results  
 #' @import data.tree
 #' @export
-showNMVreports <- function(fm ) {
+showNMVreports <- function(fm, scale = 1, rounding = 0) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  table <- getNMVreports(fm, scale, rounding)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
        df[datestr] <- table[,datestr]
@@ -483,13 +487,13 @@ showNMVreports <- function(fm ) {
 #' @param  Financial Model with nominalValueReports available 
 #' @returns data frame suitable for displaying results  
 #' @export
-showContractNMVs <- function (fm) {
+showContractNMVs <- function (fm, scale = 1, rounding = 0) {
   scna <- fm$currentScenarioAnalysis
   nmvdf<- data.frame(actusCIDs=names(scna$nominalValueReports))
   for( date in names(scna$nominalValueReports[[1]])) {
     nmvdf[date] <- 
-      unlist(lapply(scna$nominalValueReports, 
-                    function(rep){return(rep[[date]])}))
+      round(unlist(lapply(scna$nominalValueReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
   }
   return(nmvdf)
 }
@@ -630,8 +634,8 @@ setMethod("accountLQreports",
 #' @import data.tree
 #' @export
 #' 
-getLQreports <- function(fm) {
-  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq")))
+getLQreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))/scale, rounding))
 }
 
 # ******* showLQreports() 
@@ -648,15 +652,16 @@ getLQreports <- function(fm) {
 #' @import data.tree
 #' @export
 #' 
-showLQreports <- function(fm ) {
+showLQreports <- function(fm, scale = 1, rounding = 0) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("lq"))
+  table <- getLQreports(fm, scale, rounding)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
     df[datestr] <- table[,datestr]
   }
   return( df)
-}            
+}    
+
 # ******* showContractLQs() 
 #' showContractNPVs("FinancialModel")
 #' 
@@ -668,13 +673,13 @@ showLQreports <- function(fm ) {
 #' @param  Financial Model with liquidityReports available 
 #' @returns data frame suitable for displaying results  
 #' @export
-showContractLQs <- function (fm) {
+showContractLQs <- function (fm, scale = 1, rounding = 0) {
   scna <- fm$currentScenarioAnalysis
   lqdf<- data.frame(actusCIDs=names(scna$liquidityReports))
   for( date in names(scna$liquidityReports[[1]])) {
     lqdf[date] <- 
-      unlist(lapply(scna$liquidityReports, 
-                    function(rep){return(rep[[date]])}))
+      round(unlist(lapply(scna$liquidityReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
   }
   return(lqdf)
 }
@@ -736,7 +741,7 @@ setMethod(f = "netPresentValueReports",
           signature = c(host = "FinancialModel"),
           definition = function(host) {
             logMsg <-  netPresentValueReports(host= host$currentScenarioAnalysis,
-                                        tl = host$timeline)
+                                              tl = host$timeline)
             return(logMsg)
           }
 )
@@ -827,8 +832,8 @@ setMethod("accountNPVreports",
 #' @import data.tree
 #' @export
 #' 
-getNPVreports <- function(fm) {
-  return(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv")))
+getNPVreports <- function(fm, scale = 1, rounding = 0) {
+  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv"))/scale, rounding))
 }
 
 # ******* showNPVreports() 
@@ -845,9 +850,9 @@ getNPVreports <- function(fm) {
 #' @import data.tree
 #' @export
 #' 
-showNPVreports <- function(fm ) {
+showNPVreports <- function(fm, scale = 1, rounding = 0) {
   adf<- as.data.frame(fm$accountsTree$root)
-  table <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("npv"))
+  table <- getNPVreports(fm, scale, rounding)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
     df[datestr] <- table[,datestr]
@@ -865,13 +870,13 @@ showNPVreports <- function(fm ) {
 #' @param  Financial Model with netPresentValueReports available 
 #' @returns data frame suitable for displaying results  
 #' @export
-showContractNPVs <- function (fm) {
+showContractNPVs <- function (fm, scale = 1, rounding = 0) {
   scna <- fm$currentScenarioAnalysis
   npvdf<- data.frame(actusCIDs=names(scna$netPresentValueReports))
   for( date in names(scna$netPresentValueReports[[1]])) {
     npvdf[date] <- 
-      unlist(lapply(scna$netPresentValueReports, 
-                    function(rep){return(rep[[date]])}))
+      round(unlist(lapply(scna$netPresentValueReports, 
+                    function(rep){return(rep[[date]])}))/scale, rounding)
   }
   return(npvdf)
 }

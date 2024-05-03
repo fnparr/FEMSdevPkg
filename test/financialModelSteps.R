@@ -124,4 +124,5 @@ msg6 <- accountNPVreports(host = fm)
 getNPVreports(fm)
 showNPVreports(fm)
 showContractNPVs(fm)
+print(fm$accountsTree$root,"actusCIDs")
 

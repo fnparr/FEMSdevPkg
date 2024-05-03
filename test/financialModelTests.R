@@ -359,8 +359,11 @@ rm(list=ls())
   
   msg5 <- accountNMVreports(host = fm1)
   msg5
-  getNMVreports(fm1)
-  showNMVreports(fm1) 
+  getNMVreports(fm1, 1, 0)
+  showNMVreports(fm1, 1, 0) 
+  
+  # display the contract level results 
+  showContractNMVs(fm1, 1, 0)
   
 # display the contract level results 
   showContractNMVs(fm1)
@@ -400,10 +403,11 @@ rm(list=ls())
   msg2 <- generateEvents(host= fm1)
   msg3 <- events2dfByPeriod(host= fm1)
   msg4 <- liquidityReports(host = fm1) 
+  msg4 <- liquidityReports(host = fm1)
   
   #  ***** liquidity report testing from here
   
-  msg5a <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
+  msg5 <- liquidityReports(host = fm1$currentScenarioAnalysis, tl= fm1$timeline)
   msg5
   
   scna<- fm1$currentScenarioAnalysis
@@ -451,9 +455,9 @@ rm(list=ls())
   msg5 <- accountLQreports(host = fm1)
   msg5
 
-  getLQreports(fm1)
-  showLQreports(fm1)
-  showContractLQs(fm1)
+  getLQreports(fm1, 1, 0)
+  showLQreports(fm1, 1, 0)
+  showContractLQs(fm1, 1, 0)
   
   scna<- fm1$currentScenarioAnalysis
   print(scna$scenarioAccounts$root, "lq")
@@ -504,7 +508,8 @@ rm(list=ls())
   msg4 <- netPresentValueReports(host = fm1)
   msg5 <- accountNPVreports(fm1)
   msg5
-  getNPVreports(fm1)
-  showNPVreports(fm1) 
-  showContractNPVs(fm1)
+  
+  getNPVreports(fm1, 1, 0)
+  showNPVreports(fm1, 1, 0) 
+  showContractNPVs(fm1, 1, 0)
   

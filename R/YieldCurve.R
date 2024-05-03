@@ -13,8 +13,8 @@
 # some risk class (most likely riskfree) at a particular reference date. 
 # This data is organized as a set of spot rates for user selected tenors 
 # at the time of the reference date.  
-# 
-                                       
+#
+ 
 setRefClass("YieldCurve",
             fields = list(
               yieldCurveID         = "character",
@@ -86,7 +86,7 @@ setMethod(f = "YieldCurve", signature = c(),
 #'
 #' @param yieldCurveID  character  label uniquely identifying this yieldCurve
 #' @param referenceDate character date yyyy-mm-dd tenorRates observed this day 
-#' @param tenorRates numeric  pa rates (0.02=2pc) vector, names "1M", "2Y" etc 
+#' @param tenorRates numeric  pa rates (0.02=2pc) vector, names "1M", "2Y" etc
 #' @param dayCountConvention character: "30E360","30E360ISDA","A360","A365","AA"
 #' @param compoundingFrequency character: "NONE", "YEARLY", "CONTINUOUS"
 #' @return               fully initialized S4 class YieldCurve object
@@ -229,16 +229,12 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
  #    a date Tfrom  in yy *************************************
  getDiscountFactor <- function(yc,Tfrom,Tto,riskSpread) {
     frwdRate <- getForwardRates(yc,Tfrom,Tto)
-#   if (Tfrom == Tto) {
-#      factor <-  1.0
-#      return(factor)
-#    }
-#    else 
     if(yc$compoundingFrequency == "CONTINUOUS") {
       factor <- exp(-(frwdRate + riskSpread)*yearFraction(Tfrom,Tto,yc$yfdcc))
     } else if(yc$compoundingFrequency == "YEARLY") {
       factor <- 1/(1 + (frwdRate + riskSpread ))^yearFraction(Tfrom,Tto,yc$yfdcc)
     } else if(yc$compoundingFrequency == "NONE") {
+      # factor <- 1/(1 + (frwdRate + riskSpread )*yearFraction(Tfrom,Tto,yc$yfdcc))
     } else {  
       stop(paste("ErrorIn::YieldCurve::getDiscountFactor: compoundingFrequency ", 
                  yc$compoundingFrequency , " not supported !!!"))
@@ -301,4 +297,3 @@ setMethod(f = "getForwardRates", signature = c("YieldCurve", "character",
    # factor <-  1 + frwdRate*yearFraction(Tfrom,Tto,yc$yfdcc)
    return (factor)
  }
- 

@@ -2,9 +2,7 @@
 # Licensing and Copyright notices from there
 # Defines utilities for manipulating and aggregating accountNodes in 
 # a FinancialModel accounts tree 
-library(data.tree)
 setOldClass("Node")   # Allows data.tree::Node to be used in S4 object slots
-library(yaml)
 # ************
 # class AccountsTree
 #  the saved attributes for convenient identification of accountNodes
@@ -73,7 +71,11 @@ setMethod("AccountsTree", c(),
 
 setMethod(f = "AccountsTree", signature = c(yamlstring="character"),
           definition= function(yamlstring) {
-            accountsTree <- AccountsTree() 
+            accountsTree <- AccountsTree()
+            #check whether it is a path that was entered (are the last 5 characters ".yaml"?)
+            if(endsWith(yamlstring, ".yaml")){
+              yamlstring <- yaml.load_file(yamlstring)
+            }
             accountsTree$root <- treeFromYamlString(yamlstring)
             accountsTree$root <- setUniqueNodeIDs (accountsTree$root)
             return(accountsTree)

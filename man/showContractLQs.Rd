@@ -4,7 +4,8 @@
 \alias{showContractLQs}
 \title{showContractNPVs("FinancialModel")}
 \usage{
-showContractLQs(fm)
+=======
+showContractLQs(fm, scale = 1, rounding = 0)
 }
 \arguments{
 \item{Financial}{Model with liquidityReports available}
