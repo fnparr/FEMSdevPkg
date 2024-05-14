@@ -447,7 +447,9 @@ setMethod("accountNMVreports",
 #' @import data.tree
 #' @export
 getNMVreports <- function(fm, scale = 1, rounding = 0) {
-  return(round(t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))/scale, rounding))
+  mat <- t(fm$currentScenarioAnalysis$scenarioAccounts$root$Get("nmv"))
+  value_index <- which(rownames(mat) == "Equity")
+  return(round(mat[1:value_index,]/scale, rounding))
 }
 
 # ******* showNMVreports() 
@@ -466,13 +468,15 @@ getNMVreports <- function(fm, scale = 1, rounding = 0) {
 #' @import data.tree
 #' @export
 showNMVreports <- function(fm, scale = 1, rounding = 0) {
-  adf<- as.data.frame(fm$accountsTree$root)
   table <- getNMVreports(fm, scale, rounding)
+  copy <- Clone(fm$accountsTree$root)
+  Prune(copy, prune = function(node) node$nodeID <= nrow(table))
+  adf<- as.data.frame(copy)
   df <- data.frame(adf["levelName"])
   for ( datestr in colnames(table)) {
-       df[datestr] <- table[,datestr]
+    df[datestr] <- table[,datestr]
   }
-  return( df)
+  return(df)
 }
 
 # ******* showContractNMVs() 
