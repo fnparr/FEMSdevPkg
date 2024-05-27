@@ -93,6 +93,23 @@ setUniqueNodeIDs <- function(root) {
   return(root)
 }
 
+# ************
+# Function to return a yaml string from an AccountsTree
+#' treeToYamlString("accounsTree")
+#' 
+#' This function returns a yaml string representation of the accounts tree, it can later
+#' be used to recreate the accounts tree using the AccountsTree constructor.
+#' @param  accountsTree  AccountsTree: the accounts tree to be converted to yaml 
+#' @returns yaml string: describing the accounts tree structure   
+#' @import data.tree
+#' @import yaml
+#' @export
+treeToYamlString <- function(accountsTree){
+  treeList <- ToListSimple(accountsTree$root, unname = TRUE, keepOnly = c("actusCIDs", "functionIDs"))
+  yamlString <- as.yaml(treeList)
+  return(yamlString)
+}
+
 # *********
 # Clone an AccountsTree - deep copy - assumed initialized and nodeIDs set  
 # *****************
