@@ -884,3 +884,71 @@ showContractNPVs <- function (fm, scale = 1, rounding = 0) {
   }
   return(npvdf)
 }
+
+# ******* extendedEventsdf() 
+#' extendedEventsd("FinancialModel")
+#' 
+#' This function returns a data frame with the cashflow events in the
+#' currentScenarioAnalysis extended with additional fields for nodeId, nodeName,
+#' contractType, periodStart, and periodEnd. The input Financial Model must have
+#' an accountsTree for the mapping of contracts to nodes and a timeline for the
+#' period dates.
+#' 
+#' @param  Financial Model with cashflowEventsByPeriod available 
+#' @returns events data frame with added fields nodeId, nodeName, contractType, periodStart, periodEnd  
+#' @export
+extendedEventsdf <- function(fm) {
+  treemap <- ToDataFrameTable(fm$accountsTree$root, "name", "nodeID", "actusCIDs", "formulaCIDs")
+  
+  contractmap <- data.frame(nodeName = character(),
+                            nodeId = numeric(),
+                            CID = character(),
+                            contractType = character(),
+                            stringsAsFactors = FALSE)
+  
+  # Function to split CIDs and add to result data frame
+  add_cids <- function(cids, name, nodeID, cid_type) {
+    if (!is.na(cids)) {
+      cid_list <- strsplit(cids, ", ")[[1]]
+      for (cid in cid_list) {
+        contractmap <<- rbind(contractmap, data.frame(nodeName = name, nodeId = nodeID, CID = cid, contractType = cid_type, stringsAsFactors = FALSE))
+      }
+    }
+  }
+  
+  # Process actusCIDs
+  for (i in 1:nrow(treemap)) {
+    add_cids(treemap$actusCIDs[i], treemap$name[i], treemap$nodeID[i], "actusCID")
+  }
+  
+  # Process formulaCIDs
+  for (i in 1:nrow(treemap)) {
+    add_cids(treemap$formulaCIDs[i], treemap$name[i], treemap$nodeID[i], "formulaCID")
+  }
+  
+  # Extract events data frame
+  events <- fm$currentScenarioAnalysis$cashflowEventsByPeriod
+  
+  # Ensure column names and types match
+  colnames(events)[which(names(events) == "contractID")] <- "contractId"
+  contractmap$CID <- as.character(contractmap$CID)
+  events$contractId <- as.character(events$contractId)
+  
+  # Match indices
+  match_indices <- match(events$contractId, contractmap$CID)
+  
+  # Assign nodeId, nodeName, and contractType to events
+  events$nodeId <- contractmap$nodeId[match_indices]
+  events$nodeName <- contractmap$nodeName[match_indices]
+  events$contractType <- contractmap$contractType[match_indices]
+  
+  # Assign periodStart and periodEnd
+  events$periodStart <- as.Date(ifelse(events$periodIndex == 999, 
+                                       fm$timeline$periodDateVector[length(fm$timeline$periodDateVector)], 
+                                       fm$timeline$periodDateVector[events$periodIndex]))
+  events$periodEnd <- as.Date(ifelse(events$periodIndex == 999, 
+                                     as.Date("3000-01-01"), 
+                                     fm$timeline$periodDateVector[events$periodIndex + 1] - 1))
+  
+  return(events)
+}
