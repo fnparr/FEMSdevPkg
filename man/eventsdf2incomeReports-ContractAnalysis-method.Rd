@@ -3,21 +3,21 @@
 \name{eventsdf2incomeReports,ContractAnalysis-method}
 \alias{eventsdf2incomeReports,ContractAnalysis-method}
 \title{*******************************
-  eventsdf2incomeReports(cfla= ContractAnalysis) -method instance
+  eventsdf2incomeReports(host= ContractAnalysis) -method instance
 *******************************}
 \usage{
-\S4method{eventsdf2incomeReports}{ContractAnalysis}(cfla)
+\S4method{eventsdf2incomeReports}{ContractAnalysis}(host)
 }
 \arguments{
-\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing whether processing was successful
 }
 \description{
 This method generates an incomeReport (vector) for each contract using the
-  data in cfla$cashflowEventsByPeriod (dataframe), and saves this as a list 
-  keyed by contractID in cfla$incomeReports. The method is exported.
+  data in host$cashflowEventsByPeriod (dataframe), and saves this as a list 
+  keyed by contractID in host$incomeReports. The method is exported.
   
   The processing steps are: (1) subset the cashflowEvents data frame to 
   select events in the reportPeriods and with eventType in ("IP", "FP"). 
@@ -35,7 +35,7 @@ This method generates an incomeReport (vector) for each contract using the
   Method eventsdf2IncomeReport( ) generates income reports from the 
   cashflowsByPeriod df in a single method, while the corresponding liquidity
   reports do this with the sequence of method calls: liquidityByPeriod2vec( ) 
-  AND lv2LiquidityReports(cfla). The reason is that the intermediate result,
+  AND lv2LiquidityReports(host). The reason is that the intermediate result,
   for liquidity- the list by contractId of vectors with aggregated liquidity 
   change for each period, needs to be save dand made available for contract
   valuations. There is no corresponding need for aggregated income by period
@@ -65,7 +65,7 @@ This method generates an incomeReport (vector) for each contract using the
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-   logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
+   logMsgs5  <- eventsdf2incomeReports(host= cfla2015)
 } 
      
 }

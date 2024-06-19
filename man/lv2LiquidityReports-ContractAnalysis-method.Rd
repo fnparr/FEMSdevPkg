@@ -3,27 +3,27 @@
 \name{lv2LiquidityReports,ContractAnalysis-method}
 \alias{lv2LiquidityReports,ContractAnalysis-method}
 \title{*******************************
-  lv2LiquidityReports(cfla= ContractAnalysis) -method instance
+  lv2LiquidityReports(host= ContractAnalysis) -method instance
 *******************************}
 \usage{
-\S4method{lv2LiquidityReports}{ContractAnalysis}(cfla)
+\S4method{lv2LiquidityReports}{ContractAnalysis}(host)
 }
 \arguments{
-\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing whether processing was successful
 }
 \description{
 This method generates a liquidityReport (vector) for each contract using 
-  the data in cfla$contractLiquidityVectors and saves this as a list keyed by 
-  contractID in cfla$liquidityReports. The method is exported
+  the data in host$contractLiquidityVectors and saves this as a list keyed by 
+  contractID in host$liquidityReports. The method is exported
   
   Differences between liquidityReports and contractLiquidityVectors are:
-  (1) a contractLiquidityVector can have up to cfla$timeline$periodCount 
+  (1) a contractLiquidityVector can have up to host$timeline$periodCount 
   elements, (2) but it actually only has entries for periods in which at least
   one liquidity changing event happens ( so it can also have fewer than 
-  cfla$timeline$reportCount entries (3) a liquidityReport vector must have 
+  host$timeline$reportCount entries (3) a liquidityReport vector must have 
   exactly reportCount elements (4) contractLiquidityVectors record the 
   change in liquidity for each period in which the related contract sees
   liquidity changing events (5) It is more convenient for liquidity
@@ -55,7 +55,7 @@ This method generates a liquidityReport (vector) for each contract using
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-   logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
-   lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
+   logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+   lofMsgs4  <- lv2LiquidityReports(host= cfla2015)
 }      
 }

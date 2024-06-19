@@ -36,7 +36,7 @@ setRefClass("ContractAnalysis",
               scenario = "list",
               actusServerURL = "character",
               timeline = "Timeline",
-              cashflowEventsLoL = "list",
+              cashflowEventsdf = "data.frame",
               cashflowEventsByPeriod = "data.frame",
               contractLiquidityVectors = "list",
               liquidityReports = "list",
@@ -167,7 +167,7 @@ initContractAnalysis <- function (
 #'   The method return a log message with a report on which contracts were 
 #'   successfully simulated
 #'
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing which contracts were successfully simulated 
 #' @export
 #' @import    jsonlite
@@ -197,18 +197,24 @@ setMethod (f = "generateEvents",
              # sends input portfolio contracts and riskFactors to server as JSON
              simulationRsp <- simulationRequest(host$portfolio,
                                                 host$actusServerURL,
-                                                host$scenario
-                                                 )
-             if (simulationRsp$status_code == 200 ){
-                host$cashflowEventsLoL <- content(simulationRsp)
-                logmsg <- "Contract simulations were successful"
+                                                host$scenario)
+             response_content <- content(simulationRsp)
+             if (simulationRsp$status_code != 200){
+               logmsg <- paste0("Contract simulation error. status_code= ",
+                                simulationRsp$status_code,
+                                "Error info= ", response_content$error)
+               df <- data.frame()
+             } else {
+               if(all(unlist(lapply(response_content,
+                                    function(x){return(x$status)})) == "Success")){
+                 df <- mergecfls(response_content)
+                 logmsg <- "Contract simulations were successful"
+               } else{
+                 logmsg <- "Error in contract simulation during generateEvents()"
+                 df <- data.frame()
+               }
              }
-             else {
-                host$cashflowEventsLoL <- list()
-                logmsg <- paste0("Contract simulation error. status_code= ",
-                                 simulationRsp$status_code)
-   #                              "Error info= ", content$error)
-             }
+             host$cashflowEventsdf <- df
              return(logmsg) 
            }
 )
@@ -226,22 +232,22 @@ setMethod (f = "generateEvents",
 #'   ACTUS cashflow event field. The input ContractAnalysis object myst be in 
 #'   the following state: (1) portfolio, and timeline fields must be initialized
 #'   (2) statusDate of the timeline must be the same as statusdate of all 
-#'   contracts in the portfolio (3) generateEvents(cfla) must have been run to 
-#'   populate cfla$cashflowEventsLoL, and (4) the status of each contract 
+#'   contracts in the portfolio (3) generateEvents(host) must have been run to 
+#'   populate host$cashflowEventsLoL, and (4) the status of each contract 
 #'   simulation must be "Success" . You can check this using: 
-#'  > unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)})) 
+#'  > unlist(lapply(host$cashflowEventsLoL,function(x){return(x$status)})) 
 #'  
 #'   If these conditions are met, events2dfByPeriod() will reorganize the data
-#'   in cfla$cashflowEventsLoL as a dataframe with columns: 
+#'   in host$cashflowEventsLoL as a dataframe with columns: 
 #'      TBD
-#'   and save that as cfla$cashflowEventsByPeriod for use in subsequent analysis
+#'   and save that as host$cashflowEventsByPeriod for use in subsequent analysis
 #'   steps on the ContractAnalysis object. 
 #'   
 #'   A text message is returned reporting on any issues in this processing step.
 #'   
-#'   Processing steps: (0) check valid cfla$cashflowEventsLoL, (1) merge 
+#'   Processing steps: (0) check valid host$cashflowEventsLoL, (1) merge 
 #'   eventsLOL into eventsDF, (2) add periodIndex column,  (3) sort by 
-#'   (contractID, periodIndex), (4) save as cfla$cashFlowEventsByPeriod. 
+#'   (contractID, periodIndex), (4) save as host$cashFlowEventsByPeriod. 
 #'   
 #' @param host  ContractAnalysis S4 obj with portfolio, actusServer and risk data
 #' @return      log msg reporting which contracts were successfully simulated 
@@ -271,31 +277,32 @@ setMethod (f = "generateEvents",
 setMethod (f = "events2dfByPeriod", 
            signature = c(host = "ContractAnalysis") ,
            definition = function(host){ 
-    if (! is.null(host$cashflowEventsLoL) && 
-         all(unlist(lapply(host$cashflowEventsLoL,
-                           function(x){return(x$status)})) == "Success" ) )
-    { msg <- "OK" 
-      df1 <- mergecfls(host$cashflowEventsLoL)
-      df1["periodIndex"] <- sapply( df1$time, 
-         function(x){return(date2PeriodIndex(host$timeline, substr(x,1,10)))})
-      df2 <- df1[c("contractId","periodIndex","time","type", "payoff",
-                   "currency", "nominalValue","nominalRate","nominalAccrued")]
-      host$cashflowEventsByPeriod <- df2
-    }
-    else
-    {  msg <- "Cannot rearrange by Period - check state of cashflowEventsLoL"}
-    return(msg)
-})
+             if (! is.null(host$cashflowEventsdf)){ 
+               logmsg <- "OK" 
+               df1 <- host$cashflowEventsdf
+               df1["periodIndex"] <- sapply( df1$time, 
+                                             function(x)
+                                             {return(date2PeriodIndex(host$timeline, 
+                                                                      substr(x,1,10)))})
+               df2 <- df1[c( "contractId","periodIndex","time","type", "payoff",
+                             "currency", "nominalValue","nominalRate",
+                             "nominalAccrued")]
+               host$cashflowEventsByPeriod <- df2
+             } else {
+               logmsg <- "Failed - check state of cashflowEventsdf"
+             }
+             return(logmsg)
+            })
 # **************************************
-# liquidityByPeriod2vec(cfla) get liquidity change by period for each contract
+# liquidityByPeriod2vec(host) get liquidity change by period for each contract
 # *************************************
 #  **** Generic liquidityByPeriod2vec(... ) 
 setGeneric("liquidityByPeriod2vec",
-           function(cfla) 
+           function(host) 
            { standardGeneric("liquidityByPeriod2vec") }
 )
 #'  *******************************
-#'   liquidityByPeriod2vec(cfla= <ContractAnalysis>). -method instance
+#'   liquidityByPeriod2vec(host= <ContractAnalysis>). -method instance
 #' *******************************
 #'
 #'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
@@ -318,7 +325,7 @@ setGeneric("liquidityByPeriod2vec",
 #'   values. Use lapply() on this list to produce a list of 
 #'   <contractId, liquidity> vector pairs. 
 #'   
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processins was successful 
 #' @export
 #' @examples {
@@ -341,19 +348,19 @@ setGeneric("liquidityByPeriod2vec",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
+#'    logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
 #' } 
 setMethod(f = "liquidityByPeriod2vec",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
-    # subset cashflowEventsByPeriod periodIndex in 1:cfla$timeline$reportCount 
-    df1 <- subset(cfla$cashflowEventsByPeriod, 
-                  periodIndex %in% 1:cfla$timeline$periodCount)
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
+    # subset cashflowEventsByPeriod periodIndex in 1:host$timeline$reportCount 
+    df1 <- subset(host$cashflowEventsByPeriod, 
+                  periodIndex %in% 1:host$timeline$periodCount)
     df2 <- aggregate(df1$payoff, 
                      by=c(cid= list(df1$contractId), 
                           period= list(df1$periodIndex)), FUN=sum)
     df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y))
-    cfla$contractLiquidityVectors <- lapply( df2rows, function(z){
+    host$contractLiquidityVectors <- lapply( df2rows, function(z){
         lvec <- z$x     # df aggregate requires that result has name x
         names(lvec) <- z$period
         return(list(cid=z$cid[[1]],lvec= lvec))
@@ -368,23 +375,23 @@ setMethod(f = "liquidityByPeriod2vec",
 #  **** Generic lv2LiquidityReports(<>) ********
 # Defines generic method to map liquidity vectors list to liquidityReports
 setGeneric("lv2LiquidityReports",
-           function(cfla) 
+           function(host) 
              { standardGeneric("lv2LiquidityReports") }
 )
 
 #'  *******************************
-#'   lv2LiquidityReports(cfla= ContractAnalysis) -method instance
+#'   lv2LiquidityReports(host= ContractAnalysis) -method instance
 #' *******************************
 #'
 #'   This method generates a liquidityReport (vector) for each contract using 
-#'   the data in cfla$contractLiquidityVectors and saves this as a list keyed by 
-#'   contractID in cfla$liquidityReports. The method is exported
+#'   the data in host$contractLiquidityVectors and saves this as a list keyed by 
+#'   contractID in host$liquidityReports. The method is exported
 #'   
 #'   Differences between liquidityReports and contractLiquidityVectors are:
-#'   (1) a contractLiquidityVector can have up to cfla$timeline$periodCount 
+#'   (1) a contractLiquidityVector can have up to host$timeline$periodCount 
 #'   elements, (2) but it actually only has entries for periods in which at least
 #'   one liquidity changing event happens ( so it can also have fewer than 
-#'   cfla$timeline$reportCount entries (3) a liquidityReport vector must have 
+#'   host$timeline$reportCount entries (3) a liquidityReport vector must have 
 #'   exactly reportCount elements (4) contractLiquidityVectors record the 
 #'   change in liquidity for each period in which the related contract sees
 #'   liquidity changing events (5) It is more convenient for liquidity
@@ -394,7 +401,7 @@ setGeneric("lv2LiquidityReports",
 #'   enterprise is solvent at each report date. 
 #'   
 #'   The method returns a message indicating whether processing was successful.   
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processing was successful 
 #' @export
 #' @examples {
@@ -417,15 +424,15 @@ setGeneric("lv2LiquidityReports",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
-#'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
+#'    logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+#'    lofMsgs4  <- lv2LiquidityReports(host= cfla2015)
 #' }      
 setMethod(f = "lv2LiquidityReports",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
-            rseq <- seq(1,cfla$timeline$reportCount)
-            clvs <- cfla$contractLiquidityVectors
-            cfla$liquidityReports  <- lapply (names(clvs), function(y){
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
+            rseq <- seq(1,host$timeline$reportCount)
+            clvs <- host$contractLiquidityVectors
+            host$liquidityReports  <- lapply (names(clvs), function(y){
               lv <-clvs[[y]]$lvec
               vv <- c()
               rep0 <- cumsum(unlist(sapply(rseq, function(x) {
@@ -449,16 +456,16 @@ setMethod(f = "lv2LiquidityReports",
 #  **** Generic eventsdf2incomeReports(<>) ********
 # This method defines a generic method for incomeReports from eventsByPeriod df 
 setGeneric("eventsdf2incomeReports",
-           function(cfla) 
+           function(host) 
            { standardGeneric("eventsdf2incomeReports") }
 )
 #'  *******************************
-#'   eventsdf2incomeReports(cfla= ContractAnalysis) -method instance
+#'   eventsdf2incomeReports(host= ContractAnalysis) -method instance
 #' *******************************
 #'
 #'   This method generates an incomeReport (vector) for each contract using the
-#'   data in cfla$cashflowEventsByPeriod (dataframe), and saves this as a list 
-#'   keyed by contractID in cfla$incomeReports. The method is exported.
+#'   data in host$cashflowEventsByPeriod (dataframe), and saves this as a list 
+#'   keyed by contractID in host$incomeReports. The method is exported.
 #'   
 #'   The processing steps are: (1) subset the cashflowEvents data frame to 
 #'   select events in the reportPeriods and with eventType in ("IP", "FP"). 
@@ -476,7 +483,7 @@ setGeneric("eventsdf2incomeReports",
 #'   Method eventsdf2IncomeReport( ) generates income reports from the 
 #'   cashflowsByPeriod df in a single method, while the corresponding liquidity
 #'   reports do this with the sequence of method calls: liquidityByPeriod2vec( ) 
-#'   AND lv2LiquidityReports(cfla). The reason is that the intermediate result,
+#'   AND lv2LiquidityReports(host). The reason is that the intermediate result,
 #'   for liquidity- the list by contractId of vectors with aggregated liquidity 
 #'   change for each period, needs to be save dand made available for contract
 #'   valuations. There is no corresponding need for aggregated income by period
@@ -485,7 +492,7 @@ setGeneric("eventsdf2incomeReports",
 #'   
 #'   The method returns a message indicating whether processing was successful.
 #'      
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processing was successful 
 #' @export
 #' @examples {
@@ -508,15 +515,15 @@ setGeneric("eventsdf2incomeReports",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
+#'    logMsgs5  <- eventsdf2incomeReports(host= cfla2015)
 #' } 
 #'      
 setMethod(f = "eventsdf2incomeReports",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
             # step1 - subset
-            df1 <- subset(cfla$cashflowEventsByPeriod,  
-                              periodIndex %in% 1:cfla$timeline$reportCount  
+            df1 <- subset(host$cashflowEventsByPeriod,  
+                              periodIndex %in% 1:host$timeline$reportCount  
                             & type %in%  c("IP", "FP")
                          )
             # step2 aggregate 
@@ -531,7 +538,7 @@ setMethod(f = "eventsdf2incomeReports",
               names(ivec) <- z$period
               return(list(cid=z$cid[[1]],ivec= ivec))
             }) 
-            rseq <- seq(1,cfla$timeline$reportCount)
+            rseq <- seq(1,host$timeline$reportCount)
             irs  <- lapply (names(civs), function(y){
               iv <-civs[[y]]$ivec
               vv <- c()
@@ -546,10 +553,10 @@ setMethod(f = "eventsdf2incomeReports",
             })
             # step4  - add in  0,0,0 ...0 reports for contracts with no income
             piks <- sapply(irs, function(x) return(x$cid))
-            noir <- rep(0,cfla$timeline$reportCount)
+            noir <- rep(0,host$timeline$reportCount)
             names(noir) <- rseq
-            cfla$incomeReports <- lapply( 
-              sapply(cfla$portfolio$contracts,
+            host$incomeReports <- lapply( 
+              sapply(host$portfolio$contracts,
                      function(x) return (x$contractTerms$contractID)
               ),
               function(y){ 
