@@ -13,9 +13,9 @@ extendedEventsdf(fm)
 events data frame with added fields nodeId, nodeName, contractType, periodStart, periodEnd
 }
 \description{
-This function returns a data frame with the cashflow events in the
-currentScenarioAnalysis extended with additional fields for nodeId, nodeName,
-contractType, periodStart, and periodEnd. The input Financial Model must have
-an accountsTree for the mapping of contracts to nodes and a timeline for the
-period dates.
+This function returns a dataframe showing expected net present value reports
+for status date and each report date foreach contract in the portfolio of  
+in the financial model using cashflows of the currentScenarioAnalysis. 
+There is a row in the data frame for each contract and columns for each
+report date. ContractIDs are displayed in the first column of the data frame
 }

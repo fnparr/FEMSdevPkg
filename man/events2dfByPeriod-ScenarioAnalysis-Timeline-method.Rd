@@ -10,7 +10,7 @@
 This method reorganizes a list(by contract) of lists of cashflow events
   into a data frame with columns for: contractID, period, and for each 
   ACTUS cashflow event field. The input ScenarioAnalysis object must have 
-  run generateEvents(host = scna) to populate scna$cashflowEventsdf, and
+  run generateEvents(host = scna) to populate scna$cashflowEventsLoL, and
   the status of each contract simulation must be "Success" . You can check 
   this using: 
  > unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)})) 

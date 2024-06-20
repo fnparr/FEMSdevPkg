@@ -33,7 +33,7 @@ setRefClass("ScenarioAnalysis",
               scenarioID = "character",
               marketData = "list",
               yieldCurve = "YieldCurve",
-              cashflowEventsdf = "data.frame",
+              cashflowEventsLoL = "list",
               cashflowEventsByPeriod = "data.frame",
               contractLiquidityVectors = "list",
               liquidityReports = "list",
@@ -82,8 +82,7 @@ setMethod("ScenarioAnalysis", c(scenarioID = "character",
             scna$scenarioID <- scenarioID
             scna$marketData <- marketData
             scna$yieldCurve <- yieldCurve
-            scna$cashflowEventsdf <- data.frame()
-            scna$cashflowEventsByPeriod <- data.frame()
+            scna$cashflowEventsLoL <- list()
             scna$contractLiquidityVectors <- list()
             scna$liquidityReports <- list()
             scna$incomeReports <- list()
@@ -183,23 +182,16 @@ setMethod (f = "generateEvents",
            definition = function( host, ptf, serverURL){
              # sends input portfolio contracts and riskFactors to server as JSON
              simulationRsp <- simulationRequest(ptf, serverURL, host$marketData)
-             response_content <- content(simulationRsp)
-             if (simulationRsp$status_code != 200){
-               logmsg <- paste0("Contract simulation error. status_code= ",
-                                simulationRsp$status_code,
-                                "Error info= ", response_content$error)
-               df <- data.frame()
-             } else {
-               if(all(unlist(lapply(response_content,
-                                    function(x){return(x$status)})) == "Success")){
-                 df <- mergecfls(response_content)
-                 logmsg <- "Contract simulations were successful"
-               } else{
-                 logmsg <- "Error in contract simulation during generateEvents()"
-                 df <- data.frame()
-               }
+             if (simulationRsp$status_code == 200 ){
+               host$cashflowEventsLoL <- content(simulationRsp)
+               logmsg <- "Contract simulations were successful"
              }
-             host$cashflowEventsdf <- df
+             else {
+               host$cashflowEventsLoL <- list()
+               logmsg <- paste0("Contract simulation error. status_code= ",
+                                simulationRsp$status_code)
+               #                              "Error info= ", content$error)
+             }
              host$logMsgs["generateEvents"]<- logmsg
              return(logmsg) 
            }
@@ -211,7 +203,7 @@ setMethod (f = "generateEvents",
 #'   This method reorganizes a list(by contract) of lists of cashflow events
 #'   into a data frame with columns for: contractID, period, and for each 
 #'   ACTUS cashflow event field. The input ScenarioAnalysis object must have 
-#'   run generateEvents(host = scna) to populate scna$cashflowEventsdf, and
+#'   run generateEvents(host = scna) to populate scna$cashflowEventsLoL, and
 #'   the status of each contract simulation must be "Success" . You can check 
 #'   this using: 
 #'  > unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)})) 
@@ -230,9 +222,11 @@ setMethod (f = "generateEvents",
 setMethod (f = "events2dfByPeriod", 
         signature = c(host = "ScenarioAnalysis", tl = "Timeline") ,
         definition = function(host,tl){ 
-          if (! is.null(host$cashflowEventsdf)){ 
-            logmsg <- "OK" 
-            df1 <- host$cashflowEventsdf
+          if (! is.null(host$cashflowEventsLoL) && 
+              all(unlist(lapply(host$cashflowEventsLoL,
+                                function(x){return(x$status)})) == "Success" ) )
+          { logmsg <- "OK" 
+            df1 <- mergecfls(host$cashflowEventsLoL)
             df1["periodIndex"] <- sapply( df1$time, 
                                   function(x)
                                     {return(date2PeriodIndex(tl, 
@@ -241,9 +235,9 @@ setMethod (f = "events2dfByPeriod",
                           "currency", "nominalValue","nominalRate",
                           "nominalAccrued")]
             host$cashflowEventsByPeriod <- df2
-          } else {
-           logmsg <- "Failed - check state of cashflowEventsdf"
-          }
+         }
+         else
+         { logmsg <- "Failed - check state of cashflowEventsLoL"}
         host$logMsgs["events2dfByPeriod"]<- logmsg
         return(logmsg)
        })

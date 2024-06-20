@@ -7,7 +7,7 @@
 \S4method{generateEvents}{ContractAnalysis,missing,missing,missing}(host)
 }
 \arguments{
-\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing which contracts were successfully simulated

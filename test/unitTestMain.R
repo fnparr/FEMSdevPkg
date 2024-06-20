@@ -109,7 +109,11 @@ pam1 <- bondvr("2013-12-31", maturity = "5 years", nominal = 1000,
                rateResetFreq = "Fixed rate")
 ptf2 <- Portfolio(pam1)
 cfls <-generateEvents(ptf=ptf2, serverURL= serverURL, riskFactors= list())
-cfls
+cfls[[1]]$status
+cfls[[1]]$message
+cfls[[1]]$contractId
+length(cfls[[1]]$events)
+unlist(cfls[[1]]$events[[1]])
 
 rm(list=ls())
 mydatadir <- "~/mydata"
@@ -121,7 +125,7 @@ serverURL <- "https://dadfir3-app.zhaw.ch/"
 rxdfp <- paste0(mydatadir,"/UST5Y_fallingRates.csv")
 rfx <- sampleReferenceIndex(rxdfp,"UST5Y_fallingRates", "YC_EA_AAA",100)
 cfls  <- generateEvents(,ptf,serverURL,list(rfx))
-cfls
+unlist(lapply(cfls,function(x){return(x$status)}))
 
 #Test 3.0 generateEvents(<ContractAnalysis>)  single PAM no rfs case first 
 rm(list=ls())
@@ -142,8 +146,7 @@ cfla1 <- initContractAnalysis( analysisID = "cfla001",
                            timeline = Timeline()
                            )
 msg <- generateEvents(host= cfla1)
-cfls <- cfla1$cashflowEventsdf
-cfls
+cfla1$cashflowEventsLoL[[1]]$status
 
 #Test 3.1 generateEvents(<ContractAnalysis>)  sample PAM portfolio
 rm(list=ls())
@@ -165,7 +168,7 @@ cfla <- initContractAnalysis( analysisID = "cfla001",
                           actusServerURL = serverURL,
                           timeline = Timeline())
 msg <- generateEvents(host= cfla)
-cfla$cashflowEventsdf
+unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)}))
 
 #Test 3.2 include real Timeline in ContractAnalysis - prelim to events2dfByPeriod
 
@@ -201,8 +204,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                           actusServerURL = serverURL,
                           timeline = tl1 )
 msg <- generateEvents(host= cfla2015)
-cfls <- cfla2015$cashflowEventsdf
-cfls
+unlist(lapply(cfla2015$cashflowEventsLoL,function(x){return(x$status)}))
 
 # Test 3.3 now write and test events2dfByPeriod(cfla) function using timeline
 # and reorganizing the events from cashflowEventsLoL set in  Test 3.2  
@@ -227,7 +229,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
 logMsgs2  <- events2dfByPeriod(host = cfla2015)
-logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 cfla2015$contractLiquidityVectors[["102"]]
 
 # Test 3.4 now write and test lv2liquidityReports(cfla) function using the 
@@ -253,8 +255,8 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
 logMsgs2  <- events2dfByPeriod(host = cfla2015)
-logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
-logMsgs4  <- lv2LiquidityReports(host= cfla2015)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
 head (cfla2015$cashflowEventsByPeriod,15)
 
 # Test 3.5 now write and test eventsdf2incomeReports(cfla) function using the 
@@ -281,7 +283,7 @@ cfla2015 <- initContractAnalysis( analysisID = "cfla001",
                               timeline = tl1)
 logMsgs1  <- generateEvents(host = cfla2015)
 logMsgs2  <- events2dfByPeriod(host= cfla2015)
-logMsgs5  <- eventsdf2incomeReports(host= cfla2015)
+logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
 
 logMsgs6 <- nominalValueReports(host=cfla2015)
 logMsgs6
@@ -306,14 +308,14 @@ cfla1 <- initContractAnalysis( analysisID = "cfla001",
                                timeline = tl1
 )
 
-msg <- generateEvents(host= cfla1)
-cfls <- cfla1$cashflowEventsdf
-cfls
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
 
-logMsgs1  <- generateEvents(host = cfla1)
-logMsgs2  <- events2dfByPeriod(host= cfla1)
-logMsgs3  <- liquidityByPeriod2vec(host = cfla1)
-logMsgs4  <- lv2LiquidityReports(host= cfla1)
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
 head(cfla1$cashflowEventsByPeriod,15)
 
 ## Test LAM, variable rate and with loan function
@@ -338,13 +340,14 @@ cfla1 <- initContractAnalysis( analysisID = "cfla001",
                                actusServerURL = serverURL,
                                timeline = tl1
 )
-msg <- generateEvents(host= cfla1)
-cfla1$cashflowEventsdf
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
 
-logMsgs1  <- generateEvents(host = cfla1)
-logMsgs2  <- events2dfByPeriod(host= cfla1)
-logMsgs3  <- liquidityByPeriod2vec(host= cfla1)
-logMsgs4  <- lv2LiquidityReports(host= cfla1)
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
 head(cfla1$cashflowEventsByPeriod,30)
 rep <- nominalValueReports(cfla1)
 cfla1$nominalValueReports
@@ -374,13 +377,14 @@ cfla1 <- initContractAnalysis( analysisID = "cfla001",
                                actusServerURL = serverURL,
                                timeline = tl1
 )
-msg <- generateEvents(host= cfla1)
-cfla1$cashflowEventsdf
+msg <- generateEvents(cntan= cfla1)
+cfla1$cashflowEventsLoL[[1]]$status
+cfla1$cashflowEventsLoL[1]
 
-logMsgs1  <- generateEvents(host = cfla1)
-logMsgs2  <- events2dfByPeriod(host= cfla1)
-logMsgs3  <- liquidityByPeriod2vec(host= cfla1)
-logMsgs4  <- lv2LiquidityReports(host= cfla1)
+logMsgs1  <- generateEvents(cntan = cfla1)
+logMsgs2  <- events2dfByPeriod(cfla= cfla1)
+logMsgs3  <- liquidityByPeriod2vec(cfla= cfla1)
+logMsgs4  <- lv2LiquidityReports(cfla= cfla1)
 head(cfla1$cashflowEventsByPeriod,30)
 rep <- nominalValueReports(cfla1)
 cfla1$nominalValueReports

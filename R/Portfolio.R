@@ -131,24 +131,14 @@ setMethod (f = "generateEvents",
              simulationRsp <- simulationRequest(ptf, serverURL, riskFactors)
              response_content <- content(simulationRsp)
              if (simulationRsp$status_code != 200) {
-               print(paste0("Contract simulation error. status_code= ",
+               print( paste0("Contract simulation error. status_code= ",
                              simulationRsp$status_code,
-                             "Error info= ", response_content$error))
-               df <- data.frame() 
-             } else{
-               # added by Gian
-               if(all(unlist(lapply(response_content,
-                                    function(x){return(x$status)})) == "Success")){
-                 df <- mergecfls(response_content)
-                 print("Contract simulations were successful")
-               } else {
-                 print("Error in contract simulation during generateEvents()")
-                 df <- data.frame()
-               }
+                             "Error info= ", response_content$error)
+               )
+               stop("Error in contract simulation during generateEvents()" ) 
              }
-             return(df)
              #              return("returning from (ptf,severURL,rfs) version ")
-             # return(response_content) removed by Gian
+             return(response_content)
            })
 
 # **********************************
@@ -372,9 +362,9 @@ monthlyAndCumulatedValue <- function(indf){
 #'    plotlist[["monthly income"]]                               
 #' }
 simulatePortfolio <-function(ptf, serverURL, riskFactors, scenarioName){
-  dfall <- generateEvents(ptf=ptf, serverURL=serverURL, riskFactors= riskFactors)
+  cfls <- generateEvents(,ptf=ptf, serverURL=serverURL, riskFactors= riskFactors)
   # merge all cashflow events for the portfolio into one dataframe 
-  # dfall <- mergecfls(cfls) removed by Gian
+  dfall <- mergecfls(cfls) 
   
   # sort dataframe by date, add Date sortkey 
   # add a  month charstring  column (for aggregation by month) 

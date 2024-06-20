@@ -3,13 +3,13 @@
 \name{liquidityByPeriod2vec,ContractAnalysis-method}
 \alias{liquidityByPeriod2vec,ContractAnalysis-method}
 \title{*******************************
-  liquidityByPeriod2vec(host= <ContractAnalysis>). -method instance
+  liquidityByPeriod2vec(cfla= <ContractAnalysis>). -method instance
 *******************************}
 \usage{
-\S4method{liquidityByPeriod2vec}{ContractAnalysis}(host)
+\S4method{liquidityByPeriod2vec}{ContractAnalysis}(cfla)
 }
 \arguments{
-\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing whether processins was successful
@@ -56,6 +56,6 @@ This method reorganizes the cashflowEventsByPeriod df to show the liquidity
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-   logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+   logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
 } 
 }

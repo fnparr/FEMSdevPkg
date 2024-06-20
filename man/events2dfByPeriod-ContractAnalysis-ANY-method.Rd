@@ -18,22 +18,22 @@ This method reorganizes a list(by contract) of lists of cashflow events
   ACTUS cashflow event field. The input ContractAnalysis object myst be in 
   the following state: (1) portfolio, and timeline fields must be initialized
   (2) statusDate of the timeline must be the same as statusdate of all 
-  contracts in the portfolio (3) generateEvents(host) must have been run to 
-  populate host$cashflowEventsLoL, and (4) the status of each contract 
+  contracts in the portfolio (3) generateEvents(cfla) must have been run to 
+  populate cfla$cashflowEventsLoL, and (4) the status of each contract 
   simulation must be "Success" . You can check this using: 
- > unlist(lapply(host$cashflowEventsLoL,function(x){return(x$status)})) 
+ > unlist(lapply(cfla$cashflowEventsLoL,function(x){return(x$status)})) 
  
   If these conditions are met, events2dfByPeriod() will reorganize the data
-  in host$cashflowEventsLoL as a dataframe with columns: 
+  in cfla$cashflowEventsLoL as a dataframe with columns: 
      TBD
-  and save that as host$cashflowEventsByPeriod for use in subsequent analysis
+  and save that as cfla$cashflowEventsByPeriod for use in subsequent analysis
   steps on the ContractAnalysis object. 
   
   A text message is returned reporting on any issues in this processing step.
   
-  Processing steps: (0) check valid host$cashflowEventsLoL, (1) merge 
+  Processing steps: (0) check valid cfla$cashflowEventsLoL, (1) merge 
   eventsLOL into eventsDF, (2) add periodIndex column,  (3) sort by 
-  (contractID, periodIndex), (4) save as host$cashFlowEventsByPeriod.
+  (contractID, periodIndex), (4) save as cfla$cashFlowEventsByPeriod.
 }
 \examples{
 {
