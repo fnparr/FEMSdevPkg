@@ -885,8 +885,8 @@ showContractNPVs <- function (fm, scale = 1, rounding = 0) {
   return(npvdf)
 }
 
-# ******* extendedEventsdf() 
-#' extendedEventsd("FinancialModel")
+# ******* extendedEventsDF() 
+#' extendedEventsDF("FinancialModel")
 #' 
 #' This function returns a data frame with the cashflow events in the
 #' currentScenarioAnalysis extended with additional fields for nodeId, nodeName,
@@ -897,7 +897,7 @@ showContractNPVs <- function (fm, scale = 1, rounding = 0) {
 #' @param  Financial Model with cashflowEventsByPeriod available 
 #' @returns events data frame with added fields nodeId, nodeName, contractType, periodStart, periodEnd  
 #' @export
-extendedEventsdf <- function(fm) {
+extendedEventsDF <- function(fm) {
   treemap <- ToDataFrameTable(fm$accountsTree$root, "name", "nodeID", "actusCIDs", "formulaCIDs")
   
   contractmap <- data.frame(nodeName = character(),

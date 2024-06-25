@@ -6,10 +6,10 @@
   eventsdf2incomeReports(cfla= ContractAnalysis) -method instance
 *******************************}
 \usage{
-\S4method{eventsdf2incomeReports}{ContractAnalysis}(cfla)
+\S4method{eventsdf2incomeReports}{ContractAnalysis}(host)
 }
 \arguments{
-\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing whether processing was successful
@@ -65,7 +65,7 @@ This method generates an incomeReport (vector) for each contract using the
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-   logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
+   logMsgs5  <- eventsdf2incomeReports(host= cfla2015)
 } 
      
 }

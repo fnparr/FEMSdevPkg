@@ -6,10 +6,10 @@
   lv2LiquidityReports(cfla= ContractAnalysis) -method instance
 *******************************}
 \usage{
-\S4method{lv2LiquidityReports}{ContractAnalysis}(cfla)
+\S4method{lv2LiquidityReports}{ContractAnalysis}(host)
 }
 \arguments{
-\item{cfla}{CashAnalysis S4 object with portfolio, actusServer and risk data}
+\item{host}{CashAnalysis S4 object with portfolio, actusServer and risk data}
 }
 \value{
 Log summarizing whether processing was successful
@@ -55,7 +55,7 @@ This method generates a liquidityReport (vector) for each contract using
                              timeline = tl1)
    logMsgs1  <- generateEvents(host = cfla2015)
    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-   logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
-   lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
+   logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+   lofMsgs4  <- lv2LiquidityReports(host= cfla2015)
 }      
 }

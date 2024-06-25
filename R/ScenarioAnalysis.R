@@ -226,7 +226,7 @@ setMethod (f = "events2dfByPeriod",
               all(unlist(lapply(host$cashflowEventsLoL,
                                 function(x){return(x$status)})) == "Success" ) )
           { logmsg <- "OK" 
-            df1 <- mergecfls(host$cashflowEventsLoL)
+            df1 <- eventsLoL2DF(host$cashflowEventsLoL)
             df1["periodIndex"] <- sapply( df1$time, 
                                   function(x)
                                     {return(date2PeriodIndex(tl, 

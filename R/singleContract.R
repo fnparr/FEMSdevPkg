@@ -44,6 +44,8 @@ loan <- function(ctype, start, maturity, nominal, coupon,
     cntr1 <- lam(start, maturity, nominal, coupon, paymentFreq,role,
                       rateResetFreq=rateResetFreq,
                       rateResetSpread=rateResetSpread )
+  } else {
+    stop("Invalid contract type - must be PAM, ANN or LAM")
   }
   return(cntr1)
 }

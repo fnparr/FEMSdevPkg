@@ -167,7 +167,7 @@ initContractAnalysis <- function (
 #'   The method return a log message with a report on which contracts were 
 #'   successfully simulated
 #'
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing which contracts were successfully simulated 
 #' @export
 #' @import    jsonlite
@@ -275,7 +275,7 @@ setMethod (f = "events2dfByPeriod",
          all(unlist(lapply(host$cashflowEventsLoL,
                            function(x){return(x$status)})) == "Success" ) )
     { msg <- "OK" 
-      df1 <- mergecfls(host$cashflowEventsLoL)
+      df1 <- eventsLoL2DF(host$cashflowEventsLoL)
       df1["periodIndex"] <- sapply( df1$time, 
          function(x){return(date2PeriodIndex(host$timeline, substr(x,1,10)))})
       df2 <- df1[c("contractId","periodIndex","time","type", "payoff",
@@ -291,11 +291,11 @@ setMethod (f = "events2dfByPeriod",
 # *************************************
 #  **** Generic liquidityByPeriod2vec(... ) 
 setGeneric("liquidityByPeriod2vec",
-           function(cfla) 
+           function(host) 
            { standardGeneric("liquidityByPeriod2vec") }
 )
 #'  *******************************
-#'   liquidityByPeriod2vec(cfla= <ContractAnalysis>). -method instance
+#'   liquidityByPeriod2vec(host= <ContractAnalysis>). -method instance
 #' *******************************
 #'
 #'   This method reorganizes the cashflowEventsByPeriod df to show the liquidity
@@ -318,7 +318,7 @@ setGeneric("liquidityByPeriod2vec",
 #'   values. Use lapply() on this list to produce a list of 
 #'   <contractId, liquidity> vector pairs. 
 #'   
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processins was successful 
 #' @export
 #' @examples {
@@ -341,19 +341,19 @@ setGeneric("liquidityByPeriod2vec",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
+#'    logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
 #' } 
 setMethod(f = "liquidityByPeriod2vec",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
     # subset cashflowEventsByPeriod periodIndex in 1:cfla$timeline$reportCount 
-    df1 <- subset(cfla$cashflowEventsByPeriod, 
-                  periodIndex %in% 1:cfla$timeline$periodCount)
+    df1 <- subset(host$cashflowEventsByPeriod, 
+                  periodIndex %in% 1:host$timeline$periodCount)
     df2 <- aggregate(df1$payoff, 
                      by=c(cid= list(df1$contractId), 
                           period= list(df1$periodIndex)), FUN=sum)
     df2rows <- lapply(split(df2,df2$cid), function(y) as.list(y))
-    cfla$contractLiquidityVectors <- lapply( df2rows, function(z){
+    host$contractLiquidityVectors <- lapply( df2rows, function(z){
         lvec <- z$x     # df aggregate requires that result has name x
         names(lvec) <- z$period
         return(list(cid=z$cid[[1]],lvec= lvec))
@@ -368,7 +368,7 @@ setMethod(f = "liquidityByPeriod2vec",
 #  **** Generic lv2LiquidityReports(<>) ********
 # Defines generic method to map liquidity vectors list to liquidityReports
 setGeneric("lv2LiquidityReports",
-           function(cfla) 
+           function(host) 
              { standardGeneric("lv2LiquidityReports") }
 )
 
@@ -394,7 +394,7 @@ setGeneric("lv2LiquidityReports",
 #'   enterprise is solvent at each report date. 
 #'   
 #'   The method returns a message indicating whether processing was successful.   
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processing was successful 
 #' @export
 #' @examples {
@@ -417,15 +417,15 @@ setGeneric("lv2LiquidityReports",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs3  <- liquidityByPeriod2vec(cfla= cfla2015)
-#'    lofMsgs4  <- lv2LiquidityReports(cfla= cfla2015)
+#'    logMsgs3  <- liquidityByPeriod2vec(host= cfla2015)
+#'    lofMsgs4  <- lv2LiquidityReports(host= cfla2015)
 #' }      
 setMethod(f = "lv2LiquidityReports",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
-            rseq <- seq(1,cfla$timeline$reportCount)
-            clvs <- cfla$contractLiquidityVectors
-            cfla$liquidityReports  <- lapply (names(clvs), function(y){
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
+            rseq <- seq(1,host$timeline$reportCount)
+            clvs <- host$contractLiquidityVectors
+            host$liquidityReports  <- lapply (names(clvs), function(y){
               lv <-clvs[[y]]$lvec
               vv <- c()
               rep0 <- cumsum(unlist(sapply(rseq, function(x) {
@@ -449,7 +449,7 @@ setMethod(f = "lv2LiquidityReports",
 #  **** Generic eventsdf2incomeReports(<>) ********
 # This method defines a generic method for incomeReports from eventsByPeriod df 
 setGeneric("eventsdf2incomeReports",
-           function(cfla) 
+           function(host) 
            { standardGeneric("eventsdf2incomeReports") }
 )
 #'  *******************************
@@ -485,7 +485,7 @@ setGeneric("eventsdf2incomeReports",
 #'   
 #'   The method returns a message indicating whether processing was successful.
 #'      
-#' @param cfla  CashAnalysis S4 object with portfolio, actusServer and risk data
+#' @param host  CashAnalysis S4 object with portfolio, actusServer and risk data
 #' @return      Log summarizing whether processing was successful 
 #' @export
 #' @examples {
@@ -508,15 +508,15 @@ setGeneric("eventsdf2incomeReports",
 #'                              timeline = tl1)
 #'    logMsgs1  <- generateEvents(host = cfla2015)
 #'    logMsgs2  <- events2dfByPeriod(host = cfla2015)
-#'    logMsgs5  <- eventsdf2incomeReports(cfla= cfla2015)
+#'    logMsgs5  <- eventsdf2incomeReports(host= cfla2015)
 #' } 
 #'      
 setMethod(f = "eventsdf2incomeReports",
-          signature = c(cfla = "ContractAnalysis"),
-          definition = function(cfla) {
+          signature = c(host = "ContractAnalysis"),
+          definition = function(host) {
             # step1 - subset
-            df1 <- subset(cfla$cashflowEventsByPeriod,  
-                              periodIndex %in% 1:cfla$timeline$reportCount  
+            df1 <- subset(host$cashflowEventsByPeriod,  
+                              periodIndex %in% 1:host$timeline$reportCount  
                             & type %in%  c("IP", "FP")
                          )
             # step2 aggregate 
@@ -531,7 +531,7 @@ setMethod(f = "eventsdf2incomeReports",
               names(ivec) <- z$period
               return(list(cid=z$cid[[1]],ivec= ivec))
             }) 
-            rseq <- seq(1,cfla$timeline$reportCount)
+            rseq <- seq(1,host$timeline$reportCount)
             irs  <- lapply (names(civs), function(y){
               iv <-civs[[y]]$ivec
               vv <- c()
@@ -546,10 +546,10 @@ setMethod(f = "eventsdf2incomeReports",
             })
             # step4  - add in  0,0,0 ...0 reports for contracts with no income
             piks <- sapply(irs, function(x) return(x$cid))
-            noir <- rep(0,cfla$timeline$reportCount)
+            noir <- rep(0,host$timeline$reportCount)
             names(noir) <- rseq
-            cfla$incomeReports <- lapply( 
-              sapply(cfla$portfolio$contracts,
+            host$incomeReports <- lapply( 
+              sapply(host$portfolio$contracts,
                      function(x) return (x$contractTerms$contractID)
               ),
               function(y){ 
