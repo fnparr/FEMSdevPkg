@@ -110,6 +110,35 @@ treeToYamlString <- function(accountsTree){
   return(yamlString)
 }
 
+# ************
+# Function to get all actusCIDs and functionIDs from an AccountsTree$root
+#' extractCIDs("accounsTree$root")
+#' 
+#' @param  node  AccountsTree$root: the root node of the accounts tree
+#' @returns vector with all contract IDs of actus contracts and functional contracts  
+#' @import data.tree
+#' @export
+
+extractCIDs <- function(node) {
+  CIDs_list <- c()
+  if (!is.null(node$actusCIDs)) {
+    CIDs_list <- c(CIDs_list, node$actusCIDs)
+  }
+  
+  if(!is.null(node$functionIDs)) {
+    CIDs_list <- c(CIDs_list, node$functionIDs)
+  }
+  
+  if (!is.null(node$children)) {
+    for (child in node$children) {
+      CIDs_list <- c(CIDs_list, extractCIDs(child))
+    }
+  }
+  
+  return(CIDs_list)
+}
+
+
 # *********
 # Clone an AccountsTree - deep copy - assumed initialized and nodeIDs set  
 # *****************
