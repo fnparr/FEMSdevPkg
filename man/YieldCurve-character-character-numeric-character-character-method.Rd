@@ -30,12 +30,12 @@ fully initialized S4 class YieldCurve object
 \description{
 YieldCurve(character, character, namedNumericVector, character,character)
   function takes as input: (1) a YieldCurveID label, (2) a referenceDate
-  character string, (3) a named vector of numeric tenorRates, (4) a 
-  character string ACTUS dayCountConvention and (5) a character string 
+  character string, (3) a named vector of numeric tenorRates, (4) a
+  character string ACTUS dayCountConvention and (5) a character string
   compoundingFrequency with values in { "NONE", "YEARLY","CONTINUOUS"}.
   The function checks that the input dayCountConvention is a valid ACTUS code
-  and mappable to the dayCountConvention values supported in 
-  fmdates::year_frac() - used to compute arbitrage free forward rates.  
+  and mappable to the dayCountConvention values supported in
+  RQuantLib::yearFraction - used to compute arbitrage free forward rates.
   An S4 YieldCurve object is created and returned with attributes initialized
   to these values.
 }

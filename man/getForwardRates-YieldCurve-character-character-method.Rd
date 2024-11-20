@@ -19,17 +19,18 @@ Projected pa interest rate on loan from Tfrom to Tto using YieldCurve
 \description{
 Function getforwardRates(YieldCurve, character, character) takes as
   input: (1) an initialized S4 YieldCurve object, (2) a character Tfrom date
-  in yyyy-mm-dd format and (3) a character Tto date in yyyy-mm-ff from. 
+  in yyyy-mm-dd format and (3) a character Tto date in yyyy-mm-ff from.
   The function returns the perannum forward interest rate for a loan starting
-  at Tfrom and maturing at Tto based on arbitrage free projection od the 
-  supplied YieldCurve data with dayCountConvention and compoundung as 
-  set in attributes of this yield Curve. 
-  Tfrom must be earlier (<) Tto 
-  
-  getForwardRates() uses yearFraction() which in turn depends on and includes 
-  fmdates::year_frac(), lubridate::ymd(); getForwardRates() also uses   
+  at Tfrom and maturing at Tto based on arbitrage free projection od the
+  supplied YieldCurve data with dayCountConvention and compoundung as
+  set in attributes of this yield Curve.
+  Tfrom must be earlier (<) Tto
+}
+\details{
+getForwardRates() uses yearFraction() which in turn depends on and includes
+  RQuantLib::yearFraction, lubridate::ymd(); getForwardRates() also uses
   function approx() from RBase to interpolate YieldCurve values
-  
+
   The initial implementation of getForwardrates() restricts Tfrom and Tto to
   single date strings rather than vectors and compoundingFrequency == "NONE"
 }
